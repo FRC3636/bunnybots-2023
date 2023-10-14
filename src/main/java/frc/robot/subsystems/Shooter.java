@@ -4,7 +4,10 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
@@ -12,6 +15,15 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    // Derived from https://docs.limelightvision.io/docs/docs-limelight/tutorials/tutorial-estimating-distance
+    LimelightHelpers.LimelightResults latestResults = LimelightHelpers.getLatestResults("limelight");
+    if (latestResults.targetingResults.targets_Retro.length != 0) {
+      double ty = LimelightHelpers.getTY("limelight");
+      double angleToGoal = Units.degreesToRadians(Constants.Shooter.LIMELIGHT_ANGLE + ty);
+      double distanceToBucket = (Constants.Shooter.BUCKET_HEIGHT - Constants.Shooter.LIMELIGHT_HEIGHT) / Math.tan(angleToGoal);
+      System.out.println("Distance to bucket is " + distanceToBucket + " inches!");
+    } else {
+      System.out.println("No targets to measure :(");
+    }
   }
 }

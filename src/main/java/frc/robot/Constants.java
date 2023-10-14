@@ -151,6 +151,11 @@ public final class Constants {
     public static final class Shooter{
         public static final int NEO_ID = 0;
         public static final int TALON_ID = 0;
+
+        public static final double LIMELIGHT_ANGLE = 110; // degrees
+        public static final double LIMELIGHT_HEIGHT = 27.33; // inches
+
+        public static final double BUCKET_HEIGHT = 49; // inches. rough guess. will probably need updating.
     }
 
     public static final class Indexer{
