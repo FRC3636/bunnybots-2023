@@ -3,7 +3,7 @@ package frc.robot.subsystems.shooter
 import edu.wpi.first.math.util.Units
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.CANDevice
-import frc.robot.LimelightHelpers
+import frc.robot.utils.LimelightHelpers
 import kotlin.math.tan
 
 object Shooter : Subsystem {
