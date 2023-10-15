@@ -28,6 +28,8 @@ object Shooter : Subsystem {
         } else {
             println("No stuff to measure :((")
         }
+
+        io.updateInputs(ShooterInputs())
     }
 
     fun shoot() {
