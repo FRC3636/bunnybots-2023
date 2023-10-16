@@ -4,7 +4,9 @@ import edu.wpi.first.math.util.Units
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.CANDevice
 import frc.robot.utils.LimelightHelpers
+import org.littletonrobotics.junction.Logger
 import kotlin.math.tan
+
 
 object Shooter : Subsystem {
 
@@ -30,6 +32,9 @@ object Shooter : Subsystem {
         }
 
         io.updateInputs(ShooterInputs())
+
+        Logger.getInstance().recordOutput("Shooter/MainMotorVelocity", io.getSpeedMain())
+        Logger.getInstance().recordOutput("Shooter/SecondaryMotorVelocity", io.getSpeedSecondary())
     }
 
     fun shoot() {

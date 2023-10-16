@@ -37,6 +37,9 @@ interface ShooterIO {
 
     fun setVoltageMain(outputVolts: Double)
     fun setVoltageSecondary(outputVolts: Double)
+
+    fun getSpeedMain(): Double
+    fun getSpeedSecondary(): Double
 }
 
 class ShooterIOReal(mainMotorCAN: CANDevice, secondaryMotorCAN: CANDevice) : ShooterIO {
@@ -72,6 +75,14 @@ class ShooterIOReal(mainMotorCAN: CANDevice, secondaryMotorCAN: CANDevice) : Sho
     }
     override fun setVoltageSecondary(outputVolts: Double) {
         secondaryMotor.setVoltage(outputVolts)
+    }
+
+    override fun getSpeedMain(): Double {
+        return mainMotor.get()
+    }
+
+    override fun getSpeedSecondary(): Double {
+        return secondaryMotor.get()
     }
 
     internal companion object Constants {
