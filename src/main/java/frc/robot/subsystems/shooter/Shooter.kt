@@ -31,7 +31,7 @@ object Shooter : Subsystem {
             println("No stuff to measure :((")
         }
 
-        io.updateInputs(ShooterInputs())
+        io.updateInputs(shooterInputs)
 
         Logger.getInstance().recordOutput("Shooter/MainMotorVelocity", io.getSpeedMain())
         Logger.getInstance().recordOutput("Shooter/SecondaryMotorVelocity", io.getSpeedSecondary())

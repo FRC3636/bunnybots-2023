@@ -7,7 +7,6 @@ import com.revrobotics.SparkMaxAbsoluteEncoder
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.util.Units
 import frc.robot.CANDevice
-import frc.robot.subsystems.Turret.TurretIOReal
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
@@ -51,8 +50,8 @@ class ShooterIOReal(mainMotorCAN: CANDevice, secondaryMotorCAN: CANDevice) : Sho
 
 
     init {
-        secondaryEncoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * TurretIOReal.GEAR_RATIO / 60
-        secondaryMotor.encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * TurretIOReal.GEAR_RATIO / 60
+        secondaryEncoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * SECONDARY_GEAR_RATIO / 60
+        secondaryMotor.encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * SECONDARY_GEAR_RATIO / 60
     }
 
     override fun updateInputs(inputs: ShooterInputs) {
