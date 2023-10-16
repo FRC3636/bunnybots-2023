@@ -19,6 +19,7 @@ data class PerCorner<T>(
         DrivetrainCorner.BACK_LEFT -> backLeft
     }
 
+
     fun <U> map(block: (T) -> U): PerCorner<U> = generate { corner -> block(this[corner]) }
     fun <U> mapWithCorner(block: (T, DrivetrainCorner) -> U): PerCorner<U> =
         generate { corner -> block(this[corner], corner) }
@@ -27,7 +28,6 @@ data class PerCorner<T>(
     fun <U> zip(second: PerCorner<U>): PerCorner<Pair<T, U>> = generate { corner -> Pair(this[corner], second[corner]) }
 
     private fun sequence(): Sequence<T> = sequenceOf(frontLeft, frontRight, backRight, backLeft)
-
     override fun iterator(): Iterator<T> = sequence().iterator()
 
     override val size: Int = 4

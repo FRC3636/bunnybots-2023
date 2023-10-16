@@ -2,8 +2,12 @@ package frc.robot.subsystems.drivetrain
 
 import MAXSwerveModuleIO
 import ModuleInputs
+import SimSwerveModuleIO
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Rotation3d
+import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveModuleState
@@ -16,14 +20,11 @@ import frc.robot.RobotContainer
 import frc.robot.utils.PerCorner
 import frc.robot.utils.cornerStatesToChassisSpeeds
 import frc.robot.utils.toCornerSwerveModuleStates
-import SimSwerveModuleIO
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.geometry.Translation2d
 import org.littletonrobotics.junction.Logger
 
 // A singleton object representing the drivetrain.
-object Drivetrain : Subsystem {
 
+object Drivetrain : Subsystem {
 
 
 
@@ -32,6 +33,7 @@ object Drivetrain : Subsystem {
         MODULE_CAN_DEVICES.zip(MODULE_POSITIONS).map { (can, pose) ->
             MAXSwerveModuleIO(can.first, can.second, pose.rotation)
         }.zip ( PerCorner.generate { ModuleInputs() } )
+
     } else {
         PerCorner.generate { SimSwerveModuleIO() }. zip( PerCorner.generate { ModuleInputs() } )
     }
@@ -76,7 +78,6 @@ object Drivetrain : Subsystem {
         Logger.getInstance().recordOutput("Odometry/pose", estimatedPose)
         Logger.getInstance().recordOutput("Drive/ModulesState/Measured", *modules.map{it.second.state}.toTypedArray())
         Logger.getInstance().recordOutput("Drive/ModulesState/Desired", *modules.map{it.second.desiredState}.toTypedArray())
-
 
 
         // Log the swerve module states to SmartDashboard.
@@ -126,16 +127,21 @@ object Drivetrain : Subsystem {
     val rotation: Rotation2d
         get() = gyroInputs.rotation.toRotation2d()
 
+    val rotation3d: Rotation3d
+        get() = gyroInputs.rotation
+
     val velocity2d: Translation2d
         get() {
            return Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
         }
+
 }
 
 // Constants
 internal val MODULE_POSITIONS = PerCorner(
     frontLeft = Pose2d(), frontRight = Pose2d(), backRight = Pose2d(), backLeft = Pose2d()
 )
+
 
 internal val MODULE_CAN_DEVICES = PerCorner(
     frontLeft = Pair(CANDevice.FrontLeftDrivingMotor, CANDevice.FrontLeftTurningMotor),
