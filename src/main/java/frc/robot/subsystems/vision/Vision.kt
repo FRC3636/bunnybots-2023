@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.util.Units
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.subsystems.drivetrain.Drivetrain
-import frc.robot.utils.LimelightHelpers
 import frc.robot.utils.LimelightHelpers.LimelightTarget_Retro
 import org.littletonrobotics.junction.Logger
 import kotlin.math.tan
@@ -31,8 +30,7 @@ class Vision(private val io: VisionIO): Subsystem {
     }
 
     fun getDistance(target: LimelightTarget_Retro): Double{
-        val ty = LimelightHelpers.getTY("limelight")
-        val angleToBucket = Units.degreesToRadians(LIMELIGHT_ANGLE + ty)
+        val angleToBucket = Units.degreesToRadians(LIMELIGHT_ANGLE + target.ty)
         return (BUCKET_HEIGHT - LIMELIGHT_HEIGHT) / tan(angleToBucket)
     }
 
