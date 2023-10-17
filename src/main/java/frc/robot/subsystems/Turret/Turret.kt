@@ -34,7 +34,6 @@ object Turret : Subsystem {
     }
 
     fun aim() {
-
         io.setVoltage(
                 pidController.calculate(relativeAngle.radians, targetRotation.radians)
                         + feedForward.calculate(Drivetrain.velocity2d.norm)
@@ -45,7 +44,6 @@ object Turret : Subsystem {
     fun setTarget(target: Rotation2d){
         targetRotation = target
     }
-
     val relativeAngle: Rotation2d
         get() = Rotation2d(turretInputs.position.radians + Drivetrain.rotation.radians)
 

@@ -86,6 +86,7 @@ class ShooterIOReal(mainMotorCAN: CANDevice, secondaryMotorCAN: CANDevice) : Sho
 
     internal companion object Constants {
         const val SECONDARY_GEAR_RATIO = 1.0
+
     }
 }
 

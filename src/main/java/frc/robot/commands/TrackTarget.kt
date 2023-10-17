@@ -6,7 +6,6 @@ import frc.robot.subsystems.Turret.Turret
 import frc.robot.subsystems.vision.Vision
 import frc.robot.subsystems.vision.Vision.Measurement
 import frc.robot.utils.LimelightHelpers.LimelightTarget_Retro
-import frc.robot.utils.toRadians
 
 class TrackClosest(private val turret: Turret,private val vision: Vision) : CommandBase(){
 
@@ -27,7 +26,7 @@ class TrackClosest(private val turret: Turret,private val vision: Vision) : Comm
         if(mode == AimMode.TRACK){
             currentTarget = vision.closestTarget
             TargetSamples.addMeasurement(vision.takeMeasurement(currentTarget))
-            Turret.setTarget(Turret.relativeAngle.plus(Rotation2d(currentTarget.tx.toRadians())))
+            Turret.setTarget(Turret.relativeAngle.plus(Rotation2d.fromDegrees(currentTarget.tx)))
         }else if(mode == AimMode.SEARCH){
             TargetSamples.reset()
 
