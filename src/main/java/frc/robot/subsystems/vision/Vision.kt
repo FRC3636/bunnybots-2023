@@ -40,9 +40,13 @@ class Vision(private val io: VisionIO): Subsystem {
         }
 
     //ascending
-    val targetsbyDistance: List<Pair<LimelightTarget_Retro, Double>>
+    private val targetsbyDistance: List<Pair<LimelightTarget_Retro, Double>>
         get() {
             return inputs.targets.map {target: LimelightTarget_Retro -> Pair(target, getDistance(target))}.sortedBy {it.second}
+        }
+    val hasTargets: Boolean
+        get(){
+            return inputs.hasTargets
         }
 
 
