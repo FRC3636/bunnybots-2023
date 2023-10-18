@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shooter
+package frc.robot.subsystems.yeeter
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX
 import com.revrobotics.CANSparkMax
@@ -10,26 +10,26 @@ import frc.robot.CANDevice
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
-interface ShooterIO {
-    class ShooterRawInputs : LoggableInputs {
+interface YeeterIO {
+    class YeeterRawInputs : LoggableInputs {
 
-        var mainVelocity = 0.0
-        var secondaryVelocity = 0.0
+        var yeetMainVelocity = 0.0
+        var yeetSecondaryVelocity = 0.0
 
         override fun toLog(table: LogTable?) {
-            table?.put("Main Motor Velocity", mainVelocity)
-            table?.put("Secondary Motor Velocity", secondaryVelocity)
+            table?.put("Yeet Main Motor Velocity", yeetMainVelocity)
+            table?.put("Yeet Secondary Motor Velocity", yeetSecondaryVelocity)
         }
 
         override fun fromLog(table: LogTable?) {
-            table?.getDouble("Main Motor Velocity", mainVelocity)?.let {mainVelocity = it}
-            table?.getDouble("Secondary Motor Velocity", secondaryVelocity)?.let {secondaryVelocity = it}
+            table?.getDouble("Main Motor Velocity", yeetMainVelocity)?.let {yeetMainVelocity = it}
+            table?.getDouble("Secondary Motor Velocity", yeetSecondaryVelocity)?.let {yeetSecondaryVelocity = it}
         }
 
     }
 
 
-    fun updateInputs(inputs: ShooterInputs)
+    fun updateInputs(inputs: YeeterInputs)
 
     fun setSpeedMain(speed: Double)
     fun setSpeedSecondary(speed: Double)
@@ -41,11 +41,11 @@ interface ShooterIO {
     fun getSpeedSecondary(): Double
 }
 
-class ShooterIOReal(mainMotorCAN: CANDevice, secondaryMotorCAN: CANDevice) : ShooterIO {
+class YeeterIOReal(yeetMainMotorCAN: CANDevice, yeetSecondaryMotorCAN: CANDevice) : YeeterIO {
 
 
-    private val mainMotor = WPI_TalonFX(secondaryMotorCAN.id)
-    private val secondaryMotor = CANSparkMax(mainMotorCAN.id, CANSparkMaxLowLevel.MotorType.kBrushless)
+    private val yeetMainMotor = WPI_TalonFX(yeetSecondaryMotorCAN.id)
+    private val secondaryMotor = CANSparkMax(yeetMainMotorCAN.id, CANSparkMaxLowLevel.MotorType.kBrushless)
     private val secondaryEncoder = secondaryMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
 
 
@@ -54,19 +54,19 @@ class ShooterIOReal(mainMotorCAN: CANDevice, secondaryMotorCAN: CANDevice) : Sho
         secondaryMotor.encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * SECONDARY_GEAR_RATIO / 60
     }
 
-    override fun updateInputs(inputs: ShooterInputs) {
-        inputs.mainVelocity = Rotation2d(mainMotor.get())
-        inputs.secondaryVelocity = Rotation2d(secondaryEncoder.velocity)
+    override fun updateInputs(inputs: YeeterInputs) {
+        inputs.yeetMainVelocity = Rotation2d(yeetMainMotor.get())
+        inputs.yeetSecondaryVelocity = Rotation2d(secondaryEncoder.velocity)
         inputs.updateRaw()
 
     }
 
     override fun setSpeedMain(speed: Double){
-        mainMotor.set(speed)
+        yeetMainMotor.set(speed)
     }
 
     override fun setVoltageMain(outputVolts: Double){
-        mainMotor.setVoltage(outputVolts)
+        yeetMainMotor.setVoltage(outputVolts)
     }
 
     override fun setSpeedSecondary(speed: Double) {
@@ -77,7 +77,7 @@ class ShooterIOReal(mainMotorCAN: CANDevice, secondaryMotorCAN: CANDevice) : Sho
     }
 
     override fun getSpeedMain(): Double {
-        return mainMotor.get()
+        return yeetMainMotor.get()
     }
 
     override fun getSpeedSecondary(): Double {
@@ -90,14 +90,14 @@ class ShooterIOReal(mainMotorCAN: CANDevice, secondaryMotorCAN: CANDevice) : Sho
     }
 }
 
-class ShooterInputs {
-    private val inputs = ShooterIO.ShooterRawInputs()
+class YeeterInputs {
+    private val inputs = YeeterIO.YeeterRawInputs()
 
-    var mainVelocity = Rotation2d()
-    var secondaryVelocity = Rotation2d()
+    var yeetMainVelocity = Rotation2d()
+    var yeetSecondaryVelocity = Rotation2d()
 
     fun updateRaw() {
-        inputs.mainVelocity = mainVelocity.radians
-        inputs.secondaryVelocity = secondaryVelocity.radians
+        inputs.yeetMainVelocity = yeetMainVelocity.radians
+        inputs.yeetSecondaryVelocity = yeetSecondaryVelocity.radians
     }
 }
