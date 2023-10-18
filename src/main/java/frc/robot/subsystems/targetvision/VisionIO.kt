@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision
+package frc.robot.subsystems.targetvision
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import edu.wpi.first.networktables.NetworkTableEvent
@@ -10,9 +10,11 @@ import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import java.util.*
 
+
 interface VisionIO {
 
     class VisionIOInputs : LoggableInputs {
+
 
         var hasTargets: Boolean = false
         var targetCount = 0
@@ -47,31 +49,45 @@ object Limelight : VisionIO {
     private var targetCount = 0
     private var lastTimeStamp: Double = 0.0
 
+    private val table = NetworkTableInstance.getDefault().getTable("limelight")
+    private val dumpSubscriber = table.getStringTopic("json").subscribe("no json :(")
+    private val cl = table.getDoubleTopic("cl").subscribe( 0.0)
+    private val tl = table.getDoubleTopic("tl").subscribe(0.0)
+
+    val curTimestamp: Double
+        get() {
+            val updates = dumpSubscriber.readQueue()
+            val lastUpdate = updates[updates.size-1]
+            val latency: Double = cl.get() + tl.get()
+            return (lastUpdate.timestamp * 1e-6) * (latency * 1e-3)
+        }
+
     override fun updateInputs(inputs: VisionIO.VisionIOInputs) {
+
         inputs.hasTargets = hasTargets
         inputs.targets = targets
-        inputs.lastTimeStampMS = lastTimeStamp
+        inputs.lastTimeStampMS = curTimestamp
+
     }
+
 
     init {
         val nt = NetworkTableInstance.getDefault()
+
         nt.addListener(
-            LimelightHelpers.getLimelightNTTableEntry("limelight","json"),
+            dumpSubscriber,
             EnumSet.of(Kind.kValueAll),
             ::eventListener
         )
+
     }
 
     private fun eventListener(event: NetworkTableEvent) {
-        val results = ObjectMapper().readValue(event.valueData.value.string, LimelightResults::class.java)
+        val results = ObjectMapper().readValue(dumpSubscriber.get(), LimelightResults::class.java)
         hasTargets = results.targetingResults.targets_Retro.isNotEmpty()
         targets = results.targetingResults.targets_Retro.toList()
         targetCount = results.targetingResults.targets_Retro.size
-        lastTimeStamp = results.targetingResults.timestamp_LIMELIGHT_publish
+
     }
-
-
-
-
 }
 
