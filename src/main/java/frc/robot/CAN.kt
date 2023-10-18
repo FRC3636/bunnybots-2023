@@ -11,5 +11,7 @@ enum class CANDevice(val id: Int) {
     BackRightDrivingMotor(17),
     TurretMotor(18),
     YeetMotorMain(19),
-    YeetMotorSecondary(20)
+    YeetMotorSecondary(20),
+    IntakeMotorPrimary(21),
+    IntakeMotorSecondary(22)
 }
