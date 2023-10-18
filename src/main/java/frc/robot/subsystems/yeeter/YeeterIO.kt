@@ -13,17 +13,17 @@ import org.littletonrobotics.junction.inputs.LoggableInputs
 interface YeeterIO {
     class YeeterRawInputs : LoggableInputs {
 
-        var yeetMainVelocity = 0.0
-        var yeetSecondaryVelocity = 0.0
+        var mainVelocity = 0.0
+        var secondaryVelocity = 0.0
 
         override fun toLog(table: LogTable?) {
-            table?.put("Yeet Main Motor Velocity", yeetMainVelocity)
-            table?.put("Yeet Secondary Motor Velocity", yeetSecondaryVelocity)
+            table?.put("Yeet Main Motor Velocity", mainVelocity)
+            table?.put("Yeet Secondary Motor Velocity", secondaryVelocity)
         }
 
         override fun fromLog(table: LogTable?) {
-            table?.getDouble("Main Motor Velocity", yeetMainVelocity)?.let {yeetMainVelocity = it}
-            table?.getDouble("Secondary Motor Velocity", yeetSecondaryVelocity)?.let {yeetSecondaryVelocity = it}
+            table?.getDouble("Main Motor Velocity", mainVelocity)?.let {mainVelocity = it}
+            table?.getDouble("Secondary Motor Velocity", secondaryVelocity)?.let {secondaryVelocity = it}
         }
 
     }
@@ -41,11 +41,11 @@ interface YeeterIO {
     fun getSpeedSecondary(): Double
 }
 
-class YeeterIOReal(yeetMainMotorCAN: CANDevice, yeetSecondaryMotorCAN: CANDevice) : YeeterIO {
+class YeeterIOReal(mainMotorCAN: CANDevice, secondaryMotorCAN: CANDevice) : YeeterIO {
 
 
-    private val yeetMainMotor = WPI_TalonFX(yeetSecondaryMotorCAN.id)
-    private val secondaryMotor = CANSparkMax(yeetMainMotorCAN.id, CANSparkMaxLowLevel.MotorType.kBrushless)
+    private val mainMotor = WPI_TalonFX(secondaryMotorCAN.id)
+    private val secondaryMotor = CANSparkMax(mainMotorCAN.id, CANSparkMaxLowLevel.MotorType.kBrushless)
     private val secondaryEncoder = secondaryMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
 
 
@@ -55,18 +55,18 @@ class YeeterIOReal(yeetMainMotorCAN: CANDevice, yeetSecondaryMotorCAN: CANDevice
     }
 
     override fun updateInputs(inputs: YeeterInputs) {
-        inputs.yeetMainVelocity = Rotation2d(yeetMainMotor.get())
-        inputs.yeetSecondaryVelocity = Rotation2d(secondaryEncoder.velocity)
+        inputs.mainVelocity = Rotation2d(mainMotor.get())
+        inputs.secondaryVelocity = Rotation2d(secondaryEncoder.velocity)
         inputs.updateRaw()
 
     }
 
     override fun setSpeedMain(speed: Double){
-        yeetMainMotor.set(speed)
+        mainMotor.set(speed)
     }
 
     override fun setVoltageMain(outputVolts: Double){
-        yeetMainMotor.setVoltage(outputVolts)
+        mainMotor.setVoltage(outputVolts)
     }
 
     override fun setSpeedSecondary(speed: Double) {
@@ -77,7 +77,7 @@ class YeeterIOReal(yeetMainMotorCAN: CANDevice, yeetSecondaryMotorCAN: CANDevice
     }
 
     override fun getSpeedMain(): Double {
-        return yeetMainMotor.get()
+        return mainMotor.get()
     }
 
     override fun getSpeedSecondary(): Double {
@@ -93,11 +93,11 @@ class YeeterIOReal(yeetMainMotorCAN: CANDevice, yeetSecondaryMotorCAN: CANDevice
 class YeeterInputs {
     private val inputs = YeeterIO.YeeterRawInputs()
 
-    var yeetMainVelocity = Rotation2d()
-    var yeetSecondaryVelocity = Rotation2d()
+    var mainVelocity = Rotation2d()
+    var secondaryVelocity = Rotation2d()
 
     fun updateRaw() {
-        inputs.yeetMainVelocity = yeetMainVelocity.radians
-        inputs.yeetSecondaryVelocity = yeetSecondaryVelocity.radians
+        inputs.mainVelocity = mainVelocity.radians
+        inputs.secondaryVelocity = secondaryVelocity.radians
     }
 }

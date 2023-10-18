@@ -12,7 +12,7 @@ object Yeeter : Subsystem {
 
     private val yeeterInputs = YeeterInputs()
 
-    val io = YeeterIOReal(CANDevice.YeetMotorMain, CANDevice.YeetMotorSecondary)
+    val io = YeeterIOReal(CANDevice.YeetWheelMotor, CANDevice.YeetFeedMotor)
 
     override fun periodic() {
 
