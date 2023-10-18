@@ -4,15 +4,20 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import edu.wpi.first.networktables.NetworkTableEvent
 import edu.wpi.first.networktables.NetworkTableEvent.Kind
 import edu.wpi.first.networktables.NetworkTableInstance
+import edu.wpi.first.networktables.StringTopic
 import frc.robot.utils.LimelightHelpers
 import frc.robot.utils.LimelightHelpers.LimelightResults
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import java.util.*
 
+
 interface VisionIO {
 
     class VisionIOInputs : LoggableInputs {
+
 
         var hasTargets: Boolean = false
         var targetCount = 0
@@ -47,19 +52,30 @@ object Limelight : VisionIO {
     private var targetCount = 0
     private var lastTimeStamp: Double = 0.0
 
+    private val table = NetworkTableInstance.getDefault().getTable("limelight")
+    private val dumpSubscriber =table.getStringTopic("json").subscribe(null)
+    private val limelightJson = LimelightHelpers.getLimelightNTTableEntry("limelight","json").topic;
+
     override fun updateInputs(inputs: VisionIO.VisionIOInputs) {
+
         inputs.hasTargets = hasTargets
         inputs.targets = targets
         inputs.lastTimeStampMS = lastTimeStamp
     }
 
+   @Serializable
+   data class limelightDock( val botpose_wpiblue: String, @SerialName("Retro") val targets: String)asdfghgfdsasdfghjhgfdsdfghjhgfd
+
     init {
         val nt = NetworkTableInstance.getDefault()
+
+        StringTopic(LimelightHelpers.getLimelightNTTableEntry("limelight","json").topic).subscribe("no jsson :(")
         nt.addListener(
             LimelightHelpers.getLimelightNTTableEntry("limelight","json"),
             EnumSet.of(Kind.kValueAll),
             ::eventListener
         )
+
     }
 
     private fun eventListener(event: NetworkTableEvent) {
@@ -67,7 +83,7 @@ object Limelight : VisionIO {
         hasTargets = results.targetingResults.targets_Retro.isNotEmpty()
         targets = results.targetingResults.targets_Retro.toList()
         targetCount = results.targetingResults.targets_Retro.size
-        lastTimeStamp = results.targetingResults.timestamp_LIMELIGHT_publish
+
     }
 
 
