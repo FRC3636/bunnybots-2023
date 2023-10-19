@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shooter
+package frc.robot.subsystems.yeeter
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX
 import com.revrobotics.CANSparkMax
@@ -10,15 +10,15 @@ import frc.robot.CANDevice
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
-interface ShooterIO {
-    class ShooterRawInputs : LoggableInputs {
+interface YeeterIO {
+    class YeeterRawInputs : LoggableInputs {
 
         var mainVelocity = 0.0
         var secondaryVelocity = 0.0
 
         override fun toLog(table: LogTable?) {
-            table?.put("Main Motor Velocity", mainVelocity)
-            table?.put("Secondary Motor Velocity", secondaryVelocity)
+            table?.put("Yeet Main Motor Velocity", mainVelocity)
+            table?.put("Yeet Secondary Motor Velocity", secondaryVelocity)
         }
 
         override fun fromLog(table: LogTable?) {
@@ -29,7 +29,7 @@ interface ShooterIO {
     }
 
 
-    fun updateInputs(inputs: ShooterInputs)
+    fun updateInputs(inputs: YeeterInputs)
 
     fun setSpeedMain(speed: Double)
     fun setSpeedSecondary(speed: Double)
@@ -41,7 +41,7 @@ interface ShooterIO {
     fun getSpeedSecondary(): Double
 }
 
-class ShooterIOReal(mainMotorCAN: CANDevice, secondaryMotorCAN: CANDevice) : ShooterIO {
+class YeeterIOReal(mainMotorCAN: CANDevice, secondaryMotorCAN: CANDevice) : YeeterIO {
 
 
     private val mainMotor = WPI_TalonFX(secondaryMotorCAN.id)
@@ -54,7 +54,7 @@ class ShooterIOReal(mainMotorCAN: CANDevice, secondaryMotorCAN: CANDevice) : Sho
         secondaryMotor.encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * SECONDARY_GEAR_RATIO / 60
     }
 
-    override fun updateInputs(inputs: ShooterInputs) {
+    override fun updateInputs(inputs: YeeterInputs) {
         inputs.mainVelocity = Rotation2d(mainMotor.get())
         inputs.secondaryVelocity = Rotation2d(secondaryEncoder.velocity)
         inputs.updateRaw()
@@ -90,8 +90,8 @@ class ShooterIOReal(mainMotorCAN: CANDevice, secondaryMotorCAN: CANDevice) : Sho
     }
 }
 
-class ShooterInputs {
-    private val inputs = ShooterIO.ShooterRawInputs()
+class YeeterInputs {
+    private val inputs = YeeterIO.YeeterRawInputs()
 
     var mainVelocity = Rotation2d()
     var secondaryVelocity = Rotation2d()
