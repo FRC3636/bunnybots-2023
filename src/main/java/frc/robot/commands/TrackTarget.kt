@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase
 import frc.robot.subsystems.Turret.Turret
 import frc.robot.subsystems.targetvision.TargetVision
 import frc.robot.subsystems.targetvision.TargetVision.Measurement
-import frc.robot.utils.compose
 import org.ejml.simple.SimpleMatrix
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -82,10 +81,10 @@ class AimAtTarget() : CommandBase(){
 
     private var optimalTimeOffset: Double = 0.0
 
-    private val pointsToDistance: (x: Double, y: Double) -> Double =
+    private val euclideanNorm: (x: Double, y: Double) -> Double =
         {x,y -> sqrt(x.pow(2) + y.pow(2))}
 
-    private fun pointsToDistanceDerivative(vx: (Double) -> Double, vy: (Double) -> Double, x: (Double) -> Double, y: (Double) -> Double): (Double) -> Double{
+    private fun euclideanNormDerivative(vx: (Double) -> Double, vy: (Double) -> Double, x: (Double) -> Double, y: (Double) -> Double): (Double) -> Double{
         return {t: Double  -> ( (vx(t) + vy(t)) / (2*sqrt( x(t).pow(2) + y(t).pow(2) ) ) ) }
     }
 
@@ -93,14 +92,14 @@ class AimAtTarget() : CommandBase(){
 
     //iteratively find roots of function by offsetting a seed based on x intercept of tangent line of last guess
     //TODO account for chaotic fractal thingie
-    private fun newtonRaphson(seed: Double, func: (Double) -> Double, funcPrime: (Double) -> Double ): Double{
+    private fun newtonRaphson(seed: Double, func: (Double) -> Double, funcDerivative: (Double) -> Double ): Double{
 
         var nextSeed = seed
-        var h = func(nextSeed)/funcPrime(nextSeed)
+        var h = func(nextSeed)/funcDerivative(nextSeed)
 
         while(abs(h) >= THRESHOLD){
 
-            h = func(nextSeed)/funcPrime(nextSeed)
+            h = func(nextSeed)/funcDerivative(nextSeed)
             nextSeed -= h
 
         }
@@ -115,24 +114,24 @@ class AimAtTarget() : CommandBase(){
 
         //Generalized Linear Model regresses points to find quadratic functions for translation x and y in terms of t
         // Construct the design matrix X with columns for 1 (intercept), t, and t^2
-        val DesignMatrix = SimpleMatrix(smaples.size, 3)
-        val ResponseMatrix = SimpleMatrix(smaples.size, 2)
+        val designMatrix = SimpleMatrix(smaples.size, 3)
+        val responseMatrix = SimpleMatrix(smaples.size, 2)
         for (i in smaples.indices) {
-            DesignMatrix[i, 0] = 1.0
-            DesignMatrix[i, 1] = smaples[i].timestamp
-            DesignMatrix[i, 2] = smaples[i].timestamp.pow(2)
+            designMatrix[i, 0] = 1.0
+            designMatrix[i, 1] = smaples[i].timestamp
+            designMatrix[i, 2] = smaples[i].timestamp.pow(2)
 
-            ResponseMatrix[i, 0] = smaples[i].pose.x
-            ResponseMatrix[i, 1] = smaples[i].pose.y
+            responseMatrix[i, 0] = smaples[i].pose.x
+            responseMatrix[i, 1] = smaples[i].pose.y
         }
 
         // Solve for the coefficient matrix B using the formula B = (X'X)^-1 X'Y
-        val XtX = DesignMatrix.transpose().mult(DesignMatrix)
+        val XtX = designMatrix.transpose().mult(designMatrix)
         val XtXInv = XtX.invert()
-        val XtY = DesignMatrix.transpose().mult(ResponseMatrix)
+        val XtY = designMatrix.transpose().mult(responseMatrix)
         val B = XtXInv.mult(XtY)
 
-        XCoefficients.values = listOf(B.get(0,0),B.get(10),B.get(1,0))
+        XCoefficients.values = listOf(B.get(0,0),B.get(1,0),B.get(1,0))
         YCoefficients.values = listOf(B.get(0,1),B.get(1,1),B.get(2,1))
 
         val x = quadraticBuilder(XCoefficients)
@@ -141,12 +140,14 @@ class AimAtTarget() : CommandBase(){
         val vy = quadraticDerivativeBuilder(YCoefficients)
         val tofDerivative = quadraticDerivativeBuilder(TofCoefficients)
 
-        val lhsfunction: (t: Double) -> Double = { t -> pointsToDistance.compose(timeOfFlight)(x(t), y(t))}
-        val lhsDerivative: (t: Double) -> Double = { t -> pointsToDistance.compose(tofDerivative)(x(t),y(t))*pointsToDistanceDerivative(vx, vy, x, y)(t)}
+        //TODO add link to docs explaining what this means
+        //TODO create docs to explain what this means
+        val solveFunction: (t: Double) -> Double = { t -> timeOfFlight(euclideanNorm(x(t),y(t)))}
+        val solveDerivative: (t: Double) -> Double = { t -> (tofDerivative(euclideanNorm(x(t),y(t))))*euclideanNormDerivative(vx, vy, x, y)(t)}
 
 
 
-        optimalTimeOffset = newtonRaphson(INITIAL_SEED, lhsfunction, lhsDerivative)
+        optimalTimeOffset = newtonRaphson(INITIAL_SEED, solveFunction, solveDerivative)
 
         val predictedTranslation = Translation2d(x(optimalTimeOffset), y(optimalTimeOffset))
 
