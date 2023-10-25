@@ -75,6 +75,8 @@ object Drivetrain : Subsystem {
         )
 
 
+
+
         Logger.getInstance().recordOutput("Odometry/pose", estimatedPose)
         Logger.getInstance().recordOutput("Drive/ModulesState/Measured", *modules.map{it.second.state}.toTypedArray())
         Logger.getInstance().recordOutput("Drive/ModulesState/Desired", *modules.map{it.second.desiredState}.toTypedArray())
