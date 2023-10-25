@@ -1,20 +1,14 @@
 package frc.robot.commands
 
-import com.github.chen0040.data.frame.DataFrame
-import com.github.chen0040.data.frame.DataQuery
-import com.github.chen0040.data.frame.Sampler
-import com.github.chen0040.glm.enums.GlmSolverType
 import com.github.chen0040.glm.solvers.Coefficients
-import com.github.chen0040.glm.solvers.Glm
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj2.command.CommandBase
 import frc.robot.subsystems.Turret.Turret
-import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.subsystems.targetvision.TargetVision
 import frc.robot.subsystems.targetvision.TargetVision.Measurement
-import frc.robot.subsystems.targetvision.TargetVision.smaples
 import frc.robot.utils.compose
+import org.ejml.simple.SimpleMatrix
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.pow
@@ -51,32 +45,23 @@ class TrackClosest() : CommandBase(){
 
 }
 
-object AimingConstants {
+//threshold to stop newton raphson method, in milliseconds
+internal const val THRESHOLD = 0.0001
+internal const val INITIAL_SEED = 4.0
 
-    const val SAMPLE_NUM= 8
-    //threshold to stop newton raphson method
-    const val EPSILON = 0.0001
-    const val INITIAL_SEED = 4.0
 
-}
 
 class AimAtTarget() : CommandBase(){
 
-
-    private val schema: DataQuery.DataFrameQueryBuilder =
-        DataQuery.blank()
-            .newInput("t")
-            .newInput("t^2")
-            .newOutput("x/y")
-            .end()
-
-    private val glm: Glm = Glm.linear()
-
-    private enum class CoefficientsList(val coefficients: Coefficients){
-        X(Coefficients()),
-        Y(Coefficients()),
-        Tof(Coefficients()),
+    init {
+        addRequirements(Turret)
     }
+
+
+    private val XCoefficients = Coefficients()
+    private val YCoefficients = Coefficients()
+    private val TofCoefficients = Coefficients()
+
 
 
     private fun quadraticBuilder(coefficients: Coefficients): (Double) -> Double{
@@ -92,7 +77,7 @@ class AimAtTarget() : CommandBase(){
     }
 
     //TODO test for ToF Coefficients
-    private val timeOfFlight: (distance: Double) -> Double = quadraticBuilder(CoefficientsList.Tof.coefficients)
+    private val timeOfFlight: (distance: Double) -> Double = quadraticBuilder(TofCoefficients)
 
 
     private var optimalTimeOffset: Double = 0.0
@@ -104,9 +89,6 @@ class AimAtTarget() : CommandBase(){
         return {t: Double  -> ( (vx(t) + vy(t)) / (2*sqrt( x(t).pow(2) + y(t).pow(2) ) ) ) }
     }
 
-    init {
-        addRequirements(Turret)
-    }
 
 
     //iteratively find roots of function by offsetting a seed based on x intercept of tangent line of last guess
@@ -116,7 +98,7 @@ class AimAtTarget() : CommandBase(){
         var nextSeed = seed
         var h = func(nextSeed)/funcPrime(nextSeed)
 
-        while(abs(h) >= AimingConstants.EPSILON){
+        while(abs(h) >= THRESHOLD){
 
             h = func(nextSeed)/funcPrime(nextSeed)
             nextSeed -= h
@@ -125,77 +107,60 @@ class AimAtTarget() : CommandBase(){
         return nextSeed
     }
 
-    private fun constructTrajectory(){
+    private fun getRotationalOffset(): Rotation2d{
         //samples
 
         //offset timestamps so 0 is the current time
         val smaples = setSampleEpoch(TargetVision.smaples, TargetVision.curTime)
 
-
         //Generalized Linear Model regresses points to find quadratic functions for translation x and y in terms of t
-        val samplerX: Sampler.DataSampleBuilder = Sampler()
-            .forColumn("t").generate{_, index -> smaples[index].timestamp}
-            .forColumn("t^2").generate{_, index -> smaples[index].timestamp.pow(2)}
-            .forColumn("x/y").generate {_, index -> smaples[index].pose.x}
-            .end()
+        // Construct the design matrix X with columns for 1 (intercept), t, and t^2
+        val DesignMatrix = SimpleMatrix(smaples.size, 3)
+        val ResponseMatrix = SimpleMatrix(smaples.size, 2)
+        for (i in smaples.indices) {
+            DesignMatrix[i, 0] = 1.0
+            DesignMatrix[i, 1] = smaples[i].timestamp
+            DesignMatrix[i, 2] = smaples[i].timestamp.pow(2)
 
-        val samplerY: Sampler.DataSampleBuilder = Sampler()
-            .forColumn("t").generate{_, index -> smaples[index].timestamp}
-            .forColumn("t^2").generate{_, index -> smaples[index].timestamp.pow(2)}
-            .forColumn("x/y").generate {_, index -> smaples[index].pose.y}
+            ResponseMatrix[i, 0] = smaples[i].pose.x
+            ResponseMatrix[i, 1] = smaples[i].pose.y
+        }
 
-            .end()
+        // Solve for the coefficient matrix B using the formula B = (X'X)^-1 X'Y
+        val XtX = DesignMatrix.transpose().mult(DesignMatrix)
+        val XtXInv = XtX.invert()
+        val XtY = DesignMatrix.transpose().mult(ResponseMatrix)
+        val B = XtXInv.mult(XtY)
 
-        var frameX: DataFrame = schema.build()
-        var frameY: DataFrame = schema.build()
+        XCoefficients.values = listOf(B.get(0,0),B.get(10),B.get(1,0))
+        YCoefficients.values = listOf(B.get(0,1),B.get(1,1),B.get(2,1))
 
-        frameX = samplerX.sample(frameX, AimingConstants.SAMPLE_NUM)
-        frameY = samplerY.sample(frameY, AimingConstants.SAMPLE_NUM)
-
-
-        glm.solverType = GlmSolverType.GlmIrls
-
-        glm.fit(frameX)
-        CoefficientsList.X.coefficients.values = glm.coefficients.values
-
-        glm.fit(frameY)
-        CoefficientsList.Y.coefficients.values = glm.coefficients.values
-
-        val x = quadraticBuilder(CoefficientsList.X.coefficients)
-        val y = quadraticBuilder(CoefficientsList.Y.coefficients)
-        val vx = quadraticDerivativeBuilder(CoefficientsList.X.coefficients)
-        val vy = quadraticDerivativeBuilder(CoefficientsList.Y.coefficients)
-        val tofDerivative = quadraticDerivativeBuilder(CoefficientsList.Tof.coefficients)
+        val x = quadraticBuilder(XCoefficients)
+        val y = quadraticBuilder(YCoefficients)
+        val vx = quadraticDerivativeBuilder(XCoefficients)
+        val vy = quadraticDerivativeBuilder(YCoefficients)
+        val tofDerivative = quadraticDerivativeBuilder(TofCoefficients)
 
         val lhsfunction: (t: Double) -> Double = { t -> pointsToDistance.compose(timeOfFlight)(x(t), y(t))}
         val lhsDerivative: (t: Double) -> Double = { t -> pointsToDistance.compose(tofDerivative)(x(t),y(t))*pointsToDistanceDerivative(vx, vy, x, y)(t)}
 
-        optimalTimeOffset = newtonRaphson(AimingConstants.INITIAL_SEED, lhsfunction, lhsDerivative)
 
-        predictedTranslation = Translation2d(vx(optimalTimeOffset), vy(optimalTimeOffset))
+
+        optimalTimeOffset = newtonRaphson(INITIAL_SEED, lhsfunction, lhsDerivative)
+
+        val predictedTranslation = Translation2d(x(optimalTimeOffset), y(optimalTimeOffset))
+
+        val shotPoint = TargetVision.smaples[TargetVision.smaples.size - 1].pose.plus(predictedTranslation)
+        return Rotation2d(atan2(shotPoint.x, shotPoint.y))
     }
 
 
 
     override fun execute() {
-        if(TargetVision.hasTargets){
-            constructTrajectory()
-            Turret.setTarget(rotationalOffset)
+        if (TargetVision.hasTargets) {
+            Turret.setTarget(getRotationalOffset())
         }
     }
-
-
-    private var predictedTranslation: Translation2d =  Translation2d()
-    private val curVelocity: Translation2d
-        get() = Drivetrain.velocity2d
-
-    private val rotationalOffset: Rotation2d
-        get() {
-            val shotPoint = smaples[smaples.size - 1].pose.plus(predictedTranslation).plus(curVelocity.unaryMinus())
-            return Rotation2d(atan2(shotPoint.x, shotPoint.y))
-        }
-
-
 
 
 }

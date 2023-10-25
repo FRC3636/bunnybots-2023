@@ -4,19 +4,19 @@ package frc.robot.subsystems.targetvision
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.util.Units
 import edu.wpi.first.wpilibj2.command.Subsystem
-import frc.robot.commands.AimingConstants
 import frc.robot.utils.LimelightHelpers.LimelightTarget_Retro
 import org.littletonrobotics.junction.Logger
 import kotlin.math.tan
 
 object TargetVision:  Subsystem {
 
-    private val io = Limelight
-    private val inputs: VisionIO.VisionIOInputs = VisionIO.VisionIOInputs()
+    private val io: TargetVisionIO = Limelight
+    private val inputs: TargetVisionIO.TargetVisionIOInputs = TargetVisionIO.TargetVisionIOInputs()
+    private const val SAMPLE_NUM= 8
 
 
     fun getDistance(target: LimelightTarget_Retro): Double{
-        val angleToBucket = Units.degreesToRadians(LIMELIGHT_ANGLE + target.ty)
+        val angleToBucket = Units.degreesToRadians(CAMERA_PITCH + target.ty)
         return (BUCKET_HEIGHT - LIMELIGHT_HEIGHT) / tan(angleToBucket)
     }
 
@@ -64,7 +64,7 @@ object TargetVision:  Subsystem {
     fun addMeasurement(measurement: Measurement){
         smaples.add(measurement)
 
-        if (smaples.size > AimingConstants.SAMPLE_NUM)
+        if (smaples.size > SAMPLE_NUM)
             smaples.removeFirst()
 
     }
@@ -76,9 +76,9 @@ object TargetVision:  Subsystem {
 
 
 
-     private const val LIMELIGHT_ANGLE = 110 // degrees
+     private const val CAMERA_PITCH = 110 // degrees
      private const val LIMELIGHT_HEIGHT = 27.33 // inches
-     private const val BUCKET_HEIGHT = 49 // inches. rough guess.//TODO unrough the guess
+     private const val BUCKET_HEIGHT = 49 // inches. rough guess.// TODO unrough the guess
 
 
 }

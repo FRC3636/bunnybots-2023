@@ -11,9 +11,9 @@ import org.littletonrobotics.junction.inputs.LoggableInputs
 import java.util.*
 
 
-interface VisionIO {
+interface TargetVisionIO {
 
-    class VisionIOInputs : LoggableInputs {
+    class TargetVisionIOInputs : LoggableInputs {
 
 
         var hasTargets: Boolean = false
@@ -30,20 +30,18 @@ interface VisionIO {
         }
 
         override fun fromLog(table: LogTable?) {
-            table?.getBoolean("HasTargets", hasTargets)?.let { hasTargets = it}
-            table?.getDouble("TargetCount", targetCount.toDouble())?.let { targetCount = it.toInt()}
-            table?.getDouble("lastTimeStamp", lastTimeStampMS)?.let { lastTimeStampMS = it}
+            table?.getBoolean("HasTargets", hasTargets)?.let { hasTargets = it }
+            table?.getDouble("TargetCount", targetCount.toDouble())?.let { targetCount = it.toInt() }
+            table?.getDouble("lastTimeStamp", lastTimeStampMS)?.let { lastTimeStampMS = it }
 
         }
 
     }
-
-
-    fun updateInputs(inputs: VisionIOInputs)
+    fun updateInputs(inputs: TargetVisionIOInputs)
 
 }
 
-object Limelight : VisionIO {
+object Limelight : TargetVisionIO {
     private var hasTargets = false
     private var targets: List<LimelightHelpers.LimelightTarget_Retro> = mutableListOf()
     private var targetCount = 0
@@ -53,16 +51,17 @@ object Limelight : VisionIO {
     private val dumpSubscriber = table.getStringTopic("json").subscribe("no json :(")
     private val cl = table.getDoubleTopic("cl").subscribe( 0.0)
     private val tl = table.getDoubleTopic("tl").subscribe(0.0)
+    private val ts = table.getStringTopic("ts").subscribe(":3")
 
     val curTimestamp: Double
         get() {
-            val updates = dumpSubscriber.readQueue()
+            val updates = ts.readQueue()
             val lastUpdate = updates[updates.size-1]
             val latency: Double = cl.get() + tl.get()
             return (lastUpdate.timestamp * 1e-6) * (latency * 1e-3)
         }
 
-    override fun updateInputs(inputs: VisionIO.VisionIOInputs) {
+    override fun updateInputs(inputs: TargetVisionIO.TargetVisionIOInputs) {
 
         inputs.hasTargets = hasTargets
         inputs.targets = targets
@@ -81,6 +80,7 @@ object Limelight : VisionIO {
         )
 
     }
+
 
     private fun eventListener(event: NetworkTableEvent) {
         val results = ObjectMapper().readValue(dumpSubscriber.get(), LimelightResults::class.java)
