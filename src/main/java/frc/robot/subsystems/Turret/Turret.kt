@@ -27,7 +27,7 @@ object Turret : Subsystem {
 
     private val turretInputs = TurretInputs()
 
-    const val maxRotationDegrees = 90.0
+    const val MAX_ROTATION_DEGREES = 90.0
     // factoring in rotation of drivetrain
     private var targetRotation: Rotation2d = Rotation2d()
         set(value) {
