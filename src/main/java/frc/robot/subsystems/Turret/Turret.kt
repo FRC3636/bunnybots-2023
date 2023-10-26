@@ -8,6 +8,8 @@ import frc.robot.CANDevice
 import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.utils.PIDCoefficients
 import frc.robot.utils.PIDController
+import kotlin.math.absoluteValue
+import kotlin.math.sign
 
 
 object Turret : Subsystem {
@@ -25,8 +27,19 @@ object Turret : Subsystem {
 
     private val turretInputs = TurretInputs()
 
+    const val MAX_ROTATION_DEGREES = 90.0
     // factoring in rotation of drivetrain
     private var targetRotation: Rotation2d = Rotation2d()
+        set(value) {
+            var degrees = value.degrees % 360
+           
+            if(degrees.absoluteValue > 180) {
+                degrees -= 360 * degrees.sign
+            }
+            
+            degrees = degrees.coerceIn(-maxRotationDegrees, maxRotationDegrees)
+            field = Rotation2d.fromDegrees(degrees)
+        }
 
 
     override fun periodic() {
