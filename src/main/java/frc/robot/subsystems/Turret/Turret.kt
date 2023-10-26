@@ -34,7 +34,7 @@ object Turret : Subsystem {
             var degrees = (value.degrees % 360)
             // spin around to other side if possible
             if (degrees.absoluteValue > 180) {
-                degrees = (degrees.absoluteValue - 180) * degrees.sign
+                degrees = (degrees.absoluteValue - 180) * -degrees.sign
             }
             degrees = degrees.coerceIn(-maxRotationDegrees, maxRotationDegrees)
             field = Rotation2d.fromDegrees(degrees)
