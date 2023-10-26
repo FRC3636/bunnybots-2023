@@ -31,11 +31,12 @@ object Turret : Subsystem {
     // factoring in rotation of drivetrain
     private var targetRotation: Rotation2d = Rotation2d()
         set(value) {
-            var degrees = (value.degrees % 360)
-            // spin around to other side if possible
-            if (degrees.absoluteValue > 180) {
-                degrees = (degrees.absoluteValue - 180) * -degrees.sign
+            var degrees = value.degrees % 360
+           
+            if(degrees.absoluteValue > 180) {
+                degrees -= 360 * degrees.sign
             }
+            
             degrees = degrees.coerceIn(-maxRotationDegrees, maxRotationDegrees)
             field = Rotation2d.fromDegrees(degrees)
         }
