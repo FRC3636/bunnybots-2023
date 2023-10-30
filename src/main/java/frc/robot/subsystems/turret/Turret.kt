@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Turret
+package frc.robot.subsystems.turret
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
@@ -36,8 +36,7 @@ object Turret : Subsystem {
             if(degrees.absoluteValue > 180) {
                 degrees -= 360 * degrees.sign
             }
-            
-            degrees = degrees.coerceIn(-maxRotationDegrees, maxRotationDegrees)
+            degrees = degrees.coerceIn(-MAX_ROTATION_DEGREES, MAX_ROTATION_DEGREES)
             field = Rotation2d.fromDegrees(degrees)
         }
 
