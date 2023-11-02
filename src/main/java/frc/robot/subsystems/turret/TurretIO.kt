@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Turret
+package frc.robot.subsystems.turret
 
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
