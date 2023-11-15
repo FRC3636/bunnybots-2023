@@ -19,96 +19,74 @@ import org.littletonrobotics.junction.inputs.LoggableInputs
 
 
 interface ModuleIO {
-    class ModuleRawInputs: LoggableInputs {
+    class Inputs: LoggableInputs {
 
         // The current "state" of the swerve module.
         //
         // This is essentially the velocity of the wheel,
         // and includes both the speed and the angle
         // in which the module is currently traveling.
-        // var state: SwerveModuleState
 
-        var speed: Double = 0.0
-        var rotation: Double = 0.0
+
+        var state = SwerveModuleState()
 
         // The desired state of the module.
         //
         // This is the wheel velocity that we're trying to get to.
-        var desiredSpeed: Double = 0.0
-        var desiredRotation: Double = 0.0
+        var desiredState =  SwerveModuleState()
 
         // The measured position of the module.
         //
         // This is a vector with direction equal to the current angle of the module,
         // and magnitude equal to the total signed distance traveled by the wheel.
-
-        var direction: Double = 0.0
-        var distance: Double = 0.0
+        var position = SwerveModulePosition()
 
         override fun toLog(table: LogTable?) {
-            table?.put("Current Speed(Meters/Sec)", speed)
-            table?.put("Current Angle", rotation)
-            table?.put("Target Speed (Meters / Sec", desiredSpeed)
-            table?.put("Target Angle", desiredRotation)
-            table?.put("Distance Travelled", distance)
-            table?.put("Angle", direction)
+            table?.put("Current Speed(Meters/Sec)", state.speedMetersPerSecond)
+            table?.put("Current Angle", state.angle.radians)
+            table?.put("Target Speed (Meters / Sec", desiredState.speedMetersPerSecond)
+            table?.put("Target Angle", desiredState.angle.radians)
+            table?.put("Distance Travelled", position.distanceMeters)
         }
 
         override fun fromLog(table: LogTable?) {
-            table?.getDouble("Current Speed(Meters/Sec)", speed)?.let { speed = it}
-            table?.getDouble("Current Angle", rotation)?.let { rotation = it}
-            table?.getDouble("Target Speed (Meters / Sec", desiredSpeed)?.let { desiredSpeed = it}
-            table?.getDouble("Target Angle", desiredRotation)?.let { desiredRotation = it }
-            table?.getDouble("Distance Travelled", distance)?. let {desiredRotation = it}
-            table?.getDouble("Angle", direction)?.let {direction = it}
+            val angle = Rotation2d.fromRadians(table?.getDouble("Current Angle", 0.0)!!)
+
+            state = SwerveModuleState(table.getDouble("Current Speed(Meters/Sec)", 0.0), angle)
+            desiredState = SwerveModuleState(table.getDouble("Target Speed (Meters / Sec", 0.0), Rotation2d.fromRadians(table.getDouble("Target Angle", 0.0)))
+            position = SwerveModulePosition(table.getDouble("Distance Travelled", 0.0), angle)
         }
 
     }
 
-    fun updateInputs(inputs: ModuleInputs)
+    fun setDesiredState(state: SwerveModuleState) {}
 
-    fun periodic(inputs: ModuleInputs){}
-}
-
-class ModuleInputs {
-    private val rawInputs: ModuleIO.ModuleRawInputs = ModuleIO.ModuleRawInputs()
-
-    var state: SwerveModuleState = SwerveModuleState()
-    var desiredState: SwerveModuleState = SwerveModuleState()
-    var position: SwerveModulePosition = SwerveModulePosition()
-
-     fun updateRaw(){
-        rawInputs.speed = state.speedMetersPerSecond
-        rawInputs.rotation = state.angle.radians
-        rawInputs.desiredSpeed = desiredState.speedMetersPerSecond
-        rawInputs.desiredRotation = desiredState.angle.radians
-        rawInputs.distance = position.distanceMeters
-        rawInputs.direction = position.angle.radians
-    }
+    fun updateInputs(inputs: Inputs)
 }
 
 class MAXSwerveModuleIO(drivingCAN: CANDevice, turningCAN: CANDevice, val chassisAngle: Rotation2d) : ModuleIO {
+    private var desiredState: SwerveModuleState = SwerveModuleState(0.0, chassisAngle.unaryMinus())
 
-    override fun updateInputs(inputs: ModuleInputs){
+    override fun setDesiredState(state: SwerveModuleState){
+
+        //.minus(chassisAngle)
+        val corrected = SwerveModuleState(state.speedMetersPerSecond, state.angle.minus(chassisAngle))
+        // optimize the state to avoid rotating more than 90 degrees
+        desiredState = SwerveModuleState.optimize(corrected, Rotation2d.fromRadians(turningEncoder.position))
+        
+        drivingPIDController.setReference(desiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity)
+        turningPIDController.setReference(desiredState.angle.radians, CANSparkMax.ControlType.kPosition)
+    }
+
+    override fun updateInputs(inputs: ModuleIO.Inputs){
 
         inputs.state = SwerveModuleState(
             drivingEncoder.velocity, Rotation2d.fromRadians(turningEncoder.position).plus(chassisAngle)
         )
+
         inputs.position = SwerveModulePosition(drivingEncoder.position, inputs.state.angle)
 
-        val value = SwerveModuleState(0.0, chassisAngle.unaryMinus())
-        // transform the state into module space
-        val corrected = SwerveModuleState(value.speedMetersPerSecond, value.angle.minus(chassisAngle))
-        // optimize the state to avoid rotating more than 90 degrees
-        val optimized = SwerveModuleState.optimize(corrected, Rotation2d.fromRadians(turningEncoder.position))
-
-        // set the pid controller setpoints
-        drivingPIDController.setReference(optimized.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity)
-        turningPIDController.setReference(optimized.angle.radians, CANSparkMax.ControlType.kPosition)
-
-        // update the field using the original chassis space state
-        inputs.desiredState = value
-        inputs.updateRaw()
+        inputs.desiredState = SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle.plus(chassisAngle))
     }
 
 
@@ -118,8 +96,6 @@ class MAXSwerveModuleIO(drivingCAN: CANDevice, turningCAN: CANDevice, val chassi
 
         idleMode = CANSparkMax.IdleMode.kBrake
         setSmartCurrentLimit(DRIVING_CURRENT_LIMIT)
-
-        burnFlash()
     }
 
     private val turningSpark = CANSparkMax(turningCAN.id, CANSparkMaxLowLevel.MotorType.kBrushless).apply {
@@ -127,8 +103,6 @@ class MAXSwerveModuleIO(drivingCAN: CANDevice, turningCAN: CANDevice, val chassi
 
         idleMode = CANSparkMax.IdleMode.kBrake
         setSmartCurrentLimit(TURNING_CURRENT_LIMIT)
-
-        burnFlash()
     }
 
 
@@ -152,6 +126,7 @@ class MAXSwerveModuleIO(drivingCAN: CANDevice, turningCAN: CANDevice, val chassi
         velocityConversionFactor = TAU / 60
     }
 
+
     private val drivingPIDController = drivingSpark.pidController.apply {
         setFeedbackDevice(drivingEncoder)
         constants = DRIVING_PID_COEFFICIENTS
@@ -168,6 +143,11 @@ class MAXSwerveModuleIO(drivingCAN: CANDevice, turningCAN: CANDevice, val chassi
         positionPIDWrappingMaxInput = TAU
     }
 
+    init {
+        turningSpark.burnFlash()
+        drivingSpark.burnFlash()
+    }
+
 
     internal companion object Constants {
         // MAXSwerve can be configured with different pinion gears to make the module faster or increase torque
@@ -175,22 +155,24 @@ class MAXSwerveModuleIO(drivingCAN: CANDevice, turningCAN: CANDevice, val chassi
 
         // The gear ratio between the motor and the wheel.
         // I.e. the wheel angle divided by the motor angle.
-        // Motor Pinion : Motor Spur Gear = x : 22
+        // Motor Pinion : Motor Spur Gear = x : 
         // Bevel Pinion : Wheel Bevel Gear = 15 : 45
         val DRIVING_MOTOR_TO_WHEEL_GEARING = (DRIVING_MOTOR_PINION_TEETH.toDouble() / 22.0) * (15.0 / 45.0)
 
-        // The free speed of the motor in Rotation2d per second
-        val DRIVING_MOTOR_FREE_SPEED = Rotation2d.fromRotations(5760.0 / 60.0)
-
+      
         // take the known wheel diameter, divide it by two to get the radius, then get the circumference
         val WHEEL_RADIUS = Units.inchesToMeters(3.0) / 2
         val WHEEL_CIRCUMFERENCE = WHEEL_RADIUS * TAU
 
-        val DRIVING_PID_COEFFICIENTS = PIDCoefficients(p = 0.04)
-        val DRIVING_FF = 1 / DRIVING_MOTOR_FREE_SPEED.rotations
+          // The free speed of the motor in Rotation2d per second
+          val DRIVING_WHEEL_FREE_SPEED = Rotation2d.fromRotations(5760.0 / 60.0).times(WHEEL_CIRCUMFERENCE)
 
-        val TURNING_PID_COEFFICIENTS = PIDCoefficients(p = 2.0)
 
+        val DRIVING_PID_COEFFICIENTS = PIDCoefficients(p = 0.02)
+        val DRIVING_FF = 1 / DRIVING_WHEEL_FREE_SPEED.rotations
+
+        //TODO this prolly should be like 2 but it breaks for some reason
+        val TURNING_PID_COEFFICIENTS = PIDCoefficients(p = 1.0)
         val DRIVING_CURRENT_LIMIT = 50
         val TURNING_CURRENT_LIMIT = 20
     }
@@ -198,11 +180,12 @@ class MAXSwerveModuleIO(drivingCAN: CANDevice, turningCAN: CANDevice, val chassi
 
 class SimSwerveModuleIO : ModuleIO{
 
-    override fun updateInputs(inputs: ModuleInputs) {
+    override fun updateInputs(inputs: ModuleIO.Inputs) {
         inputs.state = SwerveModuleState(
             drivingMotor.angularVelocityRadPerSec * MAXSwerveModuleIO.WHEEL_RADIUS,
             Rotation2d.fromRadians(turningMotor.angularPositionRad)
         )
+
         inputs.desiredState = SwerveModuleState.optimize(SwerveModuleState(), inputs.state.angle)
 
         inputs.position = SwerveModulePosition(
@@ -210,20 +193,10 @@ class SimSwerveModuleIO : ModuleIO{
             Rotation2d.fromRadians(turningMotor.angularPositionRad)
         )
 
-    }
 
-    // TODO: figure out what the moment of inertia actually is and if it even matters
-    private val turningMotor = DCMotorSim(DCMotor.getNEO(1), TAU, 0.0001)
-    private val drivingMotor = DCMotorSim(DCMotor.getNEO(1), 6.75, 0.025)
 
-    private val drivingFeedforward = SimpleMotorFeedforward(0.116970, 0.133240)
-    private val drivingFeedback = PIDController(PIDCoefficients(p = 0.9))
+        //periodic
 
-    private val turningFeedback = PIDController(PIDCoefficients(p = 7.0)).apply {
-        enableContinuousInput(0.0, TAU)
-    }
-
-    override fun periodic(inputs: ModuleInputs) {
         // TODO: there should maybe be a proper dt here instead
         // Update the flywheel simulations.
         turningMotor.update(Robot.period)
@@ -238,6 +211,18 @@ class SimSwerveModuleIO : ModuleIO{
                 inputs.state.speedMetersPerSecond, inputs.desiredState.speedMetersPerSecond
             )
         )
+
+    }
+
+    // TODO: figure out what the moment of inertia actually is and if it even matters
+    private val turningMotor = DCMotorSim(DCMotor.getNEO(1), TAU, 0.0001)
+    private val drivingMotor = DCMotorSim(DCMotor.getNEO(1), 6.75, 0.025)
+
+    private val drivingFeedforward = SimpleMotorFeedforward(0.116970, 0.133240)
+    private val drivingFeedback = PIDController(PIDCoefficients(p = 0.9))
+
+    private val turningFeedback = PIDController(PIDCoefficients(p = 7.0)).apply {
+        enableContinuousInput(0.0, TAU)
     }
 }
 

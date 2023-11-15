@@ -56,7 +56,6 @@ class NavXGyroIO(private var offset: Rotation3d = Rotation3d()) : GyroIO{
     private val ahrs = AHRS()
 
       override fun updateInputs(inputs: GyroInputs){
-
         inputs.rotation = offset.rotateBy(
             Rotation3d(
                 Quaternion(

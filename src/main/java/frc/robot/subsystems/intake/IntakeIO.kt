@@ -11,10 +11,10 @@ import org.littletonrobotics.junction.inputs.LoggableInputs
 
 public interface IntakeIO  {
 
-    class IntakeInputs : LoggableInputs {
-        var position = Rotation2d()
-        var velocity = Rotation2d()
-        var rollers = Rotation2d()
+    class IntakeInputsRaw : LoggableInputs {
+        var position: Double = 0.0
+        var velocity: Double = 0.0
+        var rollers: Double = 0.0
 
 
             override fun toLog(table: LogTable?) {
@@ -39,6 +39,21 @@ public interface IntakeIO  {
     fun setVoltage(outputVolts: Double) {}
 }
 
+class IntakeInputs {
+
+    val inputs: IntakeIO.IntakeInputsRaw = IntakeIO.IntakeInputsRaw()
+    var position: Rotation2d = Rotation2d()
+    var velocity: Rotation2d = Rotation2d()
+    var rollers: Rotation2d = Rotation2d()
+
+    fun updateRaw(){
+        inputs.position = position.radians
+        inputs.velocity = velocity.radians
+        inputs.rollers = rollers.radians
+
+    }
+}
+
 
 class IntakeIOReal(PrimaryMotorCAN: CANDevice, SecondaryMotorCAN: CANDevice) : IntakeIO {
 
@@ -61,8 +76,6 @@ class IntakeIOReal(PrimaryMotorCAN: CANDevice, SecondaryMotorCAN: CANDevice) : I
         inputs.velocity = Rotation2d(encoder.velocity)
         inputs.updateRaw()
         TODO("Not yet implemented")
-    }
-    override fun updateInputs(inputs: IntakeIO.IntakeRawInputs) {
     }
 
     override  fun setSpeed(speed: Double){
