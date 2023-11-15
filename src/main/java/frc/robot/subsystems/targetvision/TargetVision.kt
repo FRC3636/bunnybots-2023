@@ -4,7 +4,7 @@ package frc.robot.subsystems.targetvision
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.util.Units
 import edu.wpi.first.wpilibj2.command.Subsystem
-import frc.robot.utils.LimelightHelpers.LimelightTarget_Retro
+import frc.robot.utils.LimelightHelpers.LimelightTarget_Detector
 import org.littletonrobotics.junction.Logger
 import kotlin.math.tan
 
@@ -15,15 +15,15 @@ object TargetVision:  Subsystem {
     private const val SAMPLE_NUM= 8
 
 
-    fun getDistance(target: LimelightTarget_Retro): Double{
+    fun getDistance(target: LimelightTarget_Detector): Double{
         val angleToBucket = Units.degreesToRadians(CAMERA_PITCH + target.ty)
         return (BUCKET_HEIGHT - LIMELIGHT_HEIGHT) / tan(angleToBucket)
     }
 
     //ascending
-    private val targetsbyDistance: List<Pair<LimelightTarget_Retro, Double>>
+    private val targetsbyDistance: List<Pair<LimelightTarget_Detector, Double>>
         get() {
-            return inputs.targets.map {target: LimelightTarget_Retro -> Pair(target, getDistance(target))}.sortedBy {it.second}
+            return inputs.targets.map {target: LimelightTarget_Detector -> Pair(target, getDistance(target))}.sortedBy {it.second}
         }
     val hasTargets: Boolean
         get(){
@@ -43,7 +43,7 @@ object TargetVision:  Subsystem {
 
     data class Measurement(val timestamp: Double, val pose: Translation2d)
 
-    private fun takeMeasurement(target: LimelightTarget_Retro): Measurement{
+    private fun takeMeasurement(target: LimelightTarget_Detector): Measurement{
 
         val targetTranslation = Translation2d(getDistance(target), target.tx)
 
@@ -52,9 +52,9 @@ object TargetVision:  Subsystem {
     }
 
 
-    val closestTarget: LimelightTarget_Retro
+    val closestTarget: LimelightTarget_Detector
         get(){
-            return targetsbyDistance.map{pair: Pair<LimelightTarget_Retro, Double> -> pair.first}[0]
+            return targetsbyDistance.map{pair: Pair<LimelightTarget_Detector, Double> -> pair.first}[0]
         }
 
     // samples

@@ -18,7 +18,7 @@ interface TargetVisionIO {
 
         var hasTargets: Boolean = false
         var targetCount = 0
-        var targets: List<LimelightHelpers.LimelightTarget_Retro> = mutableListOf()
+        var targets: List<LimelightHelpers.LimelightTarget_Detector> = mutableListOf()
         var latencyms: Double = 0.0
         var lastTimeStampMS: Double = 0.0
 
@@ -43,7 +43,7 @@ interface TargetVisionIO {
 
 object Limelight : TargetVisionIO {
     private var hasTargets = false
-    private var targets: List<LimelightHelpers.LimelightTarget_Retro> = mutableListOf()
+    private var targets: List<LimelightHelpers.LimelightTarget_Detector> = mutableListOf()
     private var targetCount = 0
     private var lastTimeStamp: Double = 0.0
 
@@ -84,8 +84,8 @@ object Limelight : TargetVisionIO {
 
     private fun eventListener(event: NetworkTableEvent) {
         val results = ObjectMapper().readValue(dumpSubscriber.get(), LimelightResults::class.java)
-        hasTargets = results.targetingResults.targets_Retro.isNotEmpty()
-        targets = results.targetingResults.targets_Retro.toList()
+        hasTargets = results.targetingResults.targets_Detector.isNotEmpty()
+        targets = results.targetingResults.targets_Detector.toList()
         targetCount = results.targetingResults.targets_Retro.size
 
     }
