@@ -118,9 +118,6 @@ object Drivetrain : Subsystem {
         // TODO: desaturate wheel speeds
         // SwerveDriveKinematics.desaturateWheelSpeeds(speeds, MAX_SPEED)
 
-
-
-
         kinematics.toCornerSwerveModuleStates(speeds).zip(modules).forEach { (state, module) ->
             module.first.setDesiredState(state) 
         }
@@ -129,6 +126,8 @@ object Drivetrain : Subsystem {
     // Get the estimated pose of the drivetrain using the pose estimator.
     val estimatedPose: Pose2d
         get() = poseEstimator.estimatedPosition
+
+
 }
 
 // Constants
