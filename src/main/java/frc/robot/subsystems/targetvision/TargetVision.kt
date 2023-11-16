@@ -4,12 +4,12 @@ package frc.robot.subsystems.targetvision
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.util.Units
 import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.utils.LimelightHelpers.LimelightTarget_Detector
 import org.littletonrobotics.junction.Logger
 import kotlin.math.abs
 import kotlin.math.tan
+import kotlin.math.pow
 
 object TargetVision:  Subsystem {
 
@@ -39,25 +39,24 @@ object TargetVision:  Subsystem {
 
     override fun periodic() {
         Logger.getInstance().processInputs("Vision", inputs)
+
         for (target in targetsbyDistance) {
-            if (isBlueAlliance() && target.first.classID.equals(RED_ID)) {
-                val measurement = takeMeasurement(target.first)
-                addMeasurement(measurement)
-            } else if (!isBlueAlliance() && target.first.classID.equals(BLUE_ID)) {
-                val measurement = takeMeasurement(target.first)
-                addMeasurement(measurement)
+            if(target.first.classID == (OpposingAlliance.id)){
+                
+                addMeasurement(takeMeasurement(target.first))
             }
         }
+
         io.updateInputs(inputs)
     }
 
-   data class Measurement(val timestamp: Double, val pose: Translation2d)
+   data class Measurement(val timestamp: Double, val pose: LimelightTarget_Detector)
 
     private fun takeMeasurement(target: LimelightTarget_Detector): Measurement{
 
-       val targetTranslation = Translation2d(getDistance(target), target.tx)
+       //val targetTranslation = Translation2d(getDistance(target), target.tx)
 
-       return Measurement(inputs.lastTimeStampMS, targetTranslation)
+       return Measurement(inputs.lastTimeStampMS, target)
 
    }
 
@@ -74,26 +73,54 @@ object TargetVision:  Subsystem {
     var robotPoses: MutableList<MutableList<Measurement>> = mutableListOf()
 
 
+    private fun shouldGroup(last: LimelightTarget_Detector, measurement: LimelightTarget_Detector): Double
+    {
+        var score = 0.0
+        val deltaX = abs(measurement.tx - last.tx)
+        val deltaY = abs(measurement.ty - last.ty)
+        val deltaA = abs(measurement.ta.pow(0.5) - last.ta.pow(0.5))
+
+        score += (TX_WEIGHT)*( 1 - (deltaX.pow(TX_DROPOFF_RATE) / 54.0.pow(TX_DROPOFF_RATE)) ) //54 = horizontal fov of limelight
+        score += (TY_WEIGHT)*( 1 - (deltaY.pow(TY_DROPOFF_RATE) / 41.0.pow(TY_DROPOFF_RATE)) ) //41 = vertical fov of limelight
+        score += (TA_WEIGHT)*( 1 - (deltaA.pow(TA_DROPOFF_RATE) / TA_MAX.pow(TA_DROPOFF_RATE)) )
+
+        return score
+    }
+
+
     fun addMeasurement(measurement: Measurement){
-        if(smaples.last().pose == measurement.pose) return // low update speed compensation
-        smaples.add(measurement)
+
+        var grouped = false
 
         // group targets
         for (pose in robotPoses) {
             // TODO: Find good threshold values for grouping
-            if(abs((pose.last().pose.x - measurement.pose.x)) > 0.25 || abs((pose.last().pose.y - measurement.pose.y)) > 0.25) {
+            if(shouldGroup(pose.last().pose, measurement.pose) > GROUPING_CONFIDENCE_THRESHOLD) {
                 pose.add(measurement)
+                if ((measurement.timestamp - pose.first().timestamp > MAX_SAMPLE_TIME_MS)) { // TODO: find good value
+                    // cleanup old targets
+                    pose.removeFirst()
+                }
+                grouped = true
                 break
-            } else if ((curTime - pose.last().timestamp > 2000)) { // TODO: find good value
-                // cleanup old targets
+            } else if((measurement.timestamp - pose.last().timestamp > MAX_SAMPLE_TIME_MS)){
                 robotPoses.remove(pose)
             }
+
+
         }
 
+        if(!grouped){
+            robotPoses.add(mutableListOf(measurement))
+        }
 
-        if (smaples.size > SAMPLE_NUM)
-            smaples.removeFirst()
-
+        robotPoses = robotPoses.sortedWith { a, b ->
+            when {
+                rateTrackingPreference(a.last()) > rateTrackingPreference(b.last()) -> 1
+                rateTrackingPreference(a.last()) < rateTrackingPreference(b.last()) -> -1
+                else -> 0
+            }
+        } as MutableList<MutableList<Measurement>>
    }
 
    fun reset(){
@@ -101,15 +128,39 @@ object TargetVision:  Subsystem {
    }
 
 
+    //give a measurement a rating based on how likely it is to be our current primary target
+    fun rateTrackingPreference(measurement: Measurement): Double{
+        return 0.0
+    }
+
+
     private fun isBlueAlliance(): Boolean {
-        return DriverStation.getAlliance().equals(Alliance.Blue)
+        return DriverStation.getAlliance().equals(DriverStation.Alliance.Blue)
+    }
+
+    private val OpposingAlliance = if(isBlueAlliance()){Alliance.BLUE} else {Alliance.RED}
+
+     enum class Alliance(val id: Double){
+        RED(1.0),
+        BLUE(0.0)
     }
 
 
      private const val CAMERA_PITCH = 110 // degrees
      private const val LIMELIGHT_HEIGHT = 27.33 // inches
      private const val BUCKET_HEIGHT = 49 // inches. rough guess. TODO unrough the guess
-     private const val RED_ID = 1.0
-     private const val BLUE_ID = 0.0
+
+    private const val MAX_SAMPLE_TIME_MS = 2000
+
+    //grouping
+    private const val GROUPING_CONFIDENCE_THRESHOLD = 0.80
+    private const val TX_WEIGHT = 0.75
+    private const val TX_DROPOFF_RATE = 0.25
+    private const val TA_WEIGHT = 0.15
+    private const val TA_DROPOFF_RATE = 1
+    private const val TA_MAX = 30.0 // verry roug guess, need to find how fast ta increases decreases as target moves away
+    private const val TY_WEIGHT = 0.1
+    private const val TY_DROPOFF_RATE = 1.2
+
 
 }
