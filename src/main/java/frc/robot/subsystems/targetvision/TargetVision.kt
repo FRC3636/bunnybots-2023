@@ -51,15 +51,15 @@ object TargetVision:  Subsystem {
         io.updateInputs(inputs)
     }
 
-    data class Measurement(val timestamp: Double, val pose: Translation2d)
+   data class Measurement(val timestamp: Double, val pose: Translation2d)
 
     private fun takeMeasurement(target: LimelightTarget_Detector): Measurement{
 
-        val targetTranslation = Translation2d(getDistance(target), target.tx)
+       val targetTranslation = Translation2d(getDistance(target), target.tx)
 
-        return Measurement(inputs.lastTimeStampMS, targetTranslation)
+       return Measurement(inputs.lastTimeStampMS, targetTranslation)
 
-    }
+   }
 
 
     val closestTarget: LimelightTarget_Detector
@@ -67,8 +67,8 @@ object TargetVision:  Subsystem {
             return targetsbyDistance.map{pair: Pair<LimelightTarget_Detector, Double> -> pair.first}[0]
         }
 
-    // samples
-    var smaples: MutableList<Measurement> = mutableListOf()
+   // samples
+   var smaples: MutableList<Measurement> = mutableListOf()
 
     // grouping
     var robotPoses: MutableList<MutableList<Measurement>> = mutableListOf()
@@ -94,18 +94,16 @@ object TargetVision:  Subsystem {
         if (smaples.size > SAMPLE_NUM)
             smaples.removeFirst()
 
-    }
+   }
 
-    fun reset(){
-        smaples = mutableListOf()
-    }
+   fun reset(){
+       smaples = mutableListOf()
+   }
 
 
     private fun isBlueAlliance(): Boolean {
         return DriverStation.getAlliance().equals(Alliance.Blue)
     }
-
-
 
 
      private const val CAMERA_PITCH = 110 // degrees
