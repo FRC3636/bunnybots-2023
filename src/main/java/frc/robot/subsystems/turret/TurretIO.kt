@@ -9,47 +9,28 @@ import frc.robot.CANDevice
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
-interface TurretIO  {
+interface TurretIO {
+    class Inputs : LoggableInputs {
+        var angle = Rotation2d()
+        var angularVelocityHz = Rotation2d()
 
-    class TurretRawInputs : LoggableInputs{
-
-        var position: Double = 0.0
-        var rotationalVelocity = 0.0
-
-
-         override fun toLog(table: LogTable?){
-            table?.put("Position", position)
-             table?.put("Velocity", rotationalVelocity)
+        override fun toLog(table: LogTable?) {
+            table?.put("Angle", angle.radians)
+            table?.put("Angular Velocity", angularVelocityHz.radians)
         }
 
-        override fun fromLog(table: LogTable?){
-            table?.getDouble("Position", position)?.let {position = it}
-            table?.getDouble("Velocity", rotationalVelocity)?.let {rotationalVelocity = it}
+        override fun fromLog(table: LogTable?) {
+            table?.getDouble("Angle", 0.0)?.let { angle = Rotation2d.fromRadians(it) }
+            table?.getDouble("Angular Velocity", 0.0)?.let { angle = Rotation2d.fromRadians(it) }
         }
 
     }
 
-     fun updateInputs(inputs: TurretInputs)
+    fun updateInputs(inputs: Inputs)
 
-     fun setSpeed(speed: Double)
-
-     fun setVoltage(outputVolts: Double) {}
-
+    fun setVoltage(outputVolts: Double)
 }
 
-class TurretInputs {
-    private val inputs = TurretIO.TurretRawInputs()
-
-    var position = Rotation2d()
-
-    var velocity = Rotation2d()
-
-    fun updateRaw() {
-        inputs.position = position.radians
-        inputs.rotationalVelocity = velocity.radians
-    }
-
-}
 
 class TurretIOReal(motorCAN: CANDevice) : TurretIO {
 
@@ -59,43 +40,30 @@ class TurretIOReal(motorCAN: CANDevice) : TurretIO {
 
 
     init {
-        encoder.positionConversionFactor = Units.rotationsToRadians(1.0) *  GEAR_RATIO
+        encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO
         encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
         motor.encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
         motor.encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
     }
 
-    override fun updateInputs(inputs: TurretInputs){
-        inputs.position = Rotation2d(encoder.position)
-        inputs.velocity = Rotation2d(encoder.velocity)
-        inputs.updateRaw()
-
+    override fun updateInputs(inputs: TurretIO.Inputs) {
+        inputs.angle = Rotation2d(encoder.position)
+        inputs.angularVelocityHz = Rotation2d(encoder.velocity)
     }
 
-    override  fun setSpeed(speed: Double){
-        motor.set(speed)
-    }
-
-    override fun setVoltage(outputVolts: Double){
+    override fun setVoltage(outputVolts: Double) {
         motor.setVoltage(outputVolts)
     }
 
-
     internal companion object Constants {
-        //TODO find turret gear ratio :0
+        // TODO: find turret gear ratio :0
         const val GEAR_RATIO = 1.0
-
     }
 }
 
+// TODO: implement sim turret
+
 class TurretIOSim : TurretIO {
-    //TODO implement sim turret
-    override fun updateInputs(inputs: TurretInputs) {
-
-    }
-
-    override fun setSpeed(speed: Double) {
-
-    }
-
+    override fun updateInputs(inputs: TurretIO.Inputs) {}
+    override fun setVoltage(outputVolts: Double) {}
 }
