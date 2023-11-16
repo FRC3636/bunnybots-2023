@@ -17,7 +17,7 @@ object TargetVision : Subsystem {
 
     override fun periodic() {
         io.updateInputs(inputs)
-        Logger.getInstance().processInputs("Vision", inputs)
+        Logger.getInstance().processInputs("Target Vision", inputs)
 
         if (inputs.targets.isNotEmpty()) {
             addMeasurement(takeMeasurement(targetsByDistance[0].first))

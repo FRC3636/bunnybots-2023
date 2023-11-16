@@ -61,9 +61,13 @@ object Drivetrain : Subsystem {
     }
 
     override fun periodic() {
-        gyro.updateInputs(gyroInputs)
+        // TODO: we're never actually flushing the inputs to the logger...
+
         // Update each of the modules.
         modules.forEach { (module, input) -> module.updateInputs(input) }
+        // Update the gyro
+        gyro.updateInputs(gyroInputs)
+
         // Update the estimated position.
         // poseEstimator.update(
         //     gyroInputs.rotation.toRotation2d(), modules.map { it.second.position }.toTypedArray()

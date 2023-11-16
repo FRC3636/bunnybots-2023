@@ -8,6 +8,7 @@ import frc.robot.CANDevice
 import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.utils.PIDCoefficients
 import frc.robot.utils.PIDController
+import org.littletonrobotics.junction.Logger
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
@@ -38,6 +39,9 @@ object Turret : Subsystem {
 
 
     override fun periodic() {
+        io.updateInputs(inputs)
+        Logger.getInstance().processInputs("Turret", inputs)
+
         io.setVoltage(
             pidController.calculate(
                 angleToField.radians, targetAngleToChassis.radians
