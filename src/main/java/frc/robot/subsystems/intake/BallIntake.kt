@@ -4,10 +4,10 @@ import edu.wpi.first.math.controller.ArmFeedforward
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Subsystem
-import frc.robot.CANDevice
 import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.utils.PIDCoefficients
 import frc.robot.utils.PIDController
+import frc.robot.CANDevice
 
 object BallIntake : Subsystem {
 
@@ -15,24 +15,23 @@ object BallIntake : Subsystem {
 
     val feedForward = ArmFeedforward(0.0,0.0,0.0)
 
-    private val io: IntakeIO =  IntakeIOReal(CANDevice.IntakeFeedMotor, CANDevice.IntakeAngleMotor)
 
-    private val intakeInputs = IntakeInputs()
+    private val io: IntakeIO =  IntakeIOReal(CANDevice.BallIntakeArmMotor.id, CANDevice.BallIntakeRollerMotor.id)
+
+    private val inputs = IntakeIO.IntakeInputs()
 
     private var targetRotation: Rotation2d = Rotation2d()
     override fun periodic() {
-        io.updateInputs()
+        io.updateInputs(inputs)
 
     }
 
 
-    fun takein() {
-        io.setSpeed(
-            pidController.calculate(relativeAngle.radians, targetRotation.radians)
-                    + feedForward.calculate(Drivetrain.velocity2d.norm)
-        )
-
+    fun runRollers(speed: Double) {
+        io.setRollerSpeed(speed)
     }
+
+
 
 
 

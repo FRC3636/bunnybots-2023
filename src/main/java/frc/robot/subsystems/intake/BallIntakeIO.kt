@@ -10,7 +10,6 @@ import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
 public interface IntakeIO  {
-}
 
     class IntakeInputs : LoggableInputs {
         var position = Rotation2d()
@@ -34,51 +33,61 @@ public interface IntakeIO  {
     fun updateInputs(inputs: IntakeInputs)
 
 
-    fun setSpeed(speed: Double)
+    fun setArmSpeed(speed: Double)
 
 
-    fun setVoltage(outputVolts: Double) {}
+    fun setArmVoltage(outputVolts: Double) {}
+
+    fun setRollerSpeed(speed: Double)
+
+
+    fun setRollerVoltage(outputVolts: Double) {}
 }
 
 
-class IntakeIOReal(PrimaryMotorCAN: CANDevice, SecondaryMotorCAN: CANDevice) : IntakeIO {
+class IntakeIOReal(ArmMotorID: Int, RollersMotorID: Int) : IntakeIO {
 
 
 
-    private val motor = CANSparkMax(BallIntake, CANSparkMaxLowLevel.MotorType.kBrushless)
-    private val encoder = motor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
-    private val secondaryMotor = CANSparkMax(SecondaryMotorCAN.id, CANSparkMaxLowLevel.MotorType.kBrushless)
-    private val secondaryEncoder = secondaryMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
+    private val armMotor = CANSparkMax(ArmMotorID, CANSparkMaxLowLevel.MotorType.kBrushless)
+    private val armEncoder = armMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
+    private val rollerMotor = CANSparkMax(RollersMotorID, CANSparkMaxLowLevel.MotorType.kBrushless)
+    private val rollerEncoder = rollerMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
 
 
     init {
-        encoder.positionConversionFactor = Units.rotationsToRadians(1.0) *  GEAR_RATIO
-        encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
-        motor.encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
-        motor.encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
+        armEncoder.positionConversionFactor = Units.rotationsToRadians(1.0) *  GEAR_RATIO
+        armEncoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
+        armMotor.encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
+        armMotor.encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
     }
 
-    override fun updateInputs(inputs: IntakeInputs){
-        inputs.position = Rotation2d(encoder.position)
-        inputs.velocity = Rotation2d(encoder.velocity)
-        inputs.updateRaw()
+    override fun updateInputs(inputs: IntakeIO.IntakeInputs){
+        inputs.position = Rotation2d(armEncoder.position)
+        inputs.velocity = Rotation2d(armEncoder.velocity)
+
         TODO("Not yet implemented")
     }
-    override fun updateInputs(inputs: IntakeIO.IntakeRawInputs) {
+
+    override fun setArmSpeed(speed: Double){
+        armMotor.set(speed)
     }
 
-    override  fun setSpeed(speed: Double){
-        motor.set(speed)
+    override fun setArmVoltage(outputVolts: Double){
+        armMotor.setVoltage(outputVolts)
     }
 
-    override fun setVoltage(outputVolts: Double){
-        motor.setVoltage(outputVolts)
+
+    override fun setRollerSpeed(speed: Double){
+        rollerMotor.set(speed)
+    }
+
+    override fun setRollerVoltage(outputVolts: Double){
+        rollerMotor.setVoltage(outputVolts)
     }
 
 
     internal companion object Constants {
         const val GEAR_RATIO = 1.0
-
-
     }
 }

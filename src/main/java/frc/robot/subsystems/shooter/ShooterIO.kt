@@ -43,46 +43,41 @@ interface ShooterIO {
     fun getSpeedFeeder(): Double
 }
 
-class ShooterIOReal(flywheelMotorCAN: CANDevice, feedMotorCAN: CANDevice) : ShooterIO {
+class ShooterIOReal(flywheelMotorID: Int, feedMotorID: Int) : ShooterIO {
 
 
-    private val FlywheelMotor = WPI_TalonFX(feedMotorCAN.id)
-    private val secondaryMotor = CANSparkMax(flywheelMotorCAN.id, CANSparkMaxLowLevel.MotorType.kBrushless)
-    private val secondaryEncoder = secondaryMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
+    private val flywheelMotor = WPI_TalonFX(flywheelMotorID)
+    private val feedMotor = CANSparkMax(feedMotorID, CANSparkMaxLowLevel.MotorType.kBrushless)
 
 
-    init {
-        secondaryEncoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * SECONDARY_GEAR_RATIO / 60
-        secondaryMotor.encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * SECONDARY_GEAR_RATIO / 60
-    }
 
     override fun updateInputs(inputs: ShooterIO.ShooterInputs) {
-        inputs.flywheelVelocity = Rotation2d(FlywheelMotor.get())
-        inputs.feederVelocity = Rotation2d(secondaryEncoder.velocity)
+        inputs.flywheelVelocity = Rotation2d(flywheelMotor.get())
+        inputs.feederVelocity = Rotation2d(feedMotor.encoder.velocity)
     }
 
     override fun setSpeedFlywheel(speed: Double) {
-        FlywheelMotor.set(speed)
+        flywheelMotor.set(speed)
     }
 
     override fun setVoltageFlywheel(outputVolts: Double) {
-        FlywheelMotor.setVoltage(outputVolts)
+        flywheelMotor.setVoltage(outputVolts)
     }
 
     override fun setSpeedFeeder(speed: Double) {
-        secondaryMotor.set(speed)
+        feedMotor.set(speed)
     }
 
     override fun setVoltageFeeder(outputVolts: Double) {
-        secondaryMotor.setVoltage(outputVolts)
+        feedMotor.setVoltage(outputVolts)
     }
 
     override fun getSpeedFlywheel(): Double {
-        return FlywheelMotor.get()
+        return flywheelMotor.get()
     }
 
     override fun getSpeedFeeder(): Double {
-        return secondaryMotor.get()
+        return feedMotor.get()
     }
 
     internal companion object Constants {

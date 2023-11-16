@@ -73,15 +73,16 @@ object TargetVision:  Subsystem {
     var robotPoses: MutableList<MutableList<Measurement>> = mutableListOf()
 
 
-    private fun shouldGroup(last: LimelightTarget_Detector, measurement: LimelightTarget_Detector): Double
+    private fun groupConfidence(last: LimelightTarget_Detector, measurement: LimelightTarget_Detector): Double
     {
         var score = 0.0
+
         val deltaX = abs(measurement.tx - last.tx)
         val deltaY = abs(measurement.ty - last.ty)
         val deltaA = abs(measurement.ta.pow(0.5) - last.ta.pow(0.5))
 
-        score += (TX_WEIGHT)*( 1 - (deltaX.pow(TX_DROPOFF_RATE) / 54.0.pow(TX_DROPOFF_RATE)) ) //54 = horizontal fov of limelight
-        score += (TY_WEIGHT)*( 1 - (deltaY.pow(TY_DROPOFF_RATE) / 41.0.pow(TY_DROPOFF_RATE)) ) //41 = vertical fov of limelight
+        score += (TX_WEIGHT)*( 1 - (deltaX.pow(TX_DROPOFF_RATE) / 27.0.pow(TX_DROPOFF_RATE)) ) //27 = horizontal fov of limelight
+        score += (TY_WEIGHT)*( 1 - (deltaY.pow(TY_DROPOFF_RATE) / 20.5.pow(TY_DROPOFF_RATE)) ) //20.5 = vertical fov of limelight
         score += (TA_WEIGHT)*( 1 - (deltaA.pow(TA_DROPOFF_RATE) / TA_MAX.pow(TA_DROPOFF_RATE)) )
 
         return score
@@ -95,7 +96,7 @@ object TargetVision:  Subsystem {
         // group targets
         for (pose in robotPoses) {
             // TODO: Find good threshold values for grouping
-            if(shouldGroup(pose.last().pose, measurement.pose) > GROUPING_CONFIDENCE_THRESHOLD) {
+            if(groupConfidence(pose.last().pose, measurement.pose) > GROUPING_CONFIDENCE_THRESHOLD) {
                 pose.add(measurement)
                 if ((measurement.timestamp - pose.first().timestamp > MAX_SAMPLE_TIME_MS)) { // TODO: find good value
                     // cleanup old targets
@@ -114,13 +115,9 @@ object TargetVision:  Subsystem {
             robotPoses.add(mutableListOf(measurement))
         }
 
-        robotPoses = robotPoses.sortedWith { a, b ->
-            when {
-                rateTrackingPreference(a.last()) > rateTrackingPreference(b.last()) -> 1
-                rateTrackingPreference(a.last()) < rateTrackingPreference(b.last()) -> -1
-                else -> 0
-            }
-        } as MutableList<MutableList<Measurement>>
+
+        robotPoses = robotPoses.sortedBy {rateTrackingPreference(it)} as MutableList<MutableList<Measurement>>
+
    }
 
    fun reset(){
@@ -129,8 +126,12 @@ object TargetVision:  Subsystem {
 
 
     //give a measurement a rating based on how likely it is to be our current primary target
-    fun rateTrackingPreference(measurement: Measurement): Double{
-        return 0.0
+    private fun rateTrackingPreference(measurement: List<Measurement>): Double{
+
+        var score: Double = 0.0
+
+
+        return score
     }
 
 
@@ -158,9 +159,15 @@ object TargetVision:  Subsystem {
     private const val TX_DROPOFF_RATE = 0.25
     private const val TA_WEIGHT = 0.15
     private const val TA_DROPOFF_RATE = 1
-    private const val TA_MAX = 30.0 // verry roug guess, need to find how fast ta increases decreases as target moves away
+    private const val TA_MAX = 30.0 // verry rough guess, need to find how fast ta increases decreases as target moves away
     private const val TY_WEIGHT = 0.1
     private const val TY_DROPOFF_RATE = 1.2
+
+    //preferences
+    private const val ANGLE_WEIGHT = 0.70
+    private const val ANGULAR_VELOCITY_WEIGHT = 0.10
+    private const val DISTANCE_WEIGHT = 0.20
+
 
 
 }

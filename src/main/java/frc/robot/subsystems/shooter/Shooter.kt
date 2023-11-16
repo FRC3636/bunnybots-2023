@@ -12,21 +12,23 @@ object Shooter : Subsystem {
 
     private val inputs = ShooterIO.ShooterInputs()
 
-    private val io = ShooterIOReal(CANDevice.ShooterWheelMotor, CANDevice.ShooterFeedMotor)
+    private val io = ShooterIOReal(CANDevice.FlywheelMotor.id, CANDevice.ShooterFeedMotor.id)
+
 
     override fun periodic() {
-
         io.updateInputs(inputs)
 
-        Logger.getInstance().recordOutput("Shooter/YeetMainMotorVelocity", io.getSpeedMain())
-        Logger.getInstance().recordOutput("Shooter/YeetSecondaryMotorVelocity", io.getSpeedSecondary())
+        Logger.getInstance().recordOutput("Shooter/YeetMainMotorVelocity", io.getSpeedFlywheel())
+        Logger.getInstance().recordOutput("Shooter/YeetSecondaryMotorVelocity", io.getSpeedFeeder())
     }
 
     fun spin(speed: Double) {
-        io.setSpeedMain(speed)
+        io.setSpeedFlywheel(speed)
     }
 
     fun feed(speed: Double){
-        io.setSpeedSecondary(speed)
+        io.setSpeedFeeder(speed)
     }
+
+
 }

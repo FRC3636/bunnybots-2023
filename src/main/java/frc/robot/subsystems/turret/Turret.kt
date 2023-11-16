@@ -28,7 +28,7 @@ object Turret : Subsystem {
     private val turretInputs = TurretInputs()
 
     private const val MAX_ROTATION_DEGREES = 90.0
-    // factoring in rotation of drivetrain
+
     private var targetRotation: Rotation2d = Rotation2d()
         set(value) {
             var degrees = value.degrees % 360
@@ -46,22 +46,17 @@ object Turret : Subsystem {
     }
 
     fun aim() {
-        io.setVoltage(
-                pidController.calculate(relativeAngle.radians, targetRotation.radians)
-                        + feedForward.calculate(Drivetrain.)
-        )
-
+//        io.setVoltage(
+//                pidController.calculate(relativeAngle.radians, targetRotation.radians)
+//                        + feedForward.calculate(Drivetrain.)
+//        )
+//
     }
 
     fun setTarget(target: Rotation2d){
         targetRotation = target
     }
     val relativeAngle: Rotation2d
-        get() = Rotation2d(turretInputs.position.radians + Drivetrain.rotation.radians)
-
-
-
-
-
+        get() = Rotation2d(turretInputs.position.radians + Drivetrain.gyroInputs.rotation.x)
 
 }
