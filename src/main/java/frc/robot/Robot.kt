@@ -35,12 +35,14 @@ object Robot : LoggedRobot() {
             PowerDistribution(1, PowerDistribution.ModuleType.kRev) // Enables power distribution logging
         } else {
             setUseTiming(false) // Run as fast as possible
-            val logPath: String = LogFileUtil.findReplayLog() // Pull the replay log from AdvantageScope (or prompt the user)
+            val logPath: String =
+                LogFileUtil.findReplayLog() // Pull the replay log from AdvantageScope (or prompt the user)
             Logger.getInstance().setReplaySource(WPILOGReader(logPath)) // Read replay log
             Logger.getInstance()
                 .addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))) // Save outputs to a new log
         }
-        Logger.getInstance().start() // Start logging! No more data receivers, replay sources, or metadata values may be added.
+        Logger.getInstance()
+            .start() // Start logging! No more data receivers, replay sources, or metadata values may be added.
 
         // Access the RobotContainer object so that it is initialized. This will perform all our
         // button bindings, and put our autonomous chooser on the dashboard.

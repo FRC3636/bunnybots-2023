@@ -37,6 +37,7 @@ interface TargetVisionIO {
         }
 
     }
+
     fun updateInputs(inputs: TargetVisionIOInputs)
 
 }
@@ -49,14 +50,14 @@ object Limelight : TargetVisionIO {
 
     private val table = NetworkTableInstance.getDefault().getTable("limelight")
     private val dumpSubscriber = table.getStringTopic("json").subscribe("no json :(")
-    private val cl = table.getDoubleTopic("cl").subscribe( 0.0)
+    private val cl = table.getDoubleTopic("cl").subscribe(0.0)
     private val tl = table.getDoubleTopic("tl").subscribe(0.0)
     private val ts = table.getStringTopic("ts").subscribe(":3")
 
     val curTimestamp: Double
         get() {
             val updates = ts.readQueue()
-            val lastUpdate = updates[updates.size-1]
+            val lastUpdate = updates[updates.size - 1]
             val latency: Double = cl.get() + tl.get()
             return (lastUpdate.timestamp * 1e-6) * (latency * 1e-3)
         }

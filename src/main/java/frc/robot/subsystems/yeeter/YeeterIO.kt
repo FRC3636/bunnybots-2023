@@ -22,8 +22,8 @@ interface YeeterIO {
         }
 
         override fun fromLog(table: LogTable?) {
-            table?.getDouble("Main Motor Velocity", mainVelocity)?.let {mainVelocity = it}
-            table?.getDouble("Secondary Motor Velocity", secondaryVelocity)?.let {secondaryVelocity = it}
+            table?.getDouble("Main Motor Velocity", mainVelocity)?.let { mainVelocity = it }
+            table?.getDouble("Secondary Motor Velocity", secondaryVelocity)?.let { secondaryVelocity = it }
         }
 
     }
@@ -61,17 +61,18 @@ class YeeterIOReal(mainMotorCAN: CANDevice, secondaryMotorCAN: CANDevice) : Yeet
 
     }
 
-    override fun setSpeedMain(speed: Double){
+    override fun setSpeedMain(speed: Double) {
         mainMotor.set(speed)
     }
 
-    override fun setVoltageMain(outputVolts: Double){
+    override fun setVoltageMain(outputVolts: Double) {
         mainMotor.setVoltage(outputVolts)
     }
 
     override fun setSpeedSecondary(speed: Double) {
         secondaryMotor.set(speed)
     }
+
     override fun setVoltageSecondary(outputVolts: Double) {
         secondaryMotor.setVoltage(outputVolts)
     }
