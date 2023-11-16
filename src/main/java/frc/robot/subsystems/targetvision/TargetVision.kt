@@ -9,11 +9,9 @@ import org.littletonrobotics.junction.Logger
 import kotlin.math.tan
 
 object TargetVision:  Subsystem {
-
    private val io: TargetVisionIO = Limelight
    private val inputs: TargetVisionIO.TargetVisionIOInputs = TargetVisionIO.TargetVisionIOInputs()
    private const val SAMPLE_NUM= 8
-
 
    fun getDistance(target: LimelightTarget_Retro): Double{
        val angleToBucket = Units.degreesToRadians(CAMERA_PITCH + target.ty)
@@ -72,9 +70,6 @@ object TargetVision:  Subsystem {
    fun reset(){
        smaples = mutableListOf()
    }
-
-
-
 
     private const val CAMERA_PITCH = 110 // degrees
     private const val LIMELIGHT_HEIGHT = 27.33 // inches
