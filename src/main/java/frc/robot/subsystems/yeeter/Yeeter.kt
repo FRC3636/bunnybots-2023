@@ -2,27 +2,24 @@ package frc.robot.subsystems.yeeter
 
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.CANDevice
+import frc.robot.subsystems.targetvision.TargetVision
 import org.littletonrobotics.junction.Logger
 
 
 object Yeeter : Subsystem {
 
-    // TODO: Implement feedforward maybe
+    // TODO: implement feedforward maybe
+    // TODO: this needs a sim impl
 
-
-    private val yeeterInputs = YeeterInputs()
-
-    val io = YeeterIOReal(CANDevice.YeetWheelMotor, CANDevice.YeetFeedMotor)
+    private val io = YeeterIOReal(CANDevice.YeetWheelMotor, CANDevice.YeetFeedMotor)
+    private val inputs = YeeterIO.Inputs()
 
     override fun periodic() {
-
-        io.updateInputs(yeeterInputs)
-
-        Logger.getInstance().recordOutput("Shooter/YeetMainMotorVelocity", io.getSpeedMain())
-        Logger.getInstance().recordOutput("Shooter/YeetSecondaryMotorVelocity", io.getSpeedSecondary())
+        io.updateInputs(inputs)
+        Logger.getInstance().processInputs("Yeeter", inputs)
     }
 
     fun yeet() {
-        throw NotImplementedError("Not implemented")
+        throw NotImplementedError()
     }
 }
