@@ -16,8 +16,8 @@ object RobotContainer {
 
     init {
         configureBindings()
-    
-        DriverStation.silenceJoystickConnectionWarning(RobotBase.isSimulation());
+
+        DriverStation.silenceJoystickConnectionWarning(RobotBase.isSimulation())
     }
 
     private fun configureBindings() {
