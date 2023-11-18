@@ -31,7 +31,7 @@ class TrackPrimary() : CommandBase(){
     override fun execute() {
         if(TargetVision.hasTargets) {
 
-            Turret.setTarget(Turret.angleToField.plus(Rotation2d.fromDegrees(TargetVision.primaryTarget.tx)))
+            Turret.setTarget(Turret.angleToChassis.plus(Rotation2d.fromDegrees(TargetVision.primaryTarget.tx)))
         }
 
     }
@@ -71,8 +71,6 @@ class AimAtTarget() : CommandBase(){
     //TODO test for ToF Coefficients
     private val timeOfFlight: (distance: Double) -> Double = quadraticBuilder(TofCoefficients)
 
-
-    private var optimalTimeOffset: Double = 0.0
 
     private val euclideanNorm: (x: Double, y: Double) -> Double =
         {x,y -> sqrt(x.pow(2) + y.pow(2))}
@@ -140,9 +138,7 @@ class AimAtTarget() : CommandBase(){
         val solveFunction: (t: Double) -> Double = { t -> timeOfFlight(euclideanNorm(x(t),y(t)))}
         val solveDerivative: (t: Double) -> Double = { t -> (tofDerivative(euclideanNorm(x(t),y(t))))*euclideanNormDerivative(vx, vy, x, y)(t)}
 
-
-
-        optimalTimeOffset = newtonRaphson(INITIAL_SEED, solveFunction, solveDerivative)
+        val optimalTimeOffset = newtonRaphson(INITIAL_SEED, solveFunction, solveDerivative)
 
         val predictedTranslation = Translation2d(x(optimalTimeOffset), y(optimalTimeOffset))
 
