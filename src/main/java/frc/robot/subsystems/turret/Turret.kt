@@ -8,32 +8,29 @@ import frc.robot.CANDevice
 import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.utils.PIDCoefficients
 import frc.robot.utils.PIDController
+import org.littletonrobotics.junction.Logger
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
 
 object Turret : Subsystem {
 
-    val pidController = PIDController(PIDCoefficients(0.0,0.0,0.0))
-
-    val feedForward = SimpleMotorFeedforward(0.0,0.0,0.0)
-
-    val io = if(RobotBase.isReal()){
+    private val io = if (RobotBase.isReal()) {
         TurretIOReal(CANDevice.TurretMotor)
-    }else{
+    } else {
         TurretIOSim()
     }
+    private val inputs = TurretIO.Inputs()
 
+    private val pidController = PIDController(PIDCoefficients(0.0, 0.0, 0.0))
 
-    private val turretInputs = TurretInputs()
+    private val feedForward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
 
-    const val MAX_ROTATION_DEGREES = 90.0
-    // factoring in rotation of drivetrain
-    private var targetRotation: Rotation2d = Rotation2d()
+    private var targetAngleToChassis: Rotation2d = Rotation2d()
         set(value) {
             var degrees = value.degrees % 360
-           
-            if(degrees.absoluteValue > 180) {
+
+            if (degrees.absoluteValue > 180) {
                 degrees -= 360 * degrees.sign
             }
             degrees = degrees.coerceIn(-MAX_ROTATION_DEGREES, MAX_ROTATION_DEGREES)
@@ -42,27 +39,26 @@ object Turret : Subsystem {
 
 
     override fun periodic() {
-
-    }
-
-    fun aim() {
+        io.updateInputs(inputs)
+        Logger.getInstance().processInputs("Turret", inputs)
 
         io.setVoltage(
-                pidController.calculate(relativeAngle.radians, targetRotation.radians)
-                        + feedForward.calculate(Drivetrain.velocity2d.norm)
+            pidController.calculate(
+                angleToField.radians, targetAngleToChassis.radians
+            ) + feedForward.calculate(-Drivetrain.chassisSpeeds.omegaRadiansPerSecond)
         )
-
     }
 
-    fun setTarget(target: Rotation2d){
-        targetRotation = target
+    fun setTarget(target: Rotation2d) {
+        targetAngleToChassis = target
     }
-    val relativeAngle: Rotation2d
-        get() = Rotation2d(turretInputs.position.radians + Drivetrain.rotation.radians)
 
+    val angleToChassis: Rotation2d
+        get() = inputs.angle
 
+    val angleToField: Rotation2d
+        get() = inputs.angle.plus(Drivetrain.estimatedPose.rotation)
 
-
-
-
+    // Constants
+    private const val MAX_ROTATION_DEGREES = 90.0
 }
