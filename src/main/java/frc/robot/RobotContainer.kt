@@ -11,6 +11,7 @@ import frc.robot.commands.DriveWithJoysticks
 import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.subsystems.turret.Turret
 import frc.robot.commands.*
+import frc.robot.subsystems.indexer.Indexer
 
 
 object RobotContainer {
@@ -23,14 +24,15 @@ object RobotContainer {
 
     init {
         configureBindings()
-    
-        DriverStation.silenceJoystickConnectionWarning(RobotBase.isSimulation());
+        setDefaultCommands()
+        DriverStation.silenceJoystickConnectionWarning(RobotBase.isSimulation())
     }
 
     private fun setDefaultCommands(){
         Drivetrain.defaultCommand =
             DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
         Turret.defaultCommand = TrackPrimary()
+        Indexer.defaultCommand = AutoIndex()
     }
 
 
