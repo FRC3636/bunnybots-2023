@@ -3,16 +3,16 @@ package frc.robot.commands
 import com.github.chen0040.glm.solvers.Coefficients
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.CommandBase
-import frc.robot.subsystems.turret.Turret
 import frc.robot.subsystems.targetvision.TargetVision
 import frc.robot.subsystems.targetvision.TargetVision.Sample
+import frc.robot.subsystems.turret.Turret
 import org.ejml.simple.SimpleMatrix
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
-import edu.wpi.first.wpilibj.XboxController
 
 class ControlWithJoystick(val joystick: XboxController.Axis ) : CommandBase(){
 
@@ -31,7 +31,7 @@ class TrackPrimary() : CommandBase(){
     override fun execute() {
         if(TargetVision.hasTargets) {
 
-            Turret.setTarget(Turret.relativeAngle.plus(Rotation2d.fromDegrees(TargetVision.primaryTarget.tx)))
+            Turret.setTarget(Turret.angleToField.plus(Rotation2d.fromDegrees(TargetVision.primaryTarget.tx)))
         }
 
     }
