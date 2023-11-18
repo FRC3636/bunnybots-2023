@@ -19,7 +19,7 @@ import org.littletonrobotics.junction.inputs.LoggableInputs
 
 
 interface ModuleIO {
-    class Inputs: LoggableInputs {
+    class Inputs : LoggableInputs {
 
         // The current "state" of the swerve module.
         //
@@ -33,7 +33,7 @@ interface ModuleIO {
         // The desired state of the module.
         //
         // This is the wheel velocity that we're trying to get to.
-        var desiredState =  SwerveModuleState()
+        var desiredState = SwerveModuleState()
 
         // The measured position of the module.
         //
@@ -53,7 +53,10 @@ interface ModuleIO {
             val angle = Rotation2d.fromRadians(table?.getDouble("Current Angle", 0.0)!!)
 
             state = SwerveModuleState(table.getDouble("Current Speed(Meters/Sec)", 0.0), angle)
-            desiredState = SwerveModuleState(table.getDouble("Target Speed (Meters / Sec", 0.0), Rotation2d.fromRadians(table.getDouble("Target Angle", 0.0)))
+            desiredState = SwerveModuleState(
+                table.getDouble("Target Speed (Meters / Sec", 0.0),
+                Rotation2d.fromRadians(table.getDouble("Target Angle", 0.0))
+            )
             position = SwerveModulePosition(table.getDouble("Distance Travelled", 0.0), angle)
         }
 
@@ -67,18 +70,18 @@ interface ModuleIO {
 class MAXSwerveModuleIO(drivingCAN: CANDevice, turningCAN: CANDevice, val chassisAngle: Rotation2d) : ModuleIO {
     private var desiredState: SwerveModuleState = SwerveModuleState(0.0, chassisAngle.unaryMinus())
 
-    override fun setDesiredState(state: SwerveModuleState){
+    override fun setDesiredState(state: SwerveModuleState) {
 
         //.minus(chassisAngle)
         val corrected = SwerveModuleState(state.speedMetersPerSecond, state.angle.minus(chassisAngle))
         // optimize the state to avoid rotating more than 90 degrees
         desiredState = SwerveModuleState.optimize(corrected, Rotation2d.fromRadians(turningEncoder.position))
-        
+
         drivingPIDController.setReference(desiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity)
         turningPIDController.setReference(desiredState.angle.radians, CANSparkMax.ControlType.kPosition)
     }
 
-    override fun updateInputs(inputs: ModuleIO.Inputs){
+    override fun updateInputs(inputs: ModuleIO.Inputs) {
 
         inputs.state = SwerveModuleState(
             drivingEncoder.velocity, Rotation2d.fromRadians(turningEncoder.position).plus(chassisAngle)
@@ -86,7 +89,8 @@ class MAXSwerveModuleIO(drivingCAN: CANDevice, turningCAN: CANDevice, val chassi
 
         inputs.position = SwerveModulePosition(drivingEncoder.position, inputs.state.angle)
 
-        inputs.desiredState = SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle.plus(chassisAngle))
+        inputs.desiredState =
+            SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle.plus(chassisAngle))
     }
 
 
@@ -155,17 +159,17 @@ class MAXSwerveModuleIO(drivingCAN: CANDevice, turningCAN: CANDevice, val chassi
 
         // The gear ratio between the motor and the wheel.
         // I.e. the wheel angle divided by the motor angle.
-        // Motor Pinion : Motor Spur Gear = x : 
+        // Motor Pinion : Motor Spur Gear = x :
         // Bevel Pinion : Wheel Bevel Gear = 15 : 45
         val DRIVING_MOTOR_TO_WHEEL_GEARING = (DRIVING_MOTOR_PINION_TEETH.toDouble() / 22.0) * (15.0 / 45.0)
 
-      
+
         // take the known wheel diameter, divide it by two to get the radius, then get the circumference
         val WHEEL_RADIUS = Units.inchesToMeters(3.0) / 2
         val WHEEL_CIRCUMFERENCE = WHEEL_RADIUS * TAU
 
-          // The free speed of the motor in Rotation2d per second
-          val DRIVING_WHEEL_FREE_SPEED = Rotation2d.fromRotations(5760.0 / 60.0).times(WHEEL_CIRCUMFERENCE)
+        // The free speed of the motor in Rotation2d per second
+        val DRIVING_WHEEL_FREE_SPEED = Rotation2d.fromRotations(5760.0 / 60.0).times(WHEEL_CIRCUMFERENCE)
 
 
         val DRIVING_PID_COEFFICIENTS = PIDCoefficients(p = 0.02)
@@ -178,7 +182,7 @@ class MAXSwerveModuleIO(drivingCAN: CANDevice, turningCAN: CANDevice, val chassi
     }
 }
 
-class SimSwerveModuleIO : ModuleIO{
+class SimSwerveModuleIO : ModuleIO {
 
     override fun updateInputs(inputs: ModuleIO.Inputs) {
         inputs.state = SwerveModuleState(
@@ -192,7 +196,6 @@ class SimSwerveModuleIO : ModuleIO{
             drivingMotor.angularPositionRad * MAXSwerveModuleIO.WHEEL_RADIUS,
             Rotation2d.fromRadians(turningMotor.angularPositionRad)
         )
-
 
 
         //periodic
@@ -225,4 +228,3 @@ class SimSwerveModuleIO : ModuleIO{
         enableContinuousInput(0.0, TAU)
     }
 }
-
