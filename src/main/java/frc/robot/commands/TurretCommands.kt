@@ -12,6 +12,16 @@ import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
+import edu.wpi.first.wpilibj.XboxController
+
+class ControlWithJoystick(val joystick: XboxController.Axis ) : CommandBase(){
+
+    override fun execute() {
+        Turret.setTarget(Rotation2d.fromDegrees(joystick.value.toDouble()))
+    }
+
+
+}
 
 class TrackPrimary() : CommandBase(){
     init {
@@ -28,7 +38,7 @@ class TrackPrimary() : CommandBase(){
 }
 
 //threshold to stop newton raphson method, in milliseconds
-internal const val THRESHOLD = 0.0001
+internal const val THRESHOLD = 0.001
 internal const val INITIAL_SEED = 4.0
 
 
@@ -152,9 +162,3 @@ class AimAtTarget() : CommandBase(){
 
 fun setSampleEpoch(smaples: MutableList<Sample>, epoch: Double): List<Sample>
     = smaples.map { Sample(it.timestamp - epoch, it.pose)}
-
-
-
-
-
-
