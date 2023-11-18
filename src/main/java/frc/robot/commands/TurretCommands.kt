@@ -13,7 +13,7 @@ import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class TrackClosest() : CommandBase(){
+class TrackPrimary() : CommandBase(){
     init {
         addRequirements(Turret)
     }
