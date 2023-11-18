@@ -5,13 +5,12 @@ import com.revrobotics.CANSparkMaxLowLevel
 import com.revrobotics.SparkMaxAbsoluteEncoder
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.util.Units
-import frc.robot.CANDevice
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
 public interface IntakeIO  {
 
-    class IntakeInputs : LoggableInputs {
+    class Inputs : LoggableInputs {
         var position = Rotation2d()
         var velocity = Rotation2d()
         var rollers = Rotation2d()
@@ -30,7 +29,7 @@ public interface IntakeIO  {
             }
     }
 
-    fun updateInputs(inputs: IntakeInputs)
+    fun updateInputs(inputs: Inputs)
 
 
     fun setArmSpeed(speed: Double)
@@ -62,7 +61,7 @@ class IntakeIOReal(ArmMotorID: Int, RollersMotorID: Int) : IntakeIO {
         armMotor.encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
     }
 
-    override fun updateInputs(inputs: IntakeIO.IntakeInputs){
+    override fun updateInputs(inputs: IntakeIO.Inputs){
         inputs.position = Rotation2d(armEncoder.position)
         inputs.velocity = Rotation2d(armEncoder.velocity)
 

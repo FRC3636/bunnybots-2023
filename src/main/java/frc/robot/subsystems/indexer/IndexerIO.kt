@@ -9,7 +9,7 @@ import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
 interface IndexerIO {
-    class IndexerInputs : LoggableInputs {
+    class Inputs : LoggableInputs {
 
         var indexerMotorSpeed: Rotation2d = Rotation2d()
         var beamBreakStatus: Boolean = true
@@ -26,16 +26,16 @@ interface IndexerIO {
 
     }
 
-    fun updateInputs(inputs: IndexerInputs)
+    fun updateInputs(inputs: Inputs)
 
     fun setIndexerSpeed(speed: Double)
 }
 
 class IndexerIOReal(indexerMotorCAN: CANDevice) : IndexerIO {
     private val indexerMotor = CANSparkMax(indexerMotorCAN.id, CANSparkMaxLowLevel.MotorType.kBrushless)
-    private var beamBreak = DigitalInput(BEAM_BREAK)
+    private var beamBreak = DigitalInput(BEAM_BREAK_DIO_PORT)
 
-    override fun updateInputs(inputs: IndexerIO.IndexerInputs) {
+    override fun updateInputs(inputs: IndexerIO.Inputs) {
         inputs.indexerMotorSpeed = Rotation2d(indexerMotor.get())
         inputs.beamBreakStatus = beamBreak.get()
     }
@@ -45,6 +45,6 @@ class IndexerIOReal(indexerMotorCAN: CANDevice) : IndexerIO {
     }
 
     internal companion object Constants {
-        const val BEAM_BREAK = 1
+        const val BEAM_BREAK_DIO_PORT = 1
     }
 }

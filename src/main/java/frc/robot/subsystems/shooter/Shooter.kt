@@ -17,9 +17,6 @@ object Shooter : Subsystem {
 
     override fun periodic() {
         io.updateInputs(inputs)
-
-        Logger.getInstance().recordOutput("Shooter/YeetMainMotorVelocity", io.getSpeedFlywheel())
-        Logger.getInstance().recordOutput("Shooter/YeetSecondaryMotorVelocity", io.getSpeedFeeder())
     }
 
     fun spin(speed: Double) {

@@ -5,7 +5,7 @@ import frc.robot.CANDevice
 
 object Indexer : Subsystem {
     private val io = IndexerIOReal(CANDevice.IndexerMotor)
-    private val inputs = IndexerIO.IndexerInputs()
+    private val inputs = IndexerIO.Inputs()
 
     val beamBreak: Boolean
         get() {

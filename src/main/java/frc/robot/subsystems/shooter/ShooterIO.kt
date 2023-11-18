@@ -17,14 +17,14 @@ interface ShooterIO {
         var feederVelocity: Rotation2d = Rotation2d()
 
         override fun toLog(table: LogTable?) {
-            table?.put("Yeet Flywheel Motor Velocity", flywheelVelocity.radians)
-            table?.put("Yeet Secondary Motor Velocity", feederVelocity.radians)
+            table?.put("Shooter Flywheel Motor Velocity", flywheelVelocity.radians)
+            table?.put("Shooter Feeder Motor Velocity", feederVelocity.radians)
         }
 
         override fun fromLog(table: LogTable?) {
-            table?.getDouble("Flywheel Motor Velocity", flywheelVelocity.radians)
+            table?.getDouble("Shooter Flywheel Motor Velocity", flywheelVelocity.radians)
                 ?.let { flywheelVelocity = Rotation2d(it) }
-            table?.getDouble("Secondary Motor Velocity", feederVelocity.radians)
+            table?.getDouble("Shooter Feeder Motor Velocity", feederVelocity.radians)
                 ?.let { feederVelocity = Rotation2d(it) }
         }
 
