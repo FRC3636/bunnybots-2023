@@ -65,7 +65,6 @@ class IntakeIOReal(ArmMotorID: Int, RollersMotorID: Int) : IntakeIO {
         inputs.position = Rotation2d(armEncoder.position)
         inputs.velocity = Rotation2d(armEncoder.velocity)
 
-        TODO("Not yet implemented")
     }
 
     override fun setArmSpeed(speed: Double){
