@@ -8,8 +8,8 @@ import frc.robot.subsystems.intake.BallIntake
 
 class SetIntakePosition(private val setPosition: BallIntake.Position) : Command {
 
-    lateinit var profile: TrapezoidProfile
-    var timer: Timer = Timer()
+    private lateinit var profile: TrapezoidProfile
+    private var timer: Timer = Timer()
 
 
     override fun getRequirements() = setOf(BallIntake)
