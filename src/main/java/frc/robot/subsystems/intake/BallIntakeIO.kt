@@ -8,7 +8,7 @@ import edu.wpi.first.math.util.Units
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
-public interface IntakeIO  {
+interface IntakeIO  {
 
     class Inputs : LoggableInputs {
         var position = Rotation2d()
@@ -16,16 +16,13 @@ public interface IntakeIO  {
         var rollers = Rotation2d()
 
             override fun toLog(table: LogTable?) {
-                table?.put("Yeet Main Motor Velocity", position.radians)
-                table?.put("Yeet Secondary Motor Velocity", velocity.radians)
-
-
+                table?.put("Intake Arm Position", position.radians)
+                table?.put("Intake Arm Speed", velocity.radians)
             }
 
-
             override fun fromLog(table: LogTable?) {
-                table?.getDouble("Main Motor Velocity", velocity.radians)?.let { velocity = Rotation2d(it) }
-                table?.getDouble("Secondary Motor Velocity", position.radians)?.let { position = Rotation2d(it) }
+                table?.getDouble("Intake Arm Position", position.radians)?.let { position = Rotation2d(it) }
+                table?.getDouble("Intake Arm Speed", velocity.radians)?.let { velocity = Rotation2d(it) }
             }
     }
 
@@ -51,7 +48,6 @@ class IntakeIOReal(ArmMotorID: Int, RollersMotorID: Int) : IntakeIO {
     private val armMotor = CANSparkMax(ArmMotorID, CANSparkMaxLowLevel.MotorType.kBrushless)
     private val armEncoder = armMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
     private val rollerMotor = CANSparkMax(RollersMotorID, CANSparkMaxLowLevel.MotorType.kBrushless)
-    private val rollerEncoder = rollerMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
 
 
     init {
@@ -64,8 +60,6 @@ class IntakeIOReal(ArmMotorID: Int, RollersMotorID: Int) : IntakeIO {
     override fun updateInputs(inputs: IntakeIO.Inputs){
         inputs.position = Rotation2d(armEncoder.position)
         inputs.velocity = Rotation2d(armEncoder.velocity)
-
-        TODO("Not yet implemented")
     }
 
     override fun setArmSpeed(speed: Double){
