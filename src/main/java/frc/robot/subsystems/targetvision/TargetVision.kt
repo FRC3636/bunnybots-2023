@@ -1,7 +1,6 @@
 package frc.robot.subsystems.targetvision
 
 
-import edu.wpi.first.math.Num
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.util.Units
 import edu.wpi.first.wpilibj.DriverStation
@@ -11,8 +10,6 @@ import org.littletonrobotics.junction.Logger
 import kotlin.math.abs
 import kotlin.math.tan
 import kotlin.math.pow
-import edu.wpi.first.math.Vector
-import edu.wpi.first.wpilibj.DriverStation.Alliance
 
 
 object TargetVision:  Subsystem {
