@@ -86,7 +86,7 @@ class AimAtTarget() : CommandBase(){
 
 
 
-    private fun getRotationalOffset(): Rotation2d{
+    private fun findTargetRotation(): Rotation2d {
         //samples
         //offset timestamps so 0 is the current time
         val smaples =
