@@ -22,7 +22,7 @@ object Turret : Subsystem {
     }
     private val inputs = TurretIO.Inputs()
 
-    private val pidController = PIDController(PIDCoefficients(0.0, 0.0, 0.0))
+    private val pidController = PIDController(PIDCoefficients())
 
     private val feedForward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
 
