@@ -16,6 +16,7 @@ object Shooter : Subsystem {
 
 
     override fun periodic() {
+        Logger.getInstance().processInputs("Shooter", inputs)
         io.updateInputs(inputs)
     }
 

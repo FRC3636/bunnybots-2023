@@ -2,6 +2,7 @@ package frc.robot.subsystems.indexer
 
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.CANDevice
+import org.littletonrobotics.junction.Logger
 
 object Indexer : Subsystem {
     private val io = IndexerIOReal(CANDevice.IndexerMotor)
@@ -14,6 +15,7 @@ object Indexer : Subsystem {
 
 
     override fun periodic() {
+        Logger.getInstance().processInputs("Indexer", inputs)
         io.updateInputs(inputs)
     }
 
