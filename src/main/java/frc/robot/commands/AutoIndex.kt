@@ -9,6 +9,13 @@ class AutoIndex : Command {
     private var didTimerStart = false
 
     override fun execute() {
+        if (timer.hasElapsed(7.0)) {
+            Indexer.setSpeed(0.0)
+            timer.stop()
+            timer.reset()
+            didTimerStart = false
+        }
+
         if(!Indexer.beamBreak) {
             if (!didTimerStart) {
                 timer.start()
@@ -18,10 +25,6 @@ class AutoIndex : Command {
         } else {
             Indexer.setSpeed(0.0)
         }
-    }
-
-    override fun isFinished(): Boolean {
-        return timer.hasElapsed(7.0)
     }
 
     override fun getRequirements() = setOf(Indexer)
