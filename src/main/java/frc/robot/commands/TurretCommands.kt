@@ -3,11 +3,9 @@ package frc.robot.commands
 
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.CommandBase
 import frc.robot.subsystems.targetvision.TargetVision
 import frc.robot.subsystems.targetvision.TargetVision.Sample
-import frc.robot.subsystems.turret.Turret
 import frc.robot.utils.QuadraticPolynomial
 import org.ejml.simple.SimpleMatrix
 import java.util.function.DoubleSupplier
@@ -15,6 +13,8 @@ import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
+import frc.robot.subsystems.turret.Turret
+
 
 class ControlWithJoystick(private val joystickX: DoubleSupplier, private val joystickY: DoubleSupplier ) : CommandBase(){
 

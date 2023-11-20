@@ -10,7 +10,7 @@ class QuadraticPolynomial(var a: Double, var b: Double, var c: Double){
         return (a * x).pow(2) + (b * x) + c
     }
 
-    val derivative: QuadraticPlynomial
+    val derivative: QuadraticPolynomial
         get() {
             return QuadraticPolynomial(0.0, (2 * a), b)
         }
