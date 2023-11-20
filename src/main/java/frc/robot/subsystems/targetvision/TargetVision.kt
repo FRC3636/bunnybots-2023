@@ -12,6 +12,7 @@ import kotlin.math.abs
 import kotlin.math.tan
 import kotlin.math.pow
 import edu.wpi.first.math.Vector
+import edu.wpi.first.wpilibj.DriverStation.Alliance
 
 
 object TargetVision:  Subsystem {
@@ -43,8 +44,14 @@ object TargetVision:  Subsystem {
     override fun periodic() {
         Logger.getInstance().processInputs("Vision", inputs)
 
+        val opposingAllianceId = if DriverStation.getAlliance() == DriverStation.Alliance.Blue {
+            // opposing alliance is opposite of our current, so this is the id for red
+            1.0
+        } else {
+            0.0
+        }
         for (target in targetsbyDistance) {
-            if(target.first.classID == (OpposingAlliance.id)){
+            if(target.first.classID == opposingAllianceId){
                 
                 addMeasurement(takeMeasurement(target.first))
             }
@@ -158,18 +165,6 @@ object TargetVision:  Subsystem {
         return measurementIndexed.minByOrNull { getVelocity(it) }!!.second
 
 
-    }
-
-
-    private fun isBlueAlliance(): Boolean {
-        return DriverStation.getAlliance().equals(DriverStation.Alliance.Blue)
-    }
-
-    private val OpposingAlliance = if(isBlueAlliance()){Alliance.BLUE} else {Alliance.RED}
-
-     enum class Alliance(val id: Double){
-        RED(1.0),
-        BLUE(0.0)
     }
 
 
