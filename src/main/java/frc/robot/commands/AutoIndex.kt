@@ -16,7 +16,7 @@ class AutoIndex : Command {
             didTimerStart = false
         }
 
-        if(!Indexer.beamBreak) {
+        if(!Indexer.beamUnbroken) {
             if (!didTimerStart) {
                 timer.start()
                 didTimerStart = true

@@ -8,15 +8,15 @@ object Indexer : Subsystem {
     private val io = IndexerIOReal(CANDevice.IndexerMotor)
     private val inputs = IndexerIO.Inputs()
 
-    val beamBreak: Boolean
+    val beamUnbroken: Boolean
         get() {
             return inputs.beamBreakStatus
         }
 
 
     override fun periodic() {
-        Logger.getInstance().processInputs("Indexer", inputs)
         io.updateInputs(inputs)
+        Logger.getInstance().processInputs("Indexer", inputs)
     }
 
     fun setSpeed(speed: Double) {
