@@ -159,7 +159,7 @@ class MAXSwerveModuleIO(drivingCAN: CANDevice, turningCAN: CANDevice, val chassi
 
         // The gear ratio between the motor and the wheel.
         // I.e. the wheel angle divided by the motor angle.
-        // Motor Pinion : Motor Spur Gear = x : 
+        // Motor Pinion : Motor Spur Gear = x :
         // Bevel Pinion : Wheel Bevel Gear = 15 : 45
         val DRIVING_MOTOR_TO_WHEEL_GEARING = (DRIVING_MOTOR_PINION_TEETH.toDouble() / 22.0) * (15.0 / 45.0)
 
@@ -228,4 +228,3 @@ class SimSwerveModuleIO : ModuleIO {
         enableContinuousInput(0.0, TAU)
     }
 }
-

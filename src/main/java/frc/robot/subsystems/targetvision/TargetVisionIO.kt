@@ -19,7 +19,7 @@ interface TargetVisionIO {
         var lastUpdateTimestamp: Double = 0.0
 
         // FIXME: this isn't being logged, our turret will be useless in replay
-        var targets: List<LimelightHelpers.LimelightTarget_Retro> = mutableListOf()
+        var targets: List<LimelightHelpers.LimelightTarget_Detector> = mutableListOf()
 
 
         override fun toLog(table: LogTable?) {
@@ -39,7 +39,7 @@ interface TargetVisionIO {
 object Limelight : TargetVisionIO {
     private val nt = NetworkTableInstance.getDefault()
 
-    private var targets: List<LimelightHelpers.LimelightTarget_Retro> = emptyList()
+    private var targets: List<LimelightHelpers.LimelightTarget_Detector> = emptyList()
     private var lastUpdateTimestamp = 0.0
 
     private val table = NetworkTableInstance.getDefault().getTable("limelight")
@@ -62,7 +62,6 @@ object Limelight : TargetVisionIO {
     private fun eventListener(event: NetworkTableEvent) {
         val results = ObjectMapper().readValue(dumpSubscriber.get(), LimelightResults::class.java)
         lastUpdateTimestamp = results.targetingResults.timestamp_RIOFPGA_capture
-        targets = results.targetingResults.targets_Retro.toList()
+        targets = results.targetingResults.targets_Detector.toList()
     }
 }
-
