@@ -12,18 +12,17 @@ interface IntakeIO  {
 
     class Inputs : LoggableInputs {
         var position = Rotation2d()
-        var velocity = Rotation2d()
-        var rollers = Rotation2d()
+        var armVelocity = Rotation2d()
 
             override fun toLog(table: LogTable?) {
                 table?.put("Intake Arm Position", position.radians)
-                table?.put("Intake Arm Speed", velocity.radians)
+                table?.put("Intake Arm Speed", armVelocity.radians)
             }
 
 
             override fun fromLog(table: LogTable?) {
                 table?.getDouble("Intake Arm Position", position.radians)?.let { position = Rotation2d(it) }
-                table?.getDouble("Intake Arm Speed", velocity.radians)?.let { velocity = Rotation2d(it) }
+                table?.getDouble("Intake Arm Speed", armVelocity.radians)?.let { armVelocity = Rotation2d(it) }
             }
     }
 
@@ -49,19 +48,19 @@ class IntakeIOReal(ArmMotorID: Int, RollersMotorID: Int) : IntakeIO {
     private val armMotor = CANSparkMax(ArmMotorID, CANSparkMaxLowLevel.MotorType.kBrushless)
     private val armEncoder = armMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
     private val rollerMotor = CANSparkMax(RollersMotorID, CANSparkMaxLowLevel.MotorType.kBrushless)
-    private val rollerEncoder = rollerMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
-
 
     init {
         armEncoder.positionConversionFactor = Units.rotationsToRadians(1.0) *  GEAR_RATIO
         armEncoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
         armMotor.encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
         armMotor.encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
+
+        armMotor.burnFlash()
     }
 
     override fun updateInputs(inputs: IntakeIO.Inputs){
         inputs.position = Rotation2d(armEncoder.position)
-        inputs.velocity = Rotation2d(armEncoder.velocity)
+        inputs.armVelocity = Rotation2d(armEncoder.velocity)
 
     }
 

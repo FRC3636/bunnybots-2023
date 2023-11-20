@@ -13,18 +13,17 @@ import kotlin.math.max
 
 object BallIntake : Subsystem {
 
-    val pidController = PIDController(PIDCoefficients(0.0,0.0,0.0))
+    private val pidController = PIDController(PIDCoefficients())
 
-    val feedForward = ArmFeedforward(0.0,0.0,0.0)
+    private val feedForward = ArmFeedforward(0.0,0.0,0.0)
 
     private val io: IntakeIO = IntakeIOReal(CANDevice.BallIntakeArmMotor.id, CANDevice.BallIntakeRollerMotor.id)
 
     private val inputs = IntakeIO.Inputs()
 
     override fun periodic() {
-        Logger.getInstance().processInputs("Intake", inputs)
-
         io.updateInputs(inputs)
+        Logger.getInstance().processInputs("Intake", inputs)
     }
 
     fun runRollers(speed: Double) {
@@ -38,18 +37,18 @@ object BallIntake : Subsystem {
             )))
 
         val voltage = feedForward.calculate(
-            inputs.position.radians - PI / 2,
+            inputs.position.radians,
             newVelocity.radians,
         )
 
         io.setArmVoltage(voltage)
     }
 
-    fun generateProfile(position: Double): TrapezoidProfile {
+    fun generateProfile(position: Rotation2d): TrapezoidProfile {
         return TrapezoidProfile(
             TrapezoidProfile.Constraints(0.0, 0.0),
-            TrapezoidProfile.State(position, 0.0),
-            TrapezoidProfile.State(inputs.position.radians, inputs.velocity.radians)
+            TrapezoidProfile.State(position.radians, 0.0),
+            TrapezoidProfile.State(inputs.position.radians, inputs.armVelocity.radians)
         )
     }
 
