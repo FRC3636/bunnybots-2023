@@ -20,6 +20,7 @@ interface IntakeIO  {
                 table?.put("Intake Arm Speed", velocity.radians)
             }
 
+
             override fun fromLog(table: LogTable?) {
                 table?.getDouble("Intake Arm Position", position.radians)?.let { position = Rotation2d(it) }
                 table?.getDouble("Intake Arm Speed", velocity.radians)?.let { velocity = Rotation2d(it) }
@@ -48,6 +49,7 @@ class IntakeIOReal(ArmMotorID: Int, RollersMotorID: Int) : IntakeIO {
     private val armMotor = CANSparkMax(ArmMotorID, CANSparkMaxLowLevel.MotorType.kBrushless)
     private val armEncoder = armMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
     private val rollerMotor = CANSparkMax(RollersMotorID, CANSparkMaxLowLevel.MotorType.kBrushless)
+    private val rollerEncoder = rollerMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
 
 
     init {
@@ -60,6 +62,7 @@ class IntakeIOReal(ArmMotorID: Int, RollersMotorID: Int) : IntakeIO {
     override fun updateInputs(inputs: IntakeIO.Inputs){
         inputs.position = Rotation2d(armEncoder.position)
         inputs.velocity = Rotation2d(armEncoder.velocity)
+
     }
 
     override fun setArmSpeed(speed: Double){

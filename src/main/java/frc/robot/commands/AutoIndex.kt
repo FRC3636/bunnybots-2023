@@ -10,7 +10,10 @@ class AutoIndex : Command {
 
     override fun execute() {
         if(!Indexer.beamBreak) {
-            if (!didTimerStart) timer.start()
+            if (!didTimerStart) {
+                timer.start()
+                didTimerStart = true
+            }
             Indexer.setSpeed(1.0)
         } else {
             Indexer.setSpeed(0.0)

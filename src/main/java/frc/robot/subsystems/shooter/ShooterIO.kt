@@ -11,7 +11,7 @@ import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
 interface ShooterIO {
-    class ShooterInputs : LoggableInputs {
+    class Inputs : LoggableInputs {
 
         var flywheelVelocity: Rotation2d = Rotation2d()
         var feederVelocity: Rotation2d = Rotation2d()
@@ -31,16 +31,11 @@ interface ShooterIO {
     }
 
 
-    fun updateInputs(inputs: ShooterInputs)
+    fun updateInputs(inputs: Inputs)
 
     fun setSpeedFlywheel(speed: Double)
     fun setSpeedFeeder(speed: Double)
 
-    fun setVoltageFlywheel(outputVolts: Double)
-    fun setVoltageFeeder(outputVolts: Double)
-
-    fun getSpeedFlywheel(): Double
-    fun getSpeedFeeder(): Double
 }
 
 class ShooterIOReal(flywheelMotorID: Int, feedMotorID: Int) : ShooterIO {
@@ -51,7 +46,7 @@ class ShooterIOReal(flywheelMotorID: Int, feedMotorID: Int) : ShooterIO {
 
 
 
-    override fun updateInputs(inputs: ShooterIO.ShooterInputs) {
+    override fun updateInputs(inputs: ShooterIO.Inputs) {
         inputs.flywheelVelocity = Rotation2d(flywheelMotor.get())
         inputs.feederVelocity = Rotation2d(feedMotor.encoder.velocity)
     }
@@ -60,25 +55,11 @@ class ShooterIOReal(flywheelMotorID: Int, feedMotorID: Int) : ShooterIO {
         flywheelMotor.set(speed)
     }
 
-    override fun setVoltageFlywheel(outputVolts: Double) {
-        flywheelMotor.setVoltage(outputVolts)
-    }
-
     override fun setSpeedFeeder(speed: Double) {
         feedMotor.set(speed)
     }
 
-    override fun setVoltageFeeder(outputVolts: Double) {
-        feedMotor.setVoltage(outputVolts)
-    }
 
-    override fun getSpeedFlywheel(): Double {
-        return flywheelMotor.get()
-    }
-
-    override fun getSpeedFeeder(): Double {
-        return feedMotor.get()
-    }
 
     internal companion object Constants {
         const val SECONDARY_GEAR_RATIO = 1.0

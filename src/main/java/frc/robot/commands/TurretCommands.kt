@@ -8,18 +8,20 @@ import edu.wpi.first.wpilibj2.command.CommandBase
 import frc.robot.subsystems.targetvision.TargetVision
 import frc.robot.subsystems.targetvision.TargetVision.Sample
 import frc.robot.subsystems.turret.Turret
+import frc.robot.utils.QuadraticPolynomial
 import org.ejml.simple.SimpleMatrix
+import java.util.function.DoubleSupplier
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class ControlWithJoystick(val joystick: XboxController.Axis ) : CommandBase(){
+class ControlWithJoystick(private val joystickX: DoubleSupplier, private val joystickY: DoubleSupplier ) : CommandBase(){
 
     override fun execute() {
-        Turret.setTarget(Rotation2d.fromDegrees(joystick.value.toDouble()))
+        val angle = atan2(joystickY.asDouble, joystickX.asDouble)
+        Turret.setTarget(Rotation2d(angle))
     }
-
 
 }
 
@@ -50,42 +52,27 @@ class AimAtTarget() : CommandBase(){
     }
 
 
-    private val XCoefficients = Coefficients()
-    private val YCoefficients = Coefficients()
-    private val TofCoefficients = Coefficients()
 
-
-
-    private fun quadraticBuilder(coefficients: Coefficients): (Double) -> Double{
-        val terms = coefficients.values
-        return {input:Double -> input*terms[2].pow(2) +
-                input*terms[1] + terms[0]
-        }
-    }
-
-    private fun quadraticDerivativeBuilder(coefficients: Coefficients): (Double) -> Double{
-        val terms = coefficients.values
-        return { input:Double -> 2*input*terms[2] + input*terms[1] }
-    }
-
-    //TODO test for ToF Coefficients
-    private val timeOfFlight: (distance: Double) -> Double = quadraticBuilder(TofCoefficients)
+    private val timeOfFlight = QuadraticPolynomial(0.0, 0.0, 0.0)
 
 
     private val euclideanNorm: (x: Double, y: Double) -> Double =
         {x,y -> sqrt(x.pow(2) + y.pow(2))}
 
-    private fun euclideanNormDerivative(vx: (Double) -> Double, vy: (Double) -> Double, x: (Double) -> Double, y: (Double) -> Double): (Double) -> Double{
-        return {t: Double  -> ( (vx(t) + vy(t)) / (2*sqrt( x(t).pow(2) + y(t).pow(2) ) ) ) }
+    private fun euclideanNormDerivative(vx: QuadraticPolynomial, vy: QuadraticPolynomial, x: QuadraticPolynomial, y: QuadraticPolynomial): (Double) -> Double
+    {
+        return {t: Double  -> ( (vx.of(t) + vy.of(t)) / (2*sqrt( x.of(t).pow(2) + y.of(t).pow(2) ) ) ) }
     }
 
 
 
     //iteratively find roots of function by offsetting a seed based on x intercept of tangent line of last guess
     //TODO account for chaotic fractal thingie
-    private fun newtonRaphson(seed: Double, func: (Double) -> Double, funcDerivative: (Double) -> Double ): Double{
+    private fun newtonRaphson(func: (Double) -> Double, funcDerivative: (Double) -> Double ): Double{
 
+        val seed = INITIAL_SEED
         var nextSeed = seed
+
         var h = func(nextSeed)/funcDerivative(nextSeed)
 
         while(abs(h) >= THRESHOLD){
@@ -109,6 +96,7 @@ class AimAtTarget() : CommandBase(){
         // Construct the design matrix X with columns for 1 (intercept), t, and t^2
         val designMatrix = SimpleMatrix(smaples.size, 3)
         val responseMatrix = SimpleMatrix(smaples.size, 2)
+
         for (i in smaples.indices) {
             designMatrix[i, 0] = 1.0
             designMatrix[i, 1] = smaples[i].timestamp
@@ -124,26 +112,25 @@ class AimAtTarget() : CommandBase(){
         val XtY = designMatrix.transpose().mult(responseMatrix)
         val B = XtXInv.mult(XtY)
 
-        XCoefficients.values = listOf(B.get(0,0),B.get(1,0),B.get(1,0))
-        YCoefficients.values = listOf(B.get(0,1),B.get(1,1),B.get(2,1))
 
-        val x = quadraticBuilder(XCoefficients)
-        val y = quadraticBuilder(YCoefficients)
-        val vx = quadraticDerivativeBuilder(XCoefficients)
-        val vy = quadraticDerivativeBuilder(YCoefficients)
-        val tofDerivative = quadraticDerivativeBuilder(TofCoefficients)
+        val x = QuadraticPolynomial(B.get(2, 0), B.get(1, 0), B.get(0, 0))
+        val y =QuadraticPolynomial(B.get(2, 1), B.get(1, 1), B.get(0, 1))
+
+        val vx = x.getDerivative()
+        val vy = y.getDerivative()
+        val tofDerivative = timeOfFlight.getDerivative()
 
         //TODO add link to docs explaining what this means
         //TODO create docs to explain what this means
-        val solveFunction: (t: Double) -> Double = { t -> timeOfFlight(euclideanNorm(x(t),y(t)))}
-        val solveDerivative: (t: Double) -> Double = { t -> (tofDerivative(euclideanNorm(x(t),y(t))))*euclideanNormDerivative(vx, vy, x, y)(t)}
+        val solveFunction: (t: Double) -> Double = { t -> timeOfFlight.of(euclideanNorm(x.of(t),y.of(t)))}
+        val solveDerivative: (t: Double) -> Double = { t -> (tofDerivative.of(euclideanNorm(x.of(t),y.of(t))))*euclideanNormDerivative(vx, vy, x, y)(t)}
 
-        val optimalTimeOffset = newtonRaphson(INITIAL_SEED, solveFunction, solveDerivative)
+        val optimalTimeOffset = newtonRaphson(solveFunction, solveDerivative)
 
-        val predictedTranslation = Translation2d(x(optimalTimeOffset), y(optimalTimeOffset))
+        val predictedTranslation = Translation2d(x.of(optimalTimeOffset), y.of(optimalTimeOffset))
 
         val shotPoint = TargetVision.primaryTargetSamples[TargetVision.primaryTargetSamples.size - 1].pose.plus(predictedTranslation)
-        return Rotation2d(atan2(shotPoint.x, shotPoint.y))
+        return Rotation2d(atan2(shotPoint.y, shotPoint.x))
     }
 
 
@@ -155,6 +142,8 @@ class AimAtTarget() : CommandBase(){
 
 
 }
+
+
 
 fun setSampleEpoch(smaples: MutableList<Sample>, epoch: Double): List<Sample>
     = smaples.map { Sample(it.timestamp - epoch, it.pose)}

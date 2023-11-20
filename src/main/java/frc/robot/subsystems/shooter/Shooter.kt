@@ -10,7 +10,7 @@ object Shooter : Subsystem {
     // TODO: Implement feedforward maybe
 
 
-    private val inputs = ShooterIO.ShooterInputs()
+    private val inputs = ShooterIO.Inputs()
 
     private val io = ShooterIOReal(CANDevice.FlywheelMotor.id, CANDevice.ShooterFeedMotor.id)
 
@@ -18,6 +18,8 @@ object Shooter : Subsystem {
     override fun periodic() {
         Logger.getInstance().processInputs("Shooter", inputs)
         io.updateInputs(inputs)
+
+        Logger.getInstance().processInputs("ShooterInputs", inputs)
     }
 
     fun spin(speed: Double) {
