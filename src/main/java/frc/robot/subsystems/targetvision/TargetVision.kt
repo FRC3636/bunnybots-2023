@@ -44,7 +44,7 @@ object TargetVision:  Subsystem {
     override fun periodic() {
         Logger.getInstance().processInputs("Vision", inputs)
 
-        val opposingAllianceId = if DriverStation.getAlliance() == DriverStation.Alliance.Blue {
+        val opposingAllianceId = if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
             // opposing alliance is opposite of our current, so this is the id for red
             1.0
         } else {
