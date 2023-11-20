@@ -10,7 +10,7 @@ object Indexer : Subsystem {
 
     val beamUnbroken: Boolean
         get() {
-            return inputs.beamBreakStatus
+            return inputs.beamUnbroken
         }
 
 
