@@ -1,6 +1,6 @@
 package frc.robot.commands
 
-import com.github.chen0040.glm.solvers.Coefficients
+
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj.XboxController
@@ -42,6 +42,7 @@ class TrackPrimary() : CommandBase(){
 //threshold to stop newton raphson method, in milliseconds
 internal const val THRESHOLD = 0.001
 internal const val INITIAL_SEED = 4.0
+internal const val MAX_LOOPS = 100
 
 
 
@@ -73,12 +74,12 @@ class AimAtTarget() : CommandBase(){
         val seed = INITIAL_SEED
         var nextSeed = seed
 
-        var h = func(nextSeed)/funcDerivative(nextSeed)
+        var h: Double
 
-        while(abs(h) >= THRESHOLD){
-
+        for( i in 1..MAX_LOOPS){
             h = func(nextSeed)/funcDerivative(nextSeed)
             nextSeed -= h
+            if(abs(h) >= THRESHOLD) { break }
 
         }
         return nextSeed
@@ -107,6 +108,7 @@ class AimAtTarget() : CommandBase(){
         }
 
         // Solve for the coefficient matrix B using the formula B = (X'X)^-1 X'Y
+        // Read more: https://en.wikipedia.org/wiki/Moore–Penrose_inverse
         val XtX = designMatrix.transpose().mult(designMatrix)
         val XtXInv = XtX.invert()
         val XtY = designMatrix.transpose().mult(responseMatrix)
@@ -116,9 +118,9 @@ class AimAtTarget() : CommandBase(){
         val x = QuadraticPolynomial(B.get(2, 0), B.get(1, 0), B.get(0, 0))
         val y =QuadraticPolynomial(B.get(2, 1), B.get(1, 1), B.get(0, 1))
 
-        val vx = x.getDerivative()
-        val vy = y.getDerivative()
-        val tofDerivative = timeOfFlight.getDerivative()
+        val vx = x.derivative
+        val vy = y.derivative
+        val tofDerivative = timeOfFlight.derivative
 
         //TODO add link to docs explaining what this means
         //TODO create docs to explain what this means
