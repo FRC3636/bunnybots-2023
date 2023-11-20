@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj2.command.CommandBase
 import frc.robot.subsystems.targetvision.TargetVision
-import frc.robot.subsystems.targetvision.TargetVision.Sample
+import frc.robot.subsystems.targetvision.TargetVision.PoseSample
 import frc.robot.utils.QuadraticPolynomial
 import org.ejml.simple.SimpleMatrix
 import java.util.function.DoubleSupplier
@@ -91,7 +91,7 @@ class AimAtTarget() : CommandBase(){
         //samples
         //offset timestamps so 0 is the current time
         val smaples =
-            setSampleEpoch(TargetVision.primaryTargetSamples as MutableList<Sample>, TargetVision.curTime)
+            setSampleEpoch(TargetVision.primaryTargetSamples as MutableList<PoseSample>, TargetVision.curTime)
 
         //Generalized Linear Model regresses points to find quadratic functions for translation x and y in terms of t
         // Construct the design matrix X with columns for 1 (intercept), t, and t^2
@@ -147,5 +147,5 @@ class AimAtTarget() : CommandBase(){
 
 
 
-fun setSampleEpoch(smaples: MutableList<Sample>, epoch: Double): List<Sample>
-    = smaples.map { Sample(it.timestamp - epoch, it.pose)}
+fun setSampleEpoch(smaples: MutableList<PoseSample>, epoch: Double): List<PoseSample>
+    = smaples.map { PoseSample(it.timestamp - epoch, it.pose)}
