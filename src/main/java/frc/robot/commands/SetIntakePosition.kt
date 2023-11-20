@@ -17,7 +17,7 @@ class SetIntakePosition(private val setPosition: BallIntake.Position) : Command 
     override fun initialize() {
         timer.reset()
         timer.start()
-        profile = BallIntake.generateProfile(setPosition.setpoint)
+        profile = BallIntake.generateProfile(Rotation2d.fromRadians(setPosition.setpoint))
     }
 
     override fun execute() {

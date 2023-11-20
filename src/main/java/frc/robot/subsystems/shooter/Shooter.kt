@@ -16,10 +16,8 @@ object Shooter : Subsystem {
 
 
     override fun periodic() {
-        Logger.getInstance().processInputs("Shooter", inputs)
         io.updateInputs(inputs)
-
-        Logger.getInstance().processInputs("ShooterInputs", inputs)
+        Logger.getInstance().processInputs("Shooter", inputs)
     }
 
     fun spin(speed: Double) {
