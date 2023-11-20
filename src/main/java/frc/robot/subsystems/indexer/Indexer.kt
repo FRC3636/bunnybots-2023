@@ -8,9 +8,10 @@ object Indexer : Subsystem {
     private val io = IndexerIOReal(CANDevice.IndexerMotor)
     private val inputs = IndexerIO.Inputs()
 
-    val beamUnbroken: Boolean
+    /** Beam is broken */
+    val objectDetected: Boolean
         get() {
-            return inputs.beamUnbroken
+            return inputs.beamBroken
         }
 
 

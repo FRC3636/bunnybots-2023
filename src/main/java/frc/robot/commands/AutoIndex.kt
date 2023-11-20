@@ -9,22 +9,20 @@ class AutoIndex : Command {
     private var forcingIndex = false
 
     override fun execute() {
-        if (forcingIndex) {
-            Indexer.setSpeed(1.0)
-            return
-        }
-
         if (forceIndexTimeout.hasElapsed(7.0)) {
             forcingIndex = false
             forceIndexTimeout.stop()
             forceIndexTimeout.reset()
+
+            if (!Indexer.objectDetected) {
+                Indexer.setSpeed(0.0)
+            }
         }
 
-        if(Indexer.beamUnbroken) {
-            Indexer.setSpeed(0.0)
-        } else {
+        if (Indexer.objectDetected && !forcingIndex) {
             forcingIndex = true
             forceIndexTimeout.start()
+            Indexer.setSpeed(1.0)
         }
     }
 

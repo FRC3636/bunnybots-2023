@@ -12,16 +12,16 @@ interface IndexerIO {
     class Inputs : LoggableInputs {
 
         var indexerMotorSpeed: Rotation2d = Rotation2d()
-        var beamUnbroken: Boolean = true
+        var beamBroken: Boolean = false
         override fun toLog(table: LogTable?) {
             table?.put("Indexer Speed", indexerMotorSpeed.radians)
-            table?.put("Beam Break", beamUnbroken)
+            table?.put("Beam Broken", beamBroken)
         }
 
         override fun fromLog(table: LogTable?) {
             table?.getDouble("Indexer Speed", indexerMotorSpeed.radians)
                     ?.let { indexerMotorSpeed = Rotation2d(it) }
-            table?.getBoolean("Beam Break", beamUnbroken)
+            table?.getBoolean("Beam Broken", beamBroken)
         }
 
     }
@@ -37,7 +37,7 @@ class IndexerIOReal(indexerMotorCAN: CANDevice) : IndexerIO {
 
     override fun updateInputs(inputs: IndexerIO.Inputs) {
         inputs.indexerMotorSpeed = Rotation2d(indexerMotor.get())
-        inputs.beamUnbroken = beamBreak.get()
+        inputs.beamBroken = !beamBreak.get()
     }
 
     override fun setIndexerSpeed(speed: Double) {
