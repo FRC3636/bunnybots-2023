@@ -43,6 +43,7 @@ object RobotContainer {
         Drivetrain.defaultCommand =
             DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
         Indexer.defaultCommand = AutoIndex()
+        Turret.defaultCommand = Command { setOf(Turret) }
 //        Shooter.defaultCommand = object : Command {
 //            override fun initialize() {
 //                println("Settoing motor speeds")

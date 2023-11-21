@@ -1,9 +1,11 @@
 package frc.robot.subsystems.turret
 
+import com.revrobotics.SparkMaxPIDController
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.CANDevice
 import frc.robot.subsystems.drivetrain.Drivetrain
@@ -25,7 +27,7 @@ object Turret : Subsystem {
 
     private val pidController = PIDController(PIDCoefficients(1.0, 0.0, 0.0))
 
-    private val feedForward = SimpleMotorFeedforward(1.5, 0.0, 0.0)
+    private val feedForward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
 
     private var targetAngleToChassis: Rotation2d = Rotation2d()
         set(value) {
@@ -45,7 +47,7 @@ object Turret : Subsystem {
 
         io.setVoltage(
             pidController.calculate(
-                angleToField.radians, targetAngleToChassis.radians
+                angleToChassis.radians, targetAngleToChassis.radians
             ) + feedForward.calculate(-Drivetrain.chassisSpeeds.omegaRadiansPerSecond)
         )
     }
@@ -61,10 +63,12 @@ object Turret : Subsystem {
         get() = inputs.angle.plus(Drivetrain.estimatedPose.rotation)
 
     // Constants
-    private const val MAX_ROTATION_DEGREES = 270.0
+    private const val MAX_ROTATION_DEGREES = 90.0
 
     fun setTargetCommand(angle: Rotation2d): Command {
-        println("debug: moving to $angle")
-        return this.runOnce { this.setTarget(angle) }
+        return this.runOnce {
+            println("debug: moving to $angle")
+            this.setTarget(angle)
+        }
     }
 }
