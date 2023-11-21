@@ -4,6 +4,7 @@ package frc.robot.commands
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj2.command.CommandBase
+import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.subsystems.targetvision.TargetVision
 import frc.robot.subsystems.targetvision.TargetVision.PoseSample
 import frc.robot.utils.QuadraticPolynomial
@@ -22,6 +23,8 @@ class ControlWithJoystick(private val joystickX: DoubleSupplier, private val joy
         val angle = atan2(joystickY.asDouble, joystickX.asDouble)
         Turret.setTarget(Rotation2d(angle))
     }
+
+    override fun getRequirements() = setOf(Turret)
 
 }
 

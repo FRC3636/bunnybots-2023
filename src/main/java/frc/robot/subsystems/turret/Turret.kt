@@ -22,9 +22,9 @@ object Turret : Subsystem {
     }
     private val inputs = TurretIO.Inputs()
 
-    private val pidController = PIDController(PIDCoefficients())
+    private val pidController = PIDController(PIDCoefficients(1.0, 0.0, 0.0))
 
-    private val feedForward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
+    private val feedForward = SimpleMotorFeedforward(1.5, 0.0, 0.0)
 
     private var targetAngleToChassis: Rotation2d = Rotation2d()
         set(value) {
@@ -60,5 +60,5 @@ object Turret : Subsystem {
         get() = inputs.angle.plus(Drivetrain.estimatedPose.rotation)
 
     // Constants
-    private const val MAX_ROTATION_DEGREES = 90.0
+    private const val MAX_ROTATION_DEGREES = 270.0
 }

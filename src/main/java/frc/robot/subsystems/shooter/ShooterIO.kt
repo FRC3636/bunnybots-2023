@@ -47,11 +47,12 @@ class ShooterIOReal(flywheelMotorID: Int, feedMotorID: Int) : ShooterIO {
 
 
     override fun updateInputs(inputs: ShooterIO.Inputs) {
-        inputs.flywheelVelocity = Rotation2d(flywheelMotor.get())
+        inputs.flywheelVelocity = Rotation2d(flywheelMotor.motorOutputVoltage)
         inputs.feederVelocity = Rotation2d(feedMotor.encoder.velocity)
     }
 
     override fun setSpeedFlywheel(speed: Double) {
+        println("debug: flywheel speed <- $speed")
         flywheelMotor.set(speed)
     }
 
