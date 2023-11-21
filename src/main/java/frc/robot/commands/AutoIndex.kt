@@ -9,11 +9,11 @@ class AutoIndex : SequentialCommandGroup(
         override fun getRequirements() = emptySet<Subsystem>()
     },
     object : SequentialCommandGroup(
-        InstantCommand ({
+        InstantCommand({
             Indexer.setSpeed(1.0)
         }),
         WaitCommand(7.0),
-        InstantCommand ({
+        InstantCommand({
             Indexer.setSpeed(0.0)
         }),
     ) {
