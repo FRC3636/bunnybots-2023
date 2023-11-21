@@ -3,6 +3,7 @@ package frc.robot.subsystems.turret
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.CANDevice
 import frc.robot.subsystems.drivetrain.Drivetrain
@@ -61,4 +62,9 @@ object Turret : Subsystem {
 
     // Constants
     private const val MAX_ROTATION_DEGREES = 270.0
+
+    fun setTargetCommand(angle: Rotation2d): Command {
+        println("debug: moving to $angle")
+        return this.runOnce { this.setTarget(angle) }
+    }
 }

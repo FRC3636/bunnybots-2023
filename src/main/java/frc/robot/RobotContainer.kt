@@ -42,7 +42,6 @@ object RobotContainer {
     private fun setDefaultCommands(){
         Drivetrain.defaultCommand =
             DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
-        Turret.defaultCommand = ControlWithJoystick({ 1.0 }, { 0.0 })
         Indexer.defaultCommand = AutoIndex()
 //        Shooter.defaultCommand = object : Command {
 //            override fun initialize() {
@@ -60,29 +59,21 @@ object RobotContainer {
     private fun configureBindings() {
 
         JoystickButton(controller, XboxController.Button.kLeftBumper.value).onTrue(
-                InstantCommand({
-                    Turret.setTarget(Rotation2d.fromDegrees(0.0))
-                })
+                Turret.setTargetCommand(Rotation2d.fromDegrees(0.0))
         )
 
         JoystickButton(controller, XboxController.Button.kRightBumper.value).onTrue(
-                InstantCommand({
-                    Turret.setTarget(Rotation2d.fromDegrees(90.0))
-                })
+                Turret.setTargetCommand(Rotation2d.fromDegrees(90.0))
         )
        Trigger {
            controller.rightTriggerAxis > 0.05
        }.onTrue(
-            InstantCommand({
-                Turret.setTarget(Rotation2d.fromDegrees(180.0))
-            })
+            Turret.setTargetCommand(Rotation2d.fromDegrees(180.0))
         )
         Trigger {
             controller.leftTriggerAxis > 0.05
         }.onTrue(
-                InstantCommand({
-                    Turret.setTarget(Rotation2d.fromDegrees(270.0))
-                })
+                Turret.setTargetCommand(Rotation2d.fromDegrees(270.0))
         )
 
 
