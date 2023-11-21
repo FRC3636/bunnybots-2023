@@ -7,13 +7,12 @@ import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import edu.wpi.first.wpilibj2.command.button.Trigger
+import frc.robot.commands.AutoIndex
 import frc.robot.commands.DriveWithJoysticks
 import frc.robot.subsystems.drivetrain.Drivetrain
-import frc.robot.subsystems.turret.Turret
-import frc.robot.commands.*
 import frc.robot.subsystems.indexer.Indexer
+import frc.robot.subsystems.turret.Turret
 
 
 object RobotContainer {
@@ -33,7 +32,8 @@ object RobotContainer {
     private fun setDefaultCommands(){
         Drivetrain.defaultCommand =
             DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
-        Turret.defaultCommand = TrackPrimary()
+        Turret.defaultCommand = Turret.trackPrimaryTarget()
+        Indexer.defaultCommand = AutoIndex()
     }
 
 
