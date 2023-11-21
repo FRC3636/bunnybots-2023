@@ -53,13 +53,5 @@ abstract class Intake : Subsystem {
         )
     }
 
-    enum class Position(setpoint: Rotation2d){
-        BallUp(Rotation2d()),
-        BallDown(Rotation2d()),
-        BunnyUp(Rotation2d()),
-        BunnyStowed(Rotation2d()),
-        BunnyDown(Rotation2d())
-    }
-
 }
 

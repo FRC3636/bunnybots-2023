@@ -17,4 +17,8 @@ object BunnyIntake : Intake() {
 
     override val name = "Bunny"
 
+    enum class Postition(pose: Rotation2d){
+        Up(Rotation2d()),
+        Down(Rotation2d())
+    }
 }
