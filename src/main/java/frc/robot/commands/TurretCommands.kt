@@ -25,7 +25,7 @@ class ControlWithJoystick(private val joystickX: DoubleSupplier, private val joy
 
 }
 
-class TrackPrimary() : CommandBase(){
+class TrackPrimary : CommandBase(){
     init {
         addRequirements(Turret)
     }
@@ -46,7 +46,7 @@ internal const val MAX_LOOPS = 100
 
 
 
-class AimAtTarget() : CommandBase(){
+class AimAtTarget : CommandBase(){
 
     init {
         addRequirements(Turret)
