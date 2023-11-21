@@ -21,7 +21,7 @@ internal const val MAX_LOOPS = 100
 
 
 
-class AimAtTarget() : CommandBase(){
+class AimAtTarget : CommandBase(){
 
     init {
         addRequirements(Turret)

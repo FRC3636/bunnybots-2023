@@ -31,19 +31,19 @@ public class LimelightHelpers {
     public static class LimelightTarget_Retro {
 
         @JsonProperty("t6c_ts")
-        private double[] cameraPose_TargetSpace;
+        private final double[] cameraPose_TargetSpace;
 
         @JsonProperty("t6r_fs")
-        private double[] robotPose_FieldSpace;
+        private final double[] robotPose_FieldSpace;
 
         @JsonProperty("t6r_ts")
-        private  double[] robotPose_TargetSpace;
+        private final double[] robotPose_TargetSpace;
 
         @JsonProperty("t6t_cs")
-        private double[] targetPose_CameraSpace;
+        private final double[] targetPose_CameraSpace;
 
         @JsonProperty("t6t_rs")
-        private double[] targetPose_RobotSpace;
+        private final double[] targetPose_RobotSpace;
 
         public Pose3d getCameraPose_TargetSpace()
         {
@@ -124,19 +124,19 @@ public class LimelightHelpers {
         public String fiducialFamily;
 
         @JsonProperty("t6c_ts")
-        private double[] cameraPose_TargetSpace;
+        private final double[] cameraPose_TargetSpace;
 
         @JsonProperty("t6r_fs")
-        private double[] robotPose_FieldSpace;
+        private final double[] robotPose_FieldSpace;
 
         @JsonProperty("t6r_ts")
-        private double[] robotPose_TargetSpace;
+        private final double[] robotPose_TargetSpace;
 
         @JsonProperty("t6t_cs")
-        private double[] targetPose_CameraSpace;
+        private final double[] targetPose_CameraSpace;
 
         @JsonProperty("t6t_rs")
-        private double[] targetPose_RobotSpace;
+        private final double[] targetPose_RobotSpace;
 
         public Pose3d getCameraPose_TargetSpace()
         {

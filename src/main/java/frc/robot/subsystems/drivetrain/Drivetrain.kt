@@ -34,9 +34,9 @@ object Drivetrain : Subsystem {
     private val modules = if (RobotBase.isReal()) {
         MODULE_CAN_DEVICES.zip(MODULE_POSITIONS).map { (can, pose) ->
             MAXSwerveModuleIO(can.first, can.second, pose.rotation)
-        }.zip ( PerCorner.generate { ModuleIO.Inputs() } )
+        }.zip ( PerCorner.generate { Inputs() } )
     } else {
-        PerCorner.generate { SimSwerveModuleIO() }.zip( PerCorner.generate { ModuleIO.Inputs() } )
+        PerCorner.generate { SimSwerveModuleIO() }.zip( PerCorner.generate { Inputs() } )
     }
 
 
