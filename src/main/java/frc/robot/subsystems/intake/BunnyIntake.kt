@@ -4,7 +4,8 @@ import edu.wpi.first.math.controller.ArmFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
 import frc.robot.utils.PIDCoefficients
 import frc.robot.utils.PIDController
-object BallIntake : Intake() {
+
+object BunnyIntake : Intake() {
 
     override val pidController = PIDController(PIDCoefficients())
 
@@ -14,8 +15,6 @@ object BallIntake : Intake() {
 
     override val inputs = IntakeIO.Inputs()
 
-    override val name = "Ball"
+    override val name = "Bunny"
 
 }
-
-
