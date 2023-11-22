@@ -8,12 +8,14 @@ import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.commands.DoNothingCommand
 import frc.robot.commands.DriveWithJoysticks
 import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.subsystems.indexer.Indexer
+import frc.robot.subsystems.shooter.Shooter
 import frc.robot.subsystems.turret.Turret
 
 
@@ -58,9 +60,28 @@ object RobotContainer {
         Trigger{controller.leftTriggerAxis > 0.05}.onTrue(
             Turret.setTargetCommand(Rotation2d.fromDegrees(270.0))
         )
-//
-//        Trigger { Indexer.objectDetected }
-//            .onTrue(Indexer.IndexCommand)
+
+        JoystickButton(controller, XboxController.Button.kY.value)
+            .onTrue(Indexer.IndexCommand)
+
+        JoystickButton(controller, XboxController.Button.kA.value)
+            .onTrue(InstantCommand({
+                Shooter.spin(1.0)
+            }))
+            .onFalse(InstantCommand({
+                Shooter.spin(0.0)
+            }))
+
+        JoystickButton(controller, XboxController.Button.kB.value)
+            .onTrue(InstantCommand({
+                Shooter.feed(1.0)
+            }))
+            .onFalse(InstantCommand({
+                Shooter.feed(0.0)
+            }))
+
+
+
 
     }
 
