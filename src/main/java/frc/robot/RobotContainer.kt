@@ -13,8 +13,10 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.commands.DoNothingCommand
 import frc.robot.commands.DriveWithJoysticks
+import frc.robot.commands.SetIntakePosition
 import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.subsystems.indexer.Indexer
+import frc.robot.subsystems.intake.BallIntake
 import frc.robot.subsystems.shooter.Shooter
 import frc.robot.subsystems.turret.Turret
 
@@ -79,6 +81,12 @@ object RobotContainer {
             .onFalse(InstantCommand({
                 Shooter.feed(0.0)
             }))
+
+        JoystickButton(controller, XboxController.Button.kLeftStick.value)
+            .onTrue(SetIntakePosition(Rotation2d.fromDegrees(90.0), BallIntake))
+
+        JoystickButton(controller, XboxController.Button.kRightStick.value)
+            .onTrue(SetIntakePosition(Rotation2d.fromDegrees(0.0), BallIntake))
 
 
 
