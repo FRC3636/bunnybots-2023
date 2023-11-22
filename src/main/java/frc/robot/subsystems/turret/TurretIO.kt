@@ -56,8 +56,7 @@ class TurretIOReal(motorCAN: CANDevice) : TurretIO {
     }
 
     internal companion object Constants {
-        // TODO: find turret gear ratio :0
-        const val GEAR_RATIO = 1.0
+        const val GEAR_RATIO = 5.0
     }
 }
 
