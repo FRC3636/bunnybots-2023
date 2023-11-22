@@ -9,38 +9,10 @@ import frc.robot.subsystems.targetvision.TargetVision.PoseSample
 import frc.robot.subsystems.turret.Turret
 import frc.robot.utils.QuadraticPolynomial
 import org.ejml.simple.SimpleMatrix
-import java.util.function.DoubleSupplier
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
-
-
-class ControlWithJoystick(private val joystickX: DoubleSupplier, private val joystickY: DoubleSupplier ) : CommandBase(){
-
-    override fun execute() {
-        val angle = atan2(joystickY.asDouble, joystickX.asDouble)
-        Turret.setTarget(Rotation2d(angle))
-    }
-
-
-    override fun getRequirements() = setOf(Turret)
-
-}
-
-class TrackPrimary : CommandBase(){
-    init {
-        addRequirements(Turret)
-    }
-
-    override fun execute() {
-        if(TargetVision.hasTargets) {
-
-            Turret.setTarget(Turret.angleToChassis.plus(Rotation2d.fromDegrees(TargetVision.primaryTarget.tx)))
-        }
-
-    }
-}
 
 //threshold to stop newton raphson method, in milliseconds
 internal const val THRESHOLD = 0.001
