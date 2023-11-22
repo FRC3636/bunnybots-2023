@@ -4,10 +4,13 @@ import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
 import com.revrobotics.SparkMaxAbsoluteEncoder
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.util.Units
+import edu.wpi.first.wpilibj.simulation.DCMotorSim
 import frc.robot.CANDevice
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
+
 
 interface TurretIO {
     class Inputs : LoggableInputs {
@@ -61,9 +64,22 @@ class TurretIOReal(motorCAN: CANDevice) : TurretIO {
     }
 }
 
-// TODO: implement sim turret
 
 class TurretIOSim : TurretIO {
-    override fun updateInputs(inputs: TurretIO.Inputs) {}
-    override fun setVoltage(outputVolts: Double) {}
+    companion object {
+        // calculated from cad, but probably wrong
+        private const val MOMENT_OF_INERTIA_M2_KG = 0.0103
+    }
+    private val sim = DCMotorSim(DCMotor.getNeo550(1), 5.0, MOMENT_OF_INERTIA_M2_KG)
+    private var volts = 0.0
+
+    override fun updateInputs(inputs: TurretIO.Inputs) {
+        sim.update(0.02)
+        inputs.angle = Rotation2d(sim.angularPositionRad)
+        inputs.angularVelocityHz = Rotation2d(sim.angularVelocityRadPerSec)
+    }
+    override fun setVoltage(outputVolts: Double) {
+        volts = outputVolts.coerceIn(-12.0, 12.0)
+        sim.setInputVoltage(volts)
+    }
 }

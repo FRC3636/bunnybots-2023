@@ -34,11 +34,20 @@ object Robot : LoggedRobot() {
             Logger.getInstance().addDataReceiver(NT4Publisher()) // Publish data to NetworkTables
             PowerDistribution(1, PowerDistribution.ModuleType.kRev) // Enables power distribution logging
         } else {
-            setUseTiming(false) // Run as fast as possible
-            val logPath: String = LogFileUtil.findReplayLog() // Pull the replay log from AdvantageScope (or prompt the user)
-            Logger.getInstance().setReplaySource(WPILOGReader(logPath)) // Read replay log
-            Logger.getInstance()
-                .addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))) // Save outputs to a new log
+            var logPath: String? = null
+            try {
+                logPath = LogFileUtil.findReplayLog() // Pull the replay log from AdvantageScope (or prompt the user)
+            } catch (_: java.util.NoSuchElementException) {}
+
+            if (logPath == null) {
+                // No replay log, so perform physics simulation
+                Logger.getInstance().addDataReceiver(NT4Publisher())
+            } else {
+                // Replay log exists, so replay data
+                setUseTiming(false) // Run as fast as possible
+                Logger.getInstance().setReplaySource(WPILOGReader(logPath)) // Read replay log
+                Logger.getInstance().addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))) // Save outputs to a new log
+            }
         }
         Logger.getInstance().start() // Start logging! No more data receivers, replay sources, or metadata values may be added.
 
