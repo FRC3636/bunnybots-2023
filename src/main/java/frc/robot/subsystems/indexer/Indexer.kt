@@ -1,6 +1,6 @@
 package frc.robot.subsystems.indexer
 
-import edu.wpi.first.wpilibj2.command.Subsystem
+import edu.wpi.first.wpilibj2.command.*
 import frc.robot.CANDevice
 import org.littletonrobotics.junction.Logger
 
@@ -12,6 +12,16 @@ object Indexer : Subsystem {
     val objectDetected: Boolean
         get() {
             return inputs.beamBroken
+        }
+
+
+    val indexCommand: Command
+        get(){
+            return Commands.sequence(
+                InstantCommand({ this.setSpeed(1.0)}),
+                WaitCommand(7.0),
+                InstantCommand({ this.setSpeed(0.0)})
+            )
         }
 
 
