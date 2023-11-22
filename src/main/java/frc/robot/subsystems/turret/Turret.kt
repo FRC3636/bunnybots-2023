@@ -30,9 +30,9 @@ object Turret : Subsystem {
     }
     private val inputs = TurretIO.Inputs()
 
-    private val pidController = PIDController(PIDCoefficients())
+    private val pidController = PIDController(PIDCoefficients(2.0, 0.0, 0.33))
 
-    private val feedForward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
+    private val feedForward = SimpleMotorFeedforward(1.0, 0.0, 0.0)
 
     private val mechanism = Mechanism2d(3.0, 3.0)
     private val mechanismRoot: MechanismRoot2d = mechanism.getRoot("climber", 1.5, 1.5)
@@ -51,15 +51,23 @@ object Turret : Subsystem {
 
 
     override fun periodic() {
+
         io.updateInputs(inputs)
         mechanismAim.angle = inputs.angle.degrees
         Logger.getInstance().recordOutput("Turret/Mechanism", mechanism)
         Logger.getInstance().processInputs("Turret", inputs)
 
+
+
+        val voltage = pidController.calculate(
+            angleToChassis.radians, targetAngleToChassis.radians
+        ) + feedForward.calculate(-Drivetrain.chassisSpeeds.omegaRadiansPerSecond)
+
+        Logger.getInstance().recordOutput("Turret/Voltage", voltage)
+        Logger.getInstance().recordOutput("Turret/TargetAngle", targetAngleToChassis.degrees)
+
         io.setVoltage(
-            pidController.calculate(
-                angleToChassis.radians, targetAngleToChassis.radians
-            ) + feedForward.calculate(-Drivetrain.chassisSpeeds.omegaRadiansPerSecond)
+           voltage
         )
     }
 
@@ -76,7 +84,10 @@ object Turret : Subsystem {
     // Constants
     private const val MAX_ROTATION_DEGREES = 90.0
     fun setTargetCommand(setpoint: Rotation2d): Command{
-        return InstantCommand({this.setTarget(setpoint)})
+        return InstantCommand({
+            println("moving turret to $setpoint")
+            this.setTarget(setpoint)
+        })
     }
 
 
