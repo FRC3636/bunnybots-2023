@@ -1,18 +1,18 @@
 package frc.robot.subsystems.turret
 
-import com.revrobotics.SparkMaxPIDController
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.CANDevice
 import frc.robot.subsystems.drivetrain.Drivetrain
+import frc.robot.subsystems.targetvision.TargetVision
 import frc.robot.utils.PIDCoefficients
 import frc.robot.utils.PIDController
 import org.littletonrobotics.junction.Logger
 import kotlin.math.absoluteValue
+import kotlin.math.atan2
 import kotlin.math.sign
 
 
@@ -25,7 +25,7 @@ object Turret : Subsystem {
     }
     private val inputs = TurretIO.Inputs()
 
-    private val pidController = PIDController(PIDCoefficients(1.0, 0.0, 0.0))
+    private val pidController = PIDController(PIDCoefficients())
 
     private val feedForward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
 
@@ -47,7 +47,7 @@ object Turret : Subsystem {
 
         io.setVoltage(
             pidController.calculate(
-                angleToChassis.radians, targetAngleToChassis.radians
+                angleToField.radians, targetAngleToChassis.radians
             ) + feedForward.calculate(-Drivetrain.chassisSpeeds.omegaRadiansPerSecond)
         )
     }
@@ -65,10 +65,24 @@ object Turret : Subsystem {
     // Constants
     private const val MAX_ROTATION_DEGREES = 90.0
 
-    fun setTargetCommand(angle: Rotation2d): Command {
-        return this.runOnce {
-            println("debug: moving to $angle")
-            this.setTarget(angle)
+    /**
+     * Aligns the turret to point the same direction as the joystick is being leaned.
+     */
+    fun controlWithJoysticks(joystickX: () -> Double, joystickY: () -> Double): Command {
+        return run {
+            val angle = atan2(joystickY(), joystickX())
+            setTarget(Rotation2d(angle))
+        }
+    }
+
+    /**
+     * Aligns the turret to face the primary target.
+     */
+    fun trackPrimaryTarget(): Command {
+        return run {
+            if (TargetVision.hasTargets) {
+                setTarget(angleToChassis + Rotation2d.fromDegrees(TargetVision.primaryTarget.tx))
+            }
         }
     }
 }

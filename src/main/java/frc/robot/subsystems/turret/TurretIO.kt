@@ -20,8 +20,8 @@ interface TurretIO {
         }
 
         override fun fromLog(table: LogTable?) {
-            table?.getDouble("Angle", 0.0)?.let { angle = Rotation2d.fromDegrees(it) }
-            table?.getDouble("Angular Velocity", 0.0)?.let { angularVelocityHz = Rotation2d.fromRadians(it) }
+            table?.getDouble("Angle", 0.0)?.let { angle = Rotation2d.fromRadians(it) }
+            table?.getDouble("Angular Velocity", 0.0)?.let { angle = Rotation2d.fromRadians(it) }
         }
 
     }
@@ -47,7 +47,7 @@ class TurretIOReal(motorCAN: CANDevice) : TurretIO {
     }
 
     override fun updateInputs(inputs: TurretIO.Inputs) {
-        inputs.angle = Rotation2d(Units.radiansToDegrees(encoder.position))
+        inputs.angle = Rotation2d(encoder.position)
         inputs.angularVelocityHz = Rotation2d(encoder.velocity)
     }
 
@@ -56,8 +56,7 @@ class TurretIOReal(motorCAN: CANDevice) : TurretIO {
     }
 
     internal companion object Constants {
-        // TODO: find turret gear ratio :0
-        const val GEAR_RATIO = (1/ 4.3)
+        const val GEAR_RATIO = 5.0
     }
 }
 
