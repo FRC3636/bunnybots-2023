@@ -4,6 +4,9 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.CANDevice
@@ -22,6 +25,7 @@ object Turret : Subsystem {
     private val io = if (RobotBase.isReal()) {
         TurretIOReal(CANDevice.TurretMotor)
     } else {
+        println("Using simulated turret")
         TurretIOSim()
     }
     private val inputs = TurretIO.Inputs()
@@ -29,6 +33,10 @@ object Turret : Subsystem {
     private val pidController = PIDController(PIDCoefficients())
 
     private val feedForward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
+
+    private val mechanism = Mechanism2d(3.0, 3.0)
+    private val mechanismRoot: MechanismRoot2d = mechanism.getRoot("climber", 1.5, 1.5)
+    private val mechanismAim = mechanismRoot.append(MechanismLigament2d("aim", 3.0, inputs.angle.degrees))
 
     private var targetAngleToChassis: Rotation2d = Rotation2d()
         set(value) {
@@ -44,11 +52,13 @@ object Turret : Subsystem {
 
     override fun periodic() {
         io.updateInputs(inputs)
+        mechanismAim.angle = inputs.angle.degrees
+        Logger.getInstance().recordOutput("Turret/Mechanism", mechanism)
         Logger.getInstance().processInputs("Turret", inputs)
 
         io.setVoltage(
             pidController.calculate(
-                angleToField.radians, targetAngleToChassis.radians
+                angleToChassis.radians, targetAngleToChassis.radians
             ) + feedForward.calculate(-Drivetrain.chassisSpeeds.omegaRadiansPerSecond)
         )
     }
