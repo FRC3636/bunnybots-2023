@@ -1,5 +1,6 @@
 package frc.robot
 
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.RobotBase
@@ -7,8 +8,9 @@ import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import edu.wpi.first.wpilibj2.command.button.Trigger
-import frc.robot.commands.AutoIndex
+import frc.robot.commands.DoNothingCommand
 import frc.robot.commands.DriveWithJoysticks
 import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.subsystems.indexer.Indexer
@@ -32,13 +34,33 @@ object RobotContainer {
     private fun setDefaultCommands(){
         Drivetrain.defaultCommand =
             DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
-        Turret.defaultCommand = Turret.trackPrimaryTarget()
-        Indexer.defaultCommand = AutoIndex()
+        Turret.defaultCommand = DoNothingCommand(setOf(Turret))
+//        Turret.defaultCommand = Turret.trackPrimaryTarget()
+//        Indexer.defaultCommand = AutoIndex()
     }
 
 
     private fun configureBindings() {
-        Trigger(Indexer::objectDetected).onTrue(Indexer.indexCommand)
+//        Trigger(Indexer::objectDetected).onTrue(Indexer.indexCommand)
+
+        JoystickButton(controller, XboxController.Button.kLeftBumper.value).onTrue(
+            Turret.setTargetCommand(Rotation2d.fromDegrees(0.0))
+        )
+
+        JoystickButton(controller, XboxController.Button.kRightBumper.value).onTrue(
+            Turret.setTargetCommand(Rotation2d.fromDegrees(90.0))
+        )
+
+        Trigger{controller.rightTriggerAxis > 0.05}.onTrue(
+            Turret.setTargetCommand(Rotation2d.fromDegrees(180.0))
+        )
+
+        Trigger{controller.leftTriggerAxis > 0.05}.onTrue(
+            Turret.setTargetCommand(Rotation2d.fromDegrees(270.0))
+        )
+//
+//        Trigger { Indexer.objectDetected }
+//            .onTrue(Indexer.IndexCommand)
 
     }
 

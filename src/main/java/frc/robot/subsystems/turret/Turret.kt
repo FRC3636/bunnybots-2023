@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.CANDevice
 import frc.robot.subsystems.drivetrain.Drivetrain
@@ -64,6 +65,11 @@ object Turret : Subsystem {
 
     // Constants
     private const val MAX_ROTATION_DEGREES = 90.0
+    fun setTargetCommand(setpoint: Rotation2d): Command{
+        return InstantCommand({this.setTarget(setpoint)})
+    }
+
+
 
     /**
      * Aligns the turret to point the same direction as the joystick is being leaned.
