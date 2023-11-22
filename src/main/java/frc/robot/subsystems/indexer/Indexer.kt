@@ -14,12 +14,21 @@ object Indexer : Subsystem {
             return inputs.beamBroken
         }
 
-    object IndexCommand: SequentialCommandGroup (
+    object AutoIndexCommand: SequentialCommandGroup (
         InstantCommand({ this.setSpeed(1.0)}),
         WaitCommand(7.0),
         InstantCommand({ this.setSpeed(0.0)})
     ){
         override fun getRequirements() = setOf(Indexer)
+    }
+
+    val manualIndexCommand: Command
+     get() {
+        return this.startEnd({
+            this.setSpeed(1.0)
+        }, {
+            this.setSpeed(0.0)
+        })
     }
 
 

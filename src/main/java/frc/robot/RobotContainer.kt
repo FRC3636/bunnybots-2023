@@ -36,7 +36,7 @@ object RobotContainer {
     private fun setDefaultCommands(){
         Drivetrain.defaultCommand =
             DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
-        Turret.defaultCommand = DoNothingCommand(setOf(Turret))
+//        Turret.defaultCommand = DoNothingCommand(setOf(Turret))
 //        Turret.defaultCommand = Turret.trackPrimaryTarget()
 //        Indexer.defaultCommand = AutoIndex()
     }
@@ -62,7 +62,7 @@ object RobotContainer {
         )
 
         JoystickButton(controller, XboxController.Button.kY.value)
-            .onTrue(Indexer.IndexCommand)
+            .whileTrue(Indexer.manualIndexCommand)
 
         JoystickButton(controller, XboxController.Button.kA.value)
             .onTrue(InstantCommand({

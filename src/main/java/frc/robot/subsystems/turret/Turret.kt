@@ -82,7 +82,7 @@ object Turret : Subsystem {
         get() = inputs.angle.plus(Drivetrain.estimatedPose.rotation)
 
     // Constants
-    private const val MAX_ROTATION_DEGREES = 90.0
+    private const val MAX_ROTATION_DEGREES = 135.0
     fun setTargetCommand(setpoint: Rotation2d): Command{
         return InstantCommand({
             println("moving turret to $setpoint")
