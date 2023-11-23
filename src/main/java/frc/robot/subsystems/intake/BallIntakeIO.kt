@@ -23,7 +23,7 @@ class BallIntakeIOSim(): IntakeIO {
         const val INTAKE_MASS_KG = 6.0
         const val ROLLER_INERTIA_KG_M2 = 0.000226
         const val ROLLER_GEAR_RATIO = 36.0 / 12.0
-        const val GEAR_RATIO = 1.0 / 10.0
+        const val GEAR_RATIO = 112.5
     }
 
     private val armMotor = SingleJointedArmSim(
@@ -31,8 +31,8 @@ class BallIntakeIOSim(): IntakeIO {
         GEAR_RATIO,
         SingleJointedArmSim.estimateMOI(INTAKE_LENGTH_M, INTAKE_MASS_KG),
         INTAKE_LENGTH_M,
-        Units.degreesToRadians(-90.0),
-        Units.degreesToRadians(105.0),
+        Units.degreesToRadians(-10.0),
+        Units.degreesToRadians(100.0),
         true
     )
     private val rollerMotor = FlywheelSim(

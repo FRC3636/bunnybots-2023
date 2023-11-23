@@ -80,7 +80,7 @@ object RobotContainer {
 //            }))
 
         JoystickButton(controller, 11)
-            .onTrue(SetIntakePosition(Rotation2d.fromDegrees(90.0), BallIntake))
+            .onTrue(SetIntakePosition(Rotation2d.fromDegrees(80.0), BallIntake))
 
         JoystickButton(controller, 12)
             .onTrue(SetIntakePosition(Rotation2d.fromDegrees(0.0), BallIntake))

@@ -8,9 +8,9 @@ import frc.robot.utils.PIDController
 
 object BallIntake : Intake() {
 
-    override val pidController = PIDController(PIDCoefficients(12.0, 0.0, 5.0))
+    override val pidController = PIDController(PIDCoefficients(50.0, 0.0, 0.0))
 
-    override val feedForward = ArmFeedforward(0.0,5.197,.01)
+    override val feedForward = ArmFeedforward(0.0,0.462,1.0)
 
     override val io: IntakeIO =  if (RobotBase.isReal()) {
         BallIntakeIOReal()
