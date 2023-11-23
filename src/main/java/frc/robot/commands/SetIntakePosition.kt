@@ -14,6 +14,7 @@ class SetIntakePosition(private val setpoint: Rotation2d, private val intake: In
     override fun getRequirements() = setOf(intake)
 
     override fun initialize() {
+        println("Going to $setpoint")
         timer.reset()
         timer.start()
         profile = intake.generateProfile(setpoint)

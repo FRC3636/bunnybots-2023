@@ -2,15 +2,21 @@ package frc.robot.subsystems.intake
 
 import edu.wpi.first.math.controller.ArmFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.wpilibj.RobotBase
 import frc.robot.utils.PIDCoefficients
 import frc.robot.utils.PIDController
+
 object BallIntake : Intake() {
 
-    override val pidController = PIDController(PIDCoefficients())
+    override val pidController = PIDController(PIDCoefficients(12.0, 0.0, 5.0))
 
-    override val feedForward = ArmFeedforward(0.0,0.0,0.0)
+    override val feedForward = ArmFeedforward(0.0,5.197,.01)
 
-    override val io: IntakeIO = BallIntakeIOReal()
+    override val io: IntakeIO =  if (RobotBase.isReal()) {
+        BallIntakeIOReal()
+    } else {
+        BallIntakeIOSim()
+    }
 
     override val inputs = IntakeIO.Inputs()
 
@@ -23,5 +29,3 @@ object BallIntake : Intake() {
     }
 
 }
-
-

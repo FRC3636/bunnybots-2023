@@ -37,7 +37,7 @@ abstract class Intake : Subsystem {
     )
 
     override fun periodic() {
-        val className = this.javaClass.name
+        val className = this.javaClass.simpleName
         io.updateInputs(inputs)
         Logger.getInstance().processInputs(className, inputs)
 
@@ -51,22 +51,26 @@ abstract class Intake : Subsystem {
     }
 
     fun moveIntake(position: Rotation2d, velocity: Rotation2d) {
+        val className = this.javaClass.simpleName
+        val pidCalculations = pidController.calculate(inputs.position.radians, max(
+            position.radians, 0.0
+        ))
+        Logger.getInstance().recordOutput("$className/PID", pidCalculations)
+
         val newVelocity = Rotation2d.fromRadians(velocity.radians +
-                pidController.calculate(inputs.position.radians, max(
-                    position.radians, 0.0
-                )
-                ))
+                pidCalculations)
 
         val voltage = feedForward.calculate(
             inputs.position.radians,
             newVelocity.radians,
         )
+        Logger.getInstance().recordOutput("$className/Voltage", voltage)
 
         io.setArmVoltage(voltage)
         mechanismDesiredPosition.angle = position.degrees
 
-        val className = this.javaClass.name
         Logger.getInstance().recordOutput("$className/DesiredPosition", position.degrees)
+        Logger.getInstance().recordOutput("$className/DesiredVelocity", velocity.degrees)
     }
 
     fun generateProfile(position: Rotation2d): TrapezoidProfile {
@@ -78,4 +82,3 @@ abstract class Intake : Subsystem {
     }
 
 }
-

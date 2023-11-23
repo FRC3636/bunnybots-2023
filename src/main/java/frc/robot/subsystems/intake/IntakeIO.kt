@@ -72,5 +72,4 @@ abstract class IntakeIOReal(armMotorID: Int, rollersMotorID: Int, gearRatio:Doub
     override fun setRollerSpeed(speed: Double){
         rollerMotor.set(speed)
     }
-
 }
