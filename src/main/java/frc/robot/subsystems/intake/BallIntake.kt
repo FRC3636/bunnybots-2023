@@ -8,7 +8,7 @@ import frc.robot.utils.PIDController
 
 object BallIntake : Intake() {
 
-    override val pidController = PIDController(PIDCoefficients(50.0, 0.0, 0.0))
+    override val pidController = PIDController(PIDCoefficients(25.0, 0.0, 0.0))
 
     override val feedForward = ArmFeedforward(0.0,0.462,1.0)
 

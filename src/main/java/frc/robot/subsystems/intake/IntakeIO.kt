@@ -61,7 +61,6 @@ abstract class IntakeIOReal(armMotorID: Int, rollersMotorID: Int, gearRatio:Doub
         inputs.armVelocity = Rotation2d(armEncoder.velocity)
         inputs.rollersOn = rollerMotor.appliedOutput > 0
         inputs.armVoltage = armMotor.appliedOutput * armMotor.busVoltage
-
     }
 
     override fun setArmVoltage(outputVolts: Double){

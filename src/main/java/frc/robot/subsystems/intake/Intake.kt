@@ -25,16 +25,47 @@ abstract class Intake : Subsystem {
     abstract val inputs: IntakeIO.Inputs
 
     abstract val name: String
+    
+    companion object MechanismParts {
+        private val mechanism = Mechanism2d(3.0, 3.0)
+        private val root: MechanismRoot2d = mechanism.getRoot("RobotConnection", 0.25, 0.25)
+        private val measuredPosition = root.append(
+            MechanismLigament2d("MeasuredPosition", 2.0, 90.0, 6.0, Color8Bit(Color.kWhite))
+        )
+        private val desiredPosition = root.append(
+            MechanismLigament2d("DesiredPosition", 2.0, 90.0, 6.0, Color8Bit(Color.kGreen))
+        )
+        private val desiredWheelSpokes = createWheelSpokes(desiredPosition, Color8Bit(Color.kDarkGreen))
+        private var desiredWheelSpokesOffset = Rotation2d()
+            set(value) {
+                field = value
+                desiredWheelSpokes.forEachIndexed { index, spoke ->
+                    spoke.angle = (index * 90.0) - value.degrees
+                }
+            }
+        private val measuredWheelSpokes = createWheelSpokes(measuredPosition, Color8Bit(Color.kGray))
+        private var measuredWheelSpokesOffset = Rotation2d()
+            set(value) {
+                field = value
+                measuredWheelSpokes.forEachIndexed { index, spoke ->
+                    spoke.angle = (index * 90.0) - value.degrees
+                }
+            }
 
+        private fun createWheelSpokes(parent: MechanismLigament2d, color: Color8Bit): Array<MechanismLigament2d> {
+            val spokes = Array(4) { i ->
+                MechanismLigament2d("Spoke$i", 0.25, i * 90.0, 6.0, color)
+            }
 
-    private val mechanism = Mechanism2d(3.0, 3.0)
-    private val mechanismRoot: MechanismRoot2d = mechanism.getRoot("RobotConnection", 0.0, 1.5)
-    private val mechanismMeasuredPosition = mechanismRoot.append(
-        MechanismLigament2d("MeasuredPosition", 2.0, 90.0, 6.0, Color8Bit(Color.kWhite))
-    )
-    private val mechanismDesiredPosition = mechanismRoot.append(
-        MechanismLigament2d("DesiredPosition", 2.0, 90.0, 6.0, Color8Bit(Color.kGreen))
-    )
+            for (spoke in spokes) {
+                parent.append(spoke)
+            }
+
+            return spokes
+        }
+    }
+
+    private var rollersSpeed = 0.0
 
     override fun periodic() {
         val className = this.javaClass.simpleName
@@ -42,11 +73,18 @@ abstract class Intake : Subsystem {
         Logger.getInstance().processInputs(className, inputs)
 
 
-        mechanismMeasuredPosition.angle = inputs.position.degrees
+        measuredPosition.angle = inputs.position.degrees
+        if (inputs.rollersOn) {
+            measuredWheelSpokesOffset = measuredWheelSpokesOffset.plus(Rotation2d.fromDegrees(4.0))
+        }
+        if (rollersSpeed > 0.0) {
+            desiredWheelSpokesOffset = desiredWheelSpokesOffset.plus(Rotation2d.fromDegrees(4.0))
+        }
         Logger.getInstance().recordOutput("$className/Mechanism", mechanism)
     }
 
     fun runRollers(speed: Double) {
+        rollersSpeed = speed
         io.setRollerSpeed(speed)
     }
 
@@ -67,7 +105,7 @@ abstract class Intake : Subsystem {
         Logger.getInstance().recordOutput("$className/Voltage", voltage)
 
         io.setArmVoltage(voltage)
-        mechanismDesiredPosition.angle = position.degrees
+        desiredPosition.angle = position.degrees
 
         Logger.getInstance().recordOutput("$className/DesiredPosition", position.degrees)
         Logger.getInstance().recordOutput("$className/DesiredVelocity", velocity.degrees)

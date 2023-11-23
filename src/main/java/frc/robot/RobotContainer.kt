@@ -8,12 +8,14 @@ import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import frc.robot.commands.DoNothingCommand
 import frc.robot.commands.DriveWithJoysticks
 import frc.robot.commands.SetIntakePosition
 import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.subsystems.intake.BallIntake
+import frc.robot.subsystems.turret.Turret
 
 
 object RobotContainer {
@@ -34,7 +36,7 @@ object RobotContainer {
         Drivetrain.defaultCommand =
             DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
 //        Turret.defaultCommand = DoNothingCommand(setOf(Turret))
-//        Turret.defaultCommand = Turret.trackPrimaryTarget()
+        Turret.defaultCommand = Turret.controlWithJoysticks({ controller.leftX }, { -controller.leftY })
 //        Indexer.defaultCommand = AutoIndex()
 //        BallIntake.defaultCommand = ControlIntakeWithJoystick(BallIntake, { controller.leftX }, { -controller.leftY })
         BallIntake.defaultCommand = DoNothingCommand(setOf(BallIntake))
@@ -63,13 +65,15 @@ object RobotContainer {
 //        JoystickButton(controller, XboxController.Button.kY.value)
 //            .whileTrue(Indexer.manualIndexCommand)
 //
-//        JoystickButton(controller, XboxController.Button.kA.value)
-//            .onTrue(InstantCommand({
-//                Shooter.spin(1.0)
-//            }))
-//            .onFalse(InstantCommand({
-//                Shooter.spin(0.0)
-//            }))
+        JoystickButton(controller, XboxController.Button.kA.value)
+            .onTrue(InstantCommand({
+                println("running rollers")
+                BallIntake.runRollers(1.0)
+            }))
+            .onFalse(InstantCommand({
+                println("stopping rollers")
+                BallIntake.runRollers(0.0)
+            }))
 //
 //        JoystickButton(controller, XboxController.Button.kB.value)
 //            .onTrue(InstantCommand({
