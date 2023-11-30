@@ -12,9 +12,9 @@ class DriveWithJoysticks(private val translationJoystick: Joystick, private val 
     override fun execute() {
         Drivetrain.drive(
             ChassisSpeeds.fromFieldRelativeSpeeds(
-                translationJoystick.y,
-                translationJoystick.x,
-                rotationJoystick.x,
+                translationJoystick.y * ((translationJoystick.z + 1) / 2),
+                translationJoystick.x * ((translationJoystick.z + 1) / 2),
+                rotationJoystick.x * ((translationJoystick.z + 1) / 2),
                 Rotation2d()
             )
         )
