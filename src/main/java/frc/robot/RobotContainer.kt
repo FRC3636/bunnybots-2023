@@ -52,9 +52,6 @@ object RobotContainer {
 
 
     private fun configureBindings() {
-        Trigger { Indexer.objectDetected }
-            .onTrue(Indexer.AutoIndexCommand())
-
         JoystickButton(controller, XboxController.Button.kY.value)
             .whileTrue(Indexer.manualIndexCommand)
 
