@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d
+import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.CANDevice
@@ -88,8 +89,6 @@ object Turret : Subsystem {
         })
     }
 
-
-
     /**
      * Aligns the turret to point the same direction as the joystick is being leaned.
      */
@@ -100,13 +99,15 @@ object Turret : Subsystem {
         }
     }
 
+
     /**
      * Aligns the turret to face the primary target.
      */
     fun trackPrimaryTarget(): Command {
         return run {
             if (TargetVision.hasTargets) {
-                setTarget(angleToChassis + Rotation2d.fromDegrees(TargetVision.primaryTarget.tx))
+                val target = TargetVision.primaryTargetSamples.last().pose
+                setTarget(Rotation2d(atan2(target.y, target.x)))
             }
         }
     }
