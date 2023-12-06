@@ -51,10 +51,10 @@ object RobotContainer {
         JoystickButton(controller, XboxController.Button.kA.value)
             .onTrue(InstantCommand({
                 Shooter.spin(1.0)
-            }))
+            }, Shooter))
             .onFalse(InstantCommand({
                 Shooter.spin(0.0)
-            }))
+            }, Shooter))
 
         JoystickButton(controller, XboxController.Button.kB.value)
             .onTrue(InstantCommand({
