@@ -1,6 +1,5 @@
 package frc.robot
 
-import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.RobotBase
@@ -18,10 +17,8 @@ import frc.robot.commands.SetIntakePosition
 import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.subsystems.indexer.Indexer
 import frc.robot.subsystems.intake.BallIntake
-import frc.robot.subsystems.intake.BunnyIntake
 import frc.robot.subsystems.shooter.Shooter
 import frc.robot.subsystems.turret.Turret
-import kotlin.math.atan2
 
 
 object RobotContainer {
