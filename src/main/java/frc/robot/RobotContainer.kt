@@ -37,31 +37,14 @@ object RobotContainer {
     private fun setDefaultCommands(){
         Drivetrain.defaultCommand =
             DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
-        Turret.defaultCommand = Command { setOf(Turret) }
-        Turret.defaultCommand = Turret.trackPrimaryTarget()
+        Turret.defaultCommand = Turret.controlWithJoysticks({ controller.leftX }, { controller.leftY })
         Indexer.defaultCommand = Indexer.AutoIndexCommand()
+        Shooter
+        BallIntake
     }
 
 
     private fun configureBindings() {
-//        Trigger(Indexer::objectDetected).onTrue(Indexer.indexCommand)
-
-        JoystickButton(controller, XboxController.Button.kLeftBumper.value).onTrue(
-            Turret.setTargetCommand(Rotation2d.fromDegrees(0.0))
-        )
-
-        JoystickButton(controller, XboxController.Button.kRightBumper.value).onTrue(
-            Turret.setTargetCommand(Rotation2d.fromDegrees(90.0))
-        )
-
-        Trigger{controller.rightTriggerAxis > 0.05}.onTrue(
-            Turret.setTargetCommand(Rotation2d.fromDegrees(180.0))
-        )
-
-        Trigger{controller.leftTriggerAxis > 0.05}.onTrue(
-            Turret.setTargetCommand(Rotation2d.fromDegrees(270.0))
-        )
-
         JoystickButton(controller, XboxController.Button.kY.value)
             .whileTrue(Indexer.manualIndexCommand)
 
@@ -81,15 +64,14 @@ object RobotContainer {
                 Shooter.feed(0.0)
             }))
 
-        JoystickButton(controller, XboxController.Button.kLeftStick.value)
-            .onTrue(SetIntakePosition(Rotation2d.fromDegrees(90.0), BallIntake))
+        Trigger { controller.rightTriggerAxis > 0.1 }
+            .onTrue(SetIntakePosition(BallIntake.Position.Up.pose, BallIntake))
 
-        JoystickButton(controller, XboxController.Button.kRightStick.value)
-            .onTrue(SetIntakePosition(Rotation2d.fromDegrees(0.0), BallIntake))
+        Trigger { controller.leftTriggerAxis > 0.1 }
+            .onTrue(SetIntakePosition(BallIntake.Position.Down.pose, BallIntake))
 
-
-
-
+        JoystickButton(controller, XboxController.Button.kLeftBumper.value)
+            .onTrue(SetIntakePosition(BallIntake.Position.Stowed.pose, BallIntake))
     }
 
     val autonomousCommand: Command? = null
