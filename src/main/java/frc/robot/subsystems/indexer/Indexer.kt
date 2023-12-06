@@ -14,7 +14,7 @@ object Indexer : Subsystem {
             return inputs.beamBroken
         }
 
-    object AutoIndexCommand: SequentialCommandGroup (
+    class AutoIndexCommand: SequentialCommandGroup (
         InstantCommand({ this.setSpeed(1.0)}),
         WaitCommand(7.0),
         InstantCommand({ this.setSpeed(0.0)})

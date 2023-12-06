@@ -25,7 +25,7 @@ abstract class Intake : Subsystem {
     abstract val inputs: IntakeIO.Inputs
 
     abstract val name: String
-    
+
     companion object MechanismParts {
         private val mechanism = Mechanism2d(3.0, 3.0)
         private val root: MechanismRoot2d = mechanism.getRoot("RobotConnection", 0.25, 0.25)
@@ -68,9 +68,8 @@ abstract class Intake : Subsystem {
     private var rollersSpeed = 0.0
 
     override fun periodic() {
-        val className = this.javaClass.simpleName
         io.updateInputs(inputs)
-        Logger.getInstance().processInputs(className, inputs)
+        Logger.getInstance().processInputs(name, inputs)
 
 
         measuredPosition.angle = inputs.position.degrees
@@ -80,7 +79,7 @@ abstract class Intake : Subsystem {
         if (rollersSpeed > 0.0) {
             desiredWheelSpokesOffset = desiredWheelSpokesOffset.plus(Rotation2d.fromDegrees(4.0))
         }
-        Logger.getInstance().recordOutput("$className/Mechanism", mechanism)
+        Logger.getInstance().recordOutput("$name/Mechanism", mechanism)
     }
 
     fun runRollers(speed: Double) {
@@ -89,26 +88,21 @@ abstract class Intake : Subsystem {
     }
 
     fun moveIntake(position: Rotation2d, velocity: Rotation2d) {
-        val className = this.javaClass.simpleName
-        val pidCalculations = pidController.calculate(inputs.position.radians, max(
-            position.radians, 0.0
-        ))
-        Logger.getInstance().recordOutput("$className/PID", pidCalculations)
-
         val newVelocity = Rotation2d.fromRadians(velocity.radians +
-                pidCalculations)
+                pidController.calculate(inputs.position.radians, max(
+                    position.radians, 0.0
+                )
+                ))
 
         val voltage = feedForward.calculate(
             inputs.position.radians,
             newVelocity.radians,
         )
-        Logger.getInstance().recordOutput("$className/Voltage", voltage)
 
         io.setArmVoltage(voltage)
         desiredPosition.angle = position.degrees
 
-        Logger.getInstance().recordOutput("$className/DesiredPosition", position.degrees)
-        Logger.getInstance().recordOutput("$className/DesiredVelocity", velocity.degrees)
+        Logger.getInstance().recordOutput("$name/DesiredPosition", position.degrees)
     }
 
     fun generateProfile(position: Rotation2d): TrapezoidProfile {

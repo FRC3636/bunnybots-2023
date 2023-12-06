@@ -22,7 +22,7 @@ object BallIntake : Intake() {
 
     override val name = "Ball"
 
-    enum class Position(pose: Rotation2d){
+    enum class Position(val pose: Rotation2d){
         Up(Rotation2d()),
         Down(Rotation2d()),
         Stowed(Rotation2d())

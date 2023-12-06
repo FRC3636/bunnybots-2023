@@ -51,7 +51,6 @@ object Turret : Subsystem {
 
 
     override fun periodic() {
-
         io.updateInputs(inputs)
         mechanismAim.angle = inputs.angle.degrees
         Logger.getInstance().recordOutput("Turret/Mechanism", mechanism)
@@ -85,7 +84,6 @@ object Turret : Subsystem {
     private const val MAX_ROTATION_DEGREES = 135.0
     fun setTargetCommand(setpoint: Rotation2d): Command{
         return InstantCommand({
-            println("moving turret to $setpoint")
             this.setTarget(setpoint)
         })
     }
