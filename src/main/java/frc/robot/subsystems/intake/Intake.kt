@@ -37,13 +37,12 @@ abstract class Intake : Subsystem {
     )
 
     override fun periodic() {
-        val className = this.javaClass.name
         io.updateInputs(inputs)
-        Logger.getInstance().processInputs(className, inputs)
+        Logger.getInstance().processInputs(name, inputs)
 
 
         mechanismMeasuredPosition.angle = inputs.position.degrees
-        Logger.getInstance().recordOutput("$className/Mechanism", mechanism)
+        Logger.getInstance().recordOutput("$name/Mechanism", mechanism)
     }
 
     fun runRollers(speed: Double) {
@@ -65,8 +64,7 @@ abstract class Intake : Subsystem {
         io.setArmVoltage(voltage)
         mechanismDesiredPosition.angle = position.degrees
 
-        val className = this.javaClass.name
-        Logger.getInstance().recordOutput("$className/DesiredPosition", position.degrees)
+        Logger.getInstance().recordOutput("$name/DesiredPosition", position.degrees)
     }
 
     fun generateProfile(position: Rotation2d): TrapezoidProfile {
