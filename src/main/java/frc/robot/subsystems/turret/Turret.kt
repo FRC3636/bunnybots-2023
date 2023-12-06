@@ -25,7 +25,6 @@ object Turret : Subsystem {
     private val io = if (RobotBase.isReal()) {
         TurretIOReal(CANDevice.TurretMotor)
     } else {
-        println("Using simulated turret")
         TurretIOSim()
     }
     private val inputs = TurretIO.Inputs()

@@ -3,10 +3,7 @@ package frc.robot.subsystems.shooter
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
-import com.revrobotics.SparkMaxAbsoluteEncoder
 import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.util.Units
-import frc.robot.CANDevice
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
@@ -56,7 +53,6 @@ class ShooterIOReal(flywheelMotorID: Int, feedMotorID: Int) : ShooterIO {
     }
 
     override fun setSpeedFlywheel(speed: Double) {
-        println("debug: flywheel speed <- $speed")
         flywheelMotor.set(speed)
     }
 
