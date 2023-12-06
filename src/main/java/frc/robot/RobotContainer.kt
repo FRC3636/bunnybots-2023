@@ -37,9 +37,9 @@ object RobotContainer {
     private fun setDefaultCommands(){
         Drivetrain.defaultCommand =
             DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
-//        Turret.defaultCommand = DoNothingCommand(setOf(Turret))
-//        Turret.defaultCommand = Turret.trackPrimaryTarget()
-//        Indexer.defaultCommand = AutoIndex()
+        Turret.defaultCommand = Command { setOf(Turret) }
+        Turret.defaultCommand = Turret.trackPrimaryTarget()
+        Indexer.defaultCommand = Indexer.AutoIndexCommand()
     }
 
 
