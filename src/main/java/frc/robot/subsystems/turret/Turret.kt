@@ -25,7 +25,6 @@ object Turret : Subsystem {
     private val io = if (RobotBase.isReal()) {
         TurretIOReal(CANDevice.TurretMotor)
     } else {
-        println("Using simulated turret")
         TurretIOSim()
     }
     private val inputs = TurretIO.Inputs()
@@ -85,7 +84,6 @@ object Turret : Subsystem {
     private const val MAX_ROTATION_DEGREES = 135.0
     fun setTargetCommand(setpoint: Rotation2d): Command{
         return InstantCommand({
-            println("moving turret to $setpoint")
             this.setTarget(setpoint)
         })
     }

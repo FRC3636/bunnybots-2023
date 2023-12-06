@@ -56,7 +56,6 @@ class ShooterIOReal(flywheelMotorID: Int, feedMotorID: Int) : ShooterIO {
     }
 
     override fun setSpeedFlywheel(speed: Double) {
-        println("debug: flywheel speed <- $speed")
         flywheelMotor.set(speed)
     }
 
