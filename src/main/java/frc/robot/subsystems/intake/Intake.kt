@@ -4,6 +4,11 @@ import edu.wpi.first.math.controller.ArmFeedforward
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.trajectory.TrapezoidProfile
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d
+import edu.wpi.first.wpilibj.util.Color
+import edu.wpi.first.wpilibj.util.Color8Bit
 import edu.wpi.first.wpilibj2.command.Subsystem
 import org.littletonrobotics.junction.Logger
 import kotlin.math.max
@@ -21,9 +26,23 @@ abstract class Intake : Subsystem {
 
     abstract val name: String
 
+
+    private val mechanism = Mechanism2d(3.0, 3.0)
+    private val mechanismRoot: MechanismRoot2d = mechanism.getRoot("RobotConnection", 0.0, 1.5)
+    private val mechanismMeasuredPosition = mechanismRoot.append(
+        MechanismLigament2d("MeasuredPosition", 2.0, 90.0, 6.0, Color8Bit(Color.kWhite))
+    )
+    private val mechanismDesiredPosition = mechanismRoot.append(
+        MechanismLigament2d("DesiredPosition", 2.0, 90.0, 6.0, Color8Bit(Color.kGreen))
+    )
+
     override fun periodic() {
         io.updateInputs(inputs)
-        Logger.getInstance().processInputs("($name)Intake", inputs)
+        Logger.getInstance().processInputs(name, inputs)
+
+
+        mechanismMeasuredPosition.angle = inputs.position.degrees
+        Logger.getInstance().recordOutput("$name/Mechanism", mechanism)
     }
 
     fun runRollers(speed: Double) {
@@ -43,6 +62,9 @@ abstract class Intake : Subsystem {
         )
 
         io.setArmVoltage(voltage)
+        mechanismDesiredPosition.angle = position.degrees
+
+        Logger.getInstance().recordOutput("$name/DesiredPosition", position.degrees)
     }
 
     fun generateProfile(position: Rotation2d): TrapezoidProfile {

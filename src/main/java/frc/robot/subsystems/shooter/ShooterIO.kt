@@ -44,10 +44,14 @@ class ShooterIOReal(flywheelMotorID: Int, feedMotorID: Int) : ShooterIO {
     private val flywheelMotor = WPI_TalonFX(flywheelMotorID)
     private val feedMotor = CANSparkMax(feedMotorID, CANSparkMaxLowLevel.MotorType.kBrushless)
 
+    init{
+        feedMotor.inverted = true
+    }
+
 
 
     override fun updateInputs(inputs: ShooterIO.Inputs) {
-        inputs.flywheelVelocity = Rotation2d(flywheelMotor.get())
+        inputs.flywheelVelocity = Rotation2d(flywheelMotor.motorOutputVoltage)
         inputs.feederVelocity = Rotation2d(feedMotor.encoder.velocity)
     }
 
