@@ -107,7 +107,7 @@ class AimAtTarget : CommandBase(){
         val predictedTranslation = Translation2d(x.of(optimalTimeOffset), y.of(optimalTimeOffset))
 
         val shotPoint = TargetVision.primaryTargetSamples[TargetVision.primaryTargetSamples.size - 1].pose.plus(predictedTranslation)
-        return Rotation2d(atan2(shotPoint.y, shotPoint.x))
+        return offsetToPos(shotPoint)
     }
 
 
@@ -121,6 +121,8 @@ class AimAtTarget : CommandBase(){
 }
 
 
-
+fun offsetToPos(target: Translation2d): Rotation2d {
+    return Rotation2d(atan2(target.y, target.x))
+}
 fun setSampleEpoch(smaples: MutableList<PoseSample>, epoch: Double): List<PoseSample>
     = smaples.map { PoseSample(it.timestamp - epoch, it.pose)}
