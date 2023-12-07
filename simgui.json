@@ -1,9 +1,0 @@
-{
-  "NTProvider": {
-    "types": {
-      "/AdvantageKit/RealOutputs/BallIntake/Mechanism": "Mechanism2d",
-      "/FMSInfo": "FMSInfo",
-      "/SmartDashboard/Field": "Field2d"
-    }
-  }
-}
