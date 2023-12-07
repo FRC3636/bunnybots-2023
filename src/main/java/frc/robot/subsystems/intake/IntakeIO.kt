@@ -38,7 +38,7 @@ interface IntakeIO  {
 
     fun setRollerSpeed(speed: Double)
 
-    fun resetEncoder(currentPosition: Rotation2d)
+    fun resetEncoder(offset: Rotation2d)
 
 }
 
@@ -75,8 +75,8 @@ abstract class IntakeIOReal(armMotorID: Int, rollersMotorID: Int, gearRatio:Doub
         rollerMotor.set(speed)
     }
 
-    override fun resetEncoder(currentPosition: Rotation2d) {
-        armEncoder.zeroOffset += currentPosition.radians
+    override fun resetEncoder(offset: Rotation2d) {
+        armEncoder.zeroOffset = armEncoder.position - armEncoder.zeroOffset + offset.radians
     }
 
 }

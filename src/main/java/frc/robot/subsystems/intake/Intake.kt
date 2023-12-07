@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d
 import edu.wpi.first.wpilibj.util.Color
 import edu.wpi.first.wpilibj.util.Color8Bit
 import edu.wpi.first.wpilibj2.command.Subsystem
-import frc.robot.utils.PIDCoefficients
 import org.littletonrobotics.junction.Logger
 import kotlin.math.max
 
@@ -56,9 +55,9 @@ abstract class Intake : Subsystem {
         stallDetector.calculate(inputs.armVelocity.radians, position.radians)
 
         // only reset if we're moving towards the hard stop and not making progress
-        if (stallDetector.i > 0.5 && position.radians - inputs.position.radians > 0.0) {
+        if (stallDetector.positionError > 0.5 && position.radians - inputs.position.radians > 0.0) {
             // todo: find real hard-stop position
-            io.resetEncoder(Rotation2d(1.75))
+            io.resetEncoder(Rotation2d(-1.75))
         }
 
         val newVelocity = Rotation2d.fromRadians(velocity.radians +
@@ -87,4 +86,3 @@ abstract class Intake : Subsystem {
     }
 
 }
-
