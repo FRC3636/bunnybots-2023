@@ -53,6 +53,7 @@ abstract class IntakeIOReal(armMotorID: Int, rollersMotorID: Int, gearRatio:Doub
         armMotor.encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * gearRatio / 60
         armMotor.encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * gearRatio / 60
 
+        rollerMotor.inverted = true
         armMotor.burnFlash()
     }
 

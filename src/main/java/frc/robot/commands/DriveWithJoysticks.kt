@@ -12,11 +12,17 @@ class DriveWithJoysticks(private val translationJoystick: Joystick, private val 
     override fun execute() {
         Drivetrain.drive(
             ChassisSpeeds.fromFieldRelativeSpeeds(
-                translationJoystick.y * ((translationJoystick.z + 1) / 2),
-                translationJoystick.x * ((translationJoystick.z + 1) / 2),
-                rotationJoystick.x * ((translationJoystick.z + 1) / 2),
+                translationJoystick.y * ((translationJoystick.z + 1) / 2) * MAX_SPEED_METERS_PER_SECOND,
+                translationJoystick.x * ((translationJoystick.z + 1) / 2) * MAX_SPEED_METERS_PER_SECOND,
+                rotationJoystick.x * ((translationJoystick.z + 1) / 2) * MAX_ROTATIONAL_SPEED,
                 Rotation2d()
             )
         )
+    }
+
+    internal companion object Constants {
+        //might need to be like 14.75 for the max speed or smth like that
+        const val MAX_SPEED_METERS_PER_SECOND = 4.8
+        const val MAX_ROTATIONAL_SPEED = 2*Math.PI
     }
 }

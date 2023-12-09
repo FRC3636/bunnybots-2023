@@ -15,6 +15,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.subsystems.targetvision.TargetVision
 import frc.robot.utils.PIDCoefficients
 import frc.robot.utils.PIDController
+import frc.robot.RobotContainer
 import org.littletonrobotics.junction.Logger
 import kotlin.math.absoluteValue
 import kotlin.math.atan2
@@ -23,14 +24,16 @@ import kotlin.math.sign
 
 object Turret : Subsystem {
 
+
     private val io = if (RobotBase.isReal()) {
         TurretIOReal(CANDevice.TurretMotor)
     } else {
         TurretIOSim()
     }
+
     private val inputs = TurretIO.Inputs()
 
-    private val pidController = PIDController(PIDCoefficients(2.0, 0.0, 0.33))
+    private val pidController = PIDController(PIDCoefficients(0.05, 0.000, 0.0065))
 
     private val feedForward = SimpleMotorFeedforward(1.0, 0.0, 0.0)
 
@@ -58,7 +61,6 @@ object Turret : Subsystem {
         Logger.getInstance().processInputs("Turret", inputs)
 
 
-
         val voltage = pidController.calculate(
             angleToChassis.radians, targetAngleToChassis.radians
         ) + feedForward.calculate(-Drivetrain.chassisSpeeds.omegaRadiansPerSecond)
@@ -82,7 +84,7 @@ object Turret : Subsystem {
         get() = inputs.angle.plus(Drivetrain.estimatedPose.rotation)
 
     // Constants
-    private const val MAX_ROTATION_DEGREES = 135.0
+    private const val MAX_ROTATION_DEGREES = 150.0
     fun setTargetCommand(setpoint: Rotation2d): Command{
         return InstantCommand({
             this.setTarget(setpoint)

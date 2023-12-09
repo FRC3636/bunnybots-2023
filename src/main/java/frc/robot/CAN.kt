@@ -19,9 +19,9 @@ enum class CANDevice(val id: Int) {
     FlywheelMotor(11),
     ShooterFeedMotor(12),
 
-    BallIntakeRollerMotor(21),
-    BallIntakeArmMotor(22),
+    BallIntakeRollerMotor(15),
+    BallIntakeArmMotor(14),
 
-    BunnyIntakeRollerMotor(23),
-    BunnyIntakeArmRoller(24)
+    // BunnyIntakeRollerMotor(23),
+    // BunnyIntakeArmRoller(24)
 }

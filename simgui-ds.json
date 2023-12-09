@@ -90,6 +90,9 @@
     }
   ],
   "robotJoysticks": [
+    {},
+    {},
+    {},
     {
       "guid": "Keyboard0"
     }
