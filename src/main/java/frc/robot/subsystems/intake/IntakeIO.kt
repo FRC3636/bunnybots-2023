@@ -23,7 +23,6 @@ interface IntakeIO  {
             table?.put("Intake Arm Voltage", armVoltage)
         }
 
-
         override fun fromLog(table: LogTable?) {
             table?.getDouble("Intake Arm Position", position.radians)?.let { position = Rotation2d(it) }
             table?.getDouble("Intake Arm Speed", armVelocity.radians)?.let { armVelocity = Rotation2d(it) }
@@ -37,7 +36,6 @@ interface IntakeIO  {
     fun setArmVoltage(outputVolts: Double) {}
 
     fun setRollerSpeed(speed: Double)
-
 }
 
 

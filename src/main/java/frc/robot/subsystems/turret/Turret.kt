@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d
-import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.CANDevice
@@ -15,15 +14,12 @@ import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.subsystems.targetvision.TargetVision
 import frc.robot.utils.PIDCoefficients
 import frc.robot.utils.PIDController
-import frc.robot.RobotContainer
 import org.littletonrobotics.junction.Logger
 import kotlin.math.absoluteValue
 import kotlin.math.atan2
 import kotlin.math.sign
 
-
 object Turret : Subsystem {
-
 
     private val io = if (RobotBase.isReal()) {
         TurretIOReal(CANDevice.TurretMotor)
@@ -51,7 +47,6 @@ object Turret : Subsystem {
             degrees = degrees.coerceIn(-MAX_ROTATION_DEGREES, MAX_ROTATION_DEGREES)
             field = Rotation2d.fromDegrees(degrees)
         }
-
 
     override fun periodic() {
 
@@ -102,7 +97,6 @@ object Turret : Subsystem {
             setTarget(Rotation2d(angle))
         }
     }
-
 
     /**
      * Aligns the turret to face the primary target.

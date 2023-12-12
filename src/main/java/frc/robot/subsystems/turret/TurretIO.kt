@@ -11,7 +11,6 @@ import frc.robot.CANDevice
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
-
 interface TurretIO {
     class Inputs : LoggableInputs {
         var angle = Rotation2d()
@@ -34,9 +33,7 @@ interface TurretIO {
     fun setVoltage(outputVolts: Double)
 }
 
-
 class TurretIOReal(motorCAN: CANDevice) : TurretIO {
-
 
     private val motor = CANSparkMax(motorCAN.id, CANSparkMaxLowLevel.MotorType.kBrushless).apply {
         
@@ -48,7 +45,6 @@ class TurretIOReal(motorCAN: CANDevice) : TurretIO {
         positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO
         velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
     }
-
 
     init {
         motor.burnFlash()

@@ -3,10 +3,7 @@ package frc.robot.subsystems.shooter
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
-import com.revrobotics.SparkMaxAbsoluteEncoder
 import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.util.Units
-import frc.robot.CANDevice
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
@@ -30,16 +27,14 @@ interface ShooterIO {
 
     }
 
-
     fun updateInputs(inputs: Inputs)
 
     fun setSpeedFlywheel(speed: Double)
-    fun setSpeedFeeder(speed: Double)
 
+    fun setSpeedFeeder(speed: Double)
 }
 
 class ShooterIOReal(flywheelMotorID: Int, feedMotorID: Int) : ShooterIO {
-
 
     private val flywheelMotor = WPI_TalonFX(flywheelMotorID)
     private val feedMotor = CANSparkMax(feedMotorID, CANSparkMaxLowLevel.MotorType.kBrushless)
@@ -47,8 +42,6 @@ class ShooterIOReal(flywheelMotorID: Int, feedMotorID: Int) : ShooterIO {
     init{
         feedMotor.inverted = true
     }
-
-
 
     override fun updateInputs(inputs: ShooterIO.Inputs) {
         inputs.flywheelVelocity = Rotation2d(flywheelMotor.motorOutputVoltage)
@@ -63,10 +56,7 @@ class ShooterIOReal(flywheelMotorID: Int, feedMotorID: Int) : ShooterIO {
         feedMotor.set(speed)
     }
 
-
-
     internal companion object Constants {
         const val SECONDARY_GEAR_RATIO = 1.0
-
     }
 }

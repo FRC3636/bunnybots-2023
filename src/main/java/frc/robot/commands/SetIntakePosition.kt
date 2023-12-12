@@ -27,5 +27,4 @@ class SetIntakePosition(private val setpoint: Rotation2d, private val intake: In
     override fun isFinished(): Boolean {
         return profile.isFinished(timer.get())
     }
-
 }

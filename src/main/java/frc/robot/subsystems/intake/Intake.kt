@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem
 import org.littletonrobotics.junction.Logger
 import kotlin.math.max
 
-
 abstract class Intake : Subsystem {
 
     abstract val pidController: PIDController
@@ -25,7 +24,6 @@ abstract class Intake : Subsystem {
     abstract val inputs: IntakeIO.Inputs
 
     abstract val name: String
-
 
     private val mechanism = Mechanism2d(3.0, 3.0)
     private val mechanismRoot: MechanismRoot2d = mechanism.getRoot("RobotConnection", 0.0, 1.5)
@@ -39,7 +37,6 @@ abstract class Intake : Subsystem {
     override fun periodic() {
         io.updateInputs(inputs)
         Logger.getInstance().processInputs(name, inputs)
-
 
         mechanismMeasuredPosition.angle = inputs.position.degrees
         Logger.getInstance().recordOutput("$name/Mechanism", mechanism)
@@ -74,6 +71,5 @@ abstract class Intake : Subsystem {
             TrapezoidProfile.State(inputs.position.radians, inputs.armVelocity.radians)
         )
     }
-
 }
 

@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.ArmFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
 import frc.robot.utils.PIDCoefficients
 import frc.robot.utils.PIDController
+
 object BallIntake : Intake() {
 
     override val pidController = PIDController(PIDCoefficients())
@@ -21,7 +22,6 @@ object BallIntake : Intake() {
         Down(Rotation2d()),
         Stowed(Rotation2d())
     }
-
 }
 
 

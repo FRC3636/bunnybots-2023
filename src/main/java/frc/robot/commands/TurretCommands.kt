@@ -19,18 +19,13 @@ internal const val THRESHOLD = 0.001
 internal const val INITIAL_SEED = 4.0
 internal const val MAX_LOOPS = 100
 
-
-
 class AimAtTarget : CommandBase(){
 
     init {
         addRequirements(Turret)
     }
 
-
-
     private val timeOfFlight = QuadraticPolynomial(0.0, 0.0, 0.0)
-
 
     private val euclideanNorm: (x: Double, y: Double) -> Double =
         {x,y -> sqrt(x.pow(2) + y.pow(2))}
@@ -40,10 +35,7 @@ class AimAtTarget : CommandBase(){
         return {t: Double  -> ( (vx.of(t) + vy.of(t)) / (2*sqrt( x.of(t).pow(2) + y.of(t).pow(2) ) ) ) }
     }
 
-
-
     //iteratively find roots of function by offsetting a seed based on x intercept of tangent line of last guess
-    //TODO account for chaotic fractal thingie
     private fun newtonRaphson(func: (Double) -> Double, funcDerivative: (Double) -> Double ): Double{
 
         val seed = INITIAL_SEED
@@ -59,8 +51,6 @@ class AimAtTarget : CommandBase(){
         }
         return nextSeed
     }
-
-
 
     private fun findTargetRotation(): Rotation2d {
         //samples
@@ -110,16 +100,12 @@ class AimAtTarget : CommandBase(){
         return offsetToPos(shotPoint)
     }
 
-
     override fun execute() {
         if (TargetVision.hasTargets) {
             Turret.setTarget(findTargetRotation())
         }
     }
-
-
 }
-
 
 fun offsetToPos(target: Translation2d): Rotation2d {
     return Rotation2d(atan2(target.y, target.x))

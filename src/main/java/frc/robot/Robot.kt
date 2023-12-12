@@ -9,8 +9,6 @@ import org.littletonrobotics.junction.Logger
 import org.littletonrobotics.junction.networktables.NT4Publisher
 import org.littletonrobotics.junction.wpilog.WPILOGReader
 import org.littletonrobotics.junction.wpilog.WPILOGWriter
-import frc.robot.RobotContainer
-
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -28,7 +26,6 @@ object Robot : LoggedRobot() {
     override fun robotInit() {
 
         Logger.getInstance().recordMetadata("SwerveBase", "SwerveBase")
-
 
         if (isReal()) {
             Logger.getInstance().addDataReceiver(WPILOGWriter("/U")) // Log to a USB stick
@@ -56,7 +53,6 @@ object Robot : LoggedRobot() {
         // button bindings, and put our autonomous chooser on the dashboard.
         RobotContainer
     }
-
 
     override fun robotPeriodic() {
         CommandScheduler.getInstance().run()

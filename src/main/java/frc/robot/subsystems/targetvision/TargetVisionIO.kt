@@ -11,7 +11,6 @@ import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import java.util.*
 
-
 interface TargetVisionIO {
 
     class Inputs : LoggableInputs {
@@ -20,7 +19,6 @@ interface TargetVisionIO {
 
         // FIXME: this isn't being logged, our turret will be useless in replay
         var targets: List<LimelightHelpers.LimelightTarget_Detector> = mutableListOf()
-
 
         override fun toLog(table: LogTable?) {
             table?.put("Current Timestamp", currentTimestamp)
@@ -51,13 +49,11 @@ object Limelight : TargetVisionIO {
         inputs.targets = targets
     }
 
-
     init {
         nt.addListener(
             dumpSubscriber, EnumSet.of(Kind.kValueAll), ::eventListener
         )
     }
-
 
     private fun eventListener(event: NetworkTableEvent) {
         val results = ObjectMapper().readValue(dumpSubscriber.get(), LimelightResults::class.java)

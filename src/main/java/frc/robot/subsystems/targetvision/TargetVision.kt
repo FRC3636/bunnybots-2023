@@ -1,6 +1,5 @@
 package frc.robot.subsystems.targetvision
 
-
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.util.Units
@@ -13,12 +12,10 @@ import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.tan
 
-
 object TargetVision : Subsystem {
 
     private val io: TargetVisionIO = Limelight
     private val inputs: TargetVisionIO.Inputs = TargetVisionIO.Inputs()
-
 
     private fun getDistance(target: LimelightTarget_Detector): Double {
         val angleToBucket = Units.degreesToRadians(CAMERA_PITCH.degrees + target.ty)
@@ -29,7 +26,7 @@ object TargetVision : Subsystem {
     private val targetsbyDistance: List<Pair<LimelightTarget_Detector, Double>>
         get() {
             return inputs.targets.map { target: LimelightTarget_Detector -> Pair(target, getDistance(target)) }
-                .sortedBy { it.second }
+                    .sortedBy { it.second }
         }
     val hasTargets: Boolean
         get() {
@@ -47,7 +44,6 @@ object TargetVision : Subsystem {
         0.0
     }
 
-
     override fun periodic() {
         io.updateInputs(inputs)
 
@@ -58,13 +54,9 @@ object TargetVision : Subsystem {
                 addMeasurement(takeTargetSample(target.first))
             }
         }
-
-
     }
 
-
     data class TargetSample(val timestamp: Double, val target: LimelightTarget_Detector)
-
 
     data class PoseSample(val timestamp: Double, val pose: Translation2d)
 
@@ -76,26 +68,22 @@ object TargetVision : Subsystem {
 
     }
 
-
     val primaryTargetSamples: List<PoseSample>
         get() {
             return robotSamples[0].map { pair ->
                 PoseSample(
-                    pair.timestamp,
-                    Translation2d(getDistance(pair.target), pair.target.tx)
+                        pair.timestamp,
+                        Translation2d(getDistance(pair.target), pair.target.tx)
                 )
             }
         }
-
 
     val primaryTarget: LimelightTarget_Detector
         get() {
             return robotSamples[0].last().target
         }
 
-
     private var robotSamples: MutableList<MutableList<TargetSample>> = mutableListOf()
-
 
     private fun groupConfidence(last: LimelightTarget_Detector, target: LimelightTarget_Detector): Double {
         var score = 0.0
@@ -111,10 +99,7 @@ object TargetVision : Subsystem {
         return score
     }
 
-
     private fun addMeasurement(sample: TargetSample) {
-
-
         // group targets
         for (samples in robotSamples) {
             // TODO: Find good threshold values for grouping
@@ -132,9 +117,7 @@ object TargetVision : Subsystem {
 
         robotSamples.add(mutableListOf(sample))
         Collections.swap(robotSamples, findBestRobot(robotSamples), 0)
-
     }
-
 
     //finds robot smaple collection that is easiest to hit and sets it as the primary target
     private fun findBestRobot(robotSamples: List<List<TargetSample>>): Int {
@@ -149,27 +132,22 @@ object TargetVision : Subsystem {
 
         }
 
-
         var robotSamplesIndexed = robotSamples.withIndex()
 
         //filter by tx
         robotSamplesIndexed = robotSamplesIndexed.sortedBy { pair -> abs(pair.value.last().target.tx) }
         val lowestTx = abs(robotSamplesIndexed[0].value.last().target.tx)
         robotSamplesIndexed =
-            robotSamplesIndexed.filter { pair -> abs(pair.value.last().target.tx) in lowestTx..lowestTx + TX_THRESHOLD }
+                robotSamplesIndexed.filter { pair -> abs(pair.value.last().target.tx) in lowestTx..lowestTx + TX_THRESHOLD }
 
         //filter by distance
         robotSamplesIndexed = robotSamplesIndexed.sortedBy { pair -> getDistance(pair.value.last().target) }
         val lowestDistance = getDistance(robotSamplesIndexed[0].value.last().target)
         robotSamplesIndexed =
-            robotSamplesIndexed.filter { pair -> getDistance(pair.value.last().target) in lowestDistance..lowestDistance + DISTANCE_THRESHOLD }
-
+                robotSamplesIndexed.filter { pair -> getDistance(pair.value.last().target) in lowestDistance..lowestDistance + DISTANCE_THRESHOLD }
 
         return robotSamplesIndexed.minByOrNull { getVelocity(it) }!!.index
-
-
     }
-
 
     private val CAMERA_PITCH = Rotation2d.fromDegrees(110.0) // degrees
     private val LIMELIGHT_HEIGHT = Units.inchesToMeters(27.33)
@@ -184,14 +162,11 @@ object TargetVision : Subsystem {
     private const val TA_WEIGHT = 0.15
     private const val TA_DROPOFF_RATE = 1
     private const val TA_MAX =
-        30.0 // verry rough guess, need to find how fast ta increases decreases as target moves away
+            30.0 // verry rough guess, need to find how fast ta increases decreases as target moves away
     private const val TY_WEIGHT = 0.1
     private const val TY_DROPOFF_RATE = 1.2
 
     //preferences
-
     private const val TX_THRESHOLD = 5.0
     private val DISTANCE_THRESHOLD = Units.inchesToMeters(35.0)
-
-
 }

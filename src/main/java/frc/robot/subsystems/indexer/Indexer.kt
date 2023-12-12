@@ -31,7 +31,6 @@ object Indexer : Subsystem {
         })
     }
 
-
     override fun periodic() {
         io.updateInputs(inputs)
         Logger.getInstance().processInputs("Indexer", inputs)

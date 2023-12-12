@@ -23,7 +23,6 @@ interface IndexerIO {
                     ?.let { indexerMotorSpeed = Rotation2d(it) }
             table?.getBoolean("Beam Broken", beamBroken)
         }
-
     }
 
     fun updateInputs(inputs: Inputs)
