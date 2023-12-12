@@ -22,7 +22,7 @@ class DriveWithJoysticks(private val translationJoystick: Joystick, private val 
 
     internal companion object Constants {
         //might need to be like 14.75 for the max speed or smth like that
-        const val MAX_SPEED_METERS_PER_SECOND = 4.8
+        const val MAX_SPEED_METERS_PER_SECOND = 12.8
         const val MAX_ROTATIONAL_SPEED = 2*Math.PI
     }
 }

@@ -3,14 +3,17 @@ package frc.robot
 enum class CANDevice(val id: Int) {
 
     //swerve
-    FrontLeftTurningMotor(4),
-    FrontLeftDrivingMotor(3),
-    FrontRightTurningMotor(6),
-    FrontRightDrivingMotor(5),
-    BackLeftTurningMotor(2),
-    BackLeftDrivingMotor(1),
-    BackRightTurningMotor(8),
-    BackRightDrivingMotor(7),
+    FrontLeftTurningMotor(6),
+    FrontLeftDrivingMotor(5),
+
+    FrontRightTurningMotor(4),
+    FrontRightDrivingMotor(3),
+
+    BackLeftTurningMotor(8),
+    BackLeftDrivingMotor(7),
+
+    BackRightTurningMotor(2),
+    BackRightDrivingMotor(1),
 
     IndexerMotor(13),
 
@@ -21,7 +24,4 @@ enum class CANDevice(val id: Int) {
 
     BallIntakeRollerMotor(15),
     BallIntakeArmMotor(14),
-
-    // BunnyIntakeRollerMotor(23),
-    // BunnyIntakeArmRoller(24)
 }
