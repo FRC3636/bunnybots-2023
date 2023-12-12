@@ -65,30 +65,30 @@ object RobotContainer {
             .onFalse(InstantCommand({
             }))
 
-        // Trigger {controller.leftX > 0.1 || controller.leftX > 0.1}.whileTrue(
-        //     Turret.controlWithJoysticks({controller.leftX}, {controller.leftY})
-        // )
+        Trigger {controller.leftX > 0.1 || controller.leftX > 0.1}.whileTrue(
+            Turret.controlWithJoysticks({controller.leftX}, {controller.leftY})
+        )
 
-        JoystickButton(simJoystick, 1).onTrue(
-            InstantCommand({
-                Turret.setTarget(Rotation2d.fromDegrees(180.0))
-            })
-        )
-        JoystickButton(simJoystick, 2).onTrue(
-            InstantCommand({
-                Turret.setTarget(Rotation2d.fromDegrees(30.0))
-            })
-        )
-        JoystickButton(simJoystick, 3).onTrue(
-            InstantCommand({
-                Turret.setTarget(Rotation2d.fromDegrees(-150.0))
-            })
-        )
-        JoystickButton(simJoystick, 4).onTrue(
-            InstantCommand({
-                Turret.setTarget(Rotation2d.fromDegrees(150.0))
-            })
-        )
+        // JoystickButton(simJoystick, 1).onTrue(
+        //     InstantCommand({
+        //         Turret.setTarget(Rotation2d.fromDegrees(180.0))
+        //     })
+        // )
+        // JoystickButton(simJoystick, 2).onTrue(
+        //     InstantCommand({
+        //         Turret.setTarget(Rotation2d.fromDegrees(190.0))
+        //     })
+        // )
+        // JoystickButton(simJoystick, 3).onTrue(
+        //     InstantCommand({
+        //         Turret.setTarget(Rotation2d.fromDegrees(270.0))
+        //     })
+        // )
+        // JoystickButton(simJoystick, 4).onTrue(
+        //     InstantCommand({
+        //         Turret.setTarget(Rotation2d.fromDegrees(45.0))
+        //     })
+        // )
 
         JoystickButton(controller, XboxController.Button.kLeftBumper.value).onTrue(
             InstantCommand({
@@ -123,8 +123,8 @@ object RobotContainer {
                         BallIntake.runRollers(0.0)
                     })
                     
-                    // ,
-                    // SetIntakePosition(BallIntake.Position.Up.pose, BallIntake)
+                    ,
+                    SetIntakePosition(BallIntake.Position.Up.pose, BallIntake)
                 ).alongWith(Indexer.autoIndexCommand())
             )
 

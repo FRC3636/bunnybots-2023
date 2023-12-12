@@ -137,10 +137,10 @@ internal val TRACK_WIDTH_HALF: Double = Units.inchesToMeters(14.0)
 
 // Constants
 internal val MODULE_POSITIONS = PerCorner(
-    frontLeft = Pose2d(Translation2d(WHEEL_BASE_HALF, TRACK_WIDTH_HALF), Rotation2d.fromDegrees(-90.0)), 
-    frontRight = Pose2d(Translation2d(WHEEL_BASE_HALF, -TRACK_WIDTH_HALF), Rotation2d.fromDegrees(0.0)), 
-    backRight = Pose2d(Translation2d(-WHEEL_BASE_HALF, TRACK_WIDTH_HALF), Rotation2d.fromDegrees(90.0)), 
-    backLeft = Pose2d(Translation2d(-WHEEL_BASE_HALF, -TRACK_WIDTH_HALF), Rotation2d.fromDegrees(180.0))
+    frontLeft = Pose2d(Translation2d(WHEEL_BASE_HALF, TRACK_WIDTH_HALF), Rotation2d.fromDegrees(90.0)), 
+    frontRight = Pose2d(Translation2d(WHEEL_BASE_HALF, -TRACK_WIDTH_HALF), Rotation2d.fromDegrees(180.0)), 
+    backRight = Pose2d(Translation2d(-WHEEL_BASE_HALF, TRACK_WIDTH_HALF), Rotation2d.fromDegrees(-90.0)), 
+    backLeft = Pose2d(Translation2d(-WHEEL_BASE_HALF, -TRACK_WIDTH_HALF), Rotation2d.fromDegrees(0.0))
 )
 
 

@@ -69,7 +69,7 @@ abstract class Intake : Subsystem {
 
     fun generateProfile(position: Rotation2d): TrapezoidProfile {
         return TrapezoidProfile(
-            TrapezoidProfile.Constraints(0.0, 0.0),
+            TrapezoidProfile.Constraints(0.5, 0.5),
             TrapezoidProfile.State(position.radians, 0.0),
             TrapezoidProfile.State(inputs.position.radians, inputs.armVelocity.radians)
         )
