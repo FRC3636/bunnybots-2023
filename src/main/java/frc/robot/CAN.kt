@@ -9,11 +9,11 @@ enum class CANDevice(val id: Int) {
     FrontRightTurningMotor(4),
     FrontRightDrivingMotor(3),
 
-    BackLeftTurningMotor(8),
-    BackLeftDrivingMotor(7),
+    BackLeftTurningMotor(2),
+    BackLeftDrivingMotor(1),
 
-    BackRightTurningMotor(2),
-    BackRightDrivingMotor(1),
+    BackRightTurningMotor(8),
+    BackRightDrivingMotor(7),
 
     IndexerMotor(13),
 

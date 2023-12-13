@@ -63,6 +63,7 @@ object RobotContainer {
                 Shooter.feed(1.0)
             }))
             .onFalse(InstantCommand({
+                Shooter.feed(0.0)
             }))
 
         Trigger {controller.leftX > 0.1 || controller.leftX > 0.1}.whileTrue(

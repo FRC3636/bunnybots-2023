@@ -38,19 +38,18 @@ interface TurretIO {
 class TurretIOReal(motorCAN: CANDevice) : TurretIO {
 
 
-    private val motor = CANSparkMax(motorCAN.id, CANSparkMaxLowLevel.MotorType.kBrushless).apply {
-        
-        encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
-        encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO
-    }
-    
-    private val encoder = motor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle).apply {
-        positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO
-        velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
-    }
+    private val motor = CANSparkMax(motorCAN.id, CANSparkMaxLowLevel.MotorType.kBrushless)
+
+    private val encoder = motor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
 
 
     init {
+        motor.encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO
+        motor.encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
+
+        encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
+        encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO
+        
         motor.burnFlash()
     }
 
