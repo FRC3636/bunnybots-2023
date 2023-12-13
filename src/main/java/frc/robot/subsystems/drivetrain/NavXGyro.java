@@ -1,4 +1,4 @@
-package frc.robot.subsystems.newdrivetrain;
+package frc.robot.subsystems.drivetrain;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Quaternion;

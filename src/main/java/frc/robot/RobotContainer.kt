@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.commands.DriveWithJoysticks
 import frc.robot.commands.SetIntakePosition
-import frc.robot.subsystems.newdrivetrain.Drivetrain
+import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.subsystems.indexer.Indexer
 import frc.robot.subsystems.intake.BallIntake
 import frc.robot.subsystems.shooter.Shooter
@@ -28,6 +28,8 @@ object RobotContainer {
     private val simJoystick = if(RobotBase.isSimulation()){Joystick(3)}else{null}
     private val controller = XboxController(2)
 
+    private val drivetrain = Drivetrain()
+
     init {
         configureBindings()
         setDefaultCommands()
@@ -35,8 +37,8 @@ object RobotContainer {
     }
 
     private fun setDefaultCommands(){
-        Drivetrain.defaultCommand =
-            DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
+        drivetrain.defaultCommand =
+            DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight, drivetrain = drivetrain)
         //  Turret.defaultCommand = Turret.trackPrimaryTarget()
         Indexer
         // Shooter.defaultCommand = InstantCommand({
