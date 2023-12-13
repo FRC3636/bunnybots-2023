@@ -36,9 +36,9 @@ public final class DriveConstants {
 
     // SPARK MAX CAN IDs
     public static final int FRONT_LEFT_DRIVING_CAN_ID = CANDevice.FrontLeftDrivingMotor.getId();
-    public static final int REAR_LEFT_DRIVING_CAN_ID = CANDevice.BackLeftTurningMotor.getId();
+    public static final int REAR_LEFT_DRIVING_CAN_ID = CANDevice.BackLeftDrivingMotor.getId();
     public static final int FRONT_RIGHT_DRIVING_CAN_ID = CANDevice.FrontRightDrivingMotor.getId();
-    public static final int REAR_RIGHT_DRIVING_CAN_ID = CANDevice.BackRightTurningMotor.getId();
+    public static final int REAR_RIGHT_DRIVING_CAN_ID = CANDevice.BackRightDrivingMotor.getId();
 
     public static final int FRONT_LEFT_TURNING_CAN_ID = CANDevice.FrontLeftTurningMotor.getId();
     public static final int REAR_LEFT_TURNING_CAN_ID = CANDevice.BackLeftTurningMotor.getId();
