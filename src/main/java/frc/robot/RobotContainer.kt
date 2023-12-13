@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.commands.DriveWithJoysticks
 import frc.robot.commands.SetIntakePosition
-import frc.robot.subsystems.drivetrain.Drivetrain
+import frc.robot.subsystems.newdrivetrain.Drivetrain
 import frc.robot.subsystems.indexer.Indexer
 import frc.robot.subsystems.intake.BallIntake
 import frc.robot.subsystems.shooter.Shooter
