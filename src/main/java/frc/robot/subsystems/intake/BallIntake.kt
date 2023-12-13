@@ -6,9 +6,9 @@ import frc.robot.utils.PIDCoefficients
 import frc.robot.utils.PIDController
 object BallIntake : Intake() {
 
-    override val pidController = PIDController(PIDCoefficients())
+    override val pidController = PIDController(PIDCoefficients(25.0, 0.0, 0.0))
 
-    override val feedForward = ArmFeedforward(0.0,0.0,0.0)
+    override val feedForward = ArmFeedforward(0.0,0.462,1.0)
 
     override val io: IntakeIO = BallIntakeIOReal()
 
@@ -18,7 +18,7 @@ object BallIntake : Intake() {
 
     enum class Position(val pose: Rotation2d){
         Up(Rotation2d()),
-        Down(Rotation2d()),
+        Down(Rotation2d(63.0)), // source: jackson
         Stowed(Rotation2d())
     }
 
