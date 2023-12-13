@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.subsystems.drivetrain.Drivetrain
+import frc.robot.subsystems.olddrivetrain.Drivetrain
 
 class DriveWithJoysticks(private val translationJoystick: Joystick, private val rotationJoystick: Joystick) : Command {
     override fun getRequirements() = setOf(Drivetrain)
