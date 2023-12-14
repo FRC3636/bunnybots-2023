@@ -123,6 +123,10 @@ object Drivetrain : Subsystem {
         }
     }
 
+    fun zeroGyro() {
+        gyro.reset()
+    }
+
     // Get the estimated pose of the drivetrain using the pose estimator.
     val estimatedPose: Pose2d
         get() = poseEstimator.estimatedPosition

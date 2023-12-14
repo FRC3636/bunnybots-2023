@@ -34,6 +34,8 @@ interface GyroIO {
     fun updateInputs(inputs: GyroInputs)
 
     fun calibrate() {}
+
+    fun reset() {}
 }
 
 class GyroInputs {
@@ -77,6 +79,10 @@ class NavXGyroIO(private var offset: Rotation3d = Rotation3d()) : GyroIO{
 
     override fun calibrate() {
         ahrs.calibrate()
+    }
+
+    override fun reset() {
+        ahrs.reset()
     }
 
 }

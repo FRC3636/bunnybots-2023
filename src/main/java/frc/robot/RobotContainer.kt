@@ -60,10 +60,16 @@ object RobotContainer {
         //     .whileTrue(Indexer.manualIndexCommand)
 
 
-        JoystickButton(joystickRight, 1).whileTrue(
+        JoystickButton(joystickLeft, 1).whileTrue(
             InstantCommand({
                 Shooter.spin(1.0)
             }).also{ it.addRequirements(Shooter)}
+        )
+
+        JoystickButton(joystickLeft, 8).onTrue(
+            InstantCommand({
+                Drivetrain.zeroGyro()
+            })
         )
 
         JoystickButton(joystickRight, 1)
