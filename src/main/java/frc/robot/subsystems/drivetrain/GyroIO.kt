@@ -2,6 +2,7 @@ package frc.robot.subsystems.drivetrain
 
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.math.geometry.Quaternion
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Rotation3d
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
@@ -34,6 +35,8 @@ interface GyroIO {
     fun updateInputs(inputs: GyroInputs)
 
     fun calibrate() {}
+
+    fun setRotation(rotation: Rotation3d) {}
 }
 
 class GyroInputs {
@@ -54,6 +57,7 @@ class GyroInputs {
 class NavXGyroIO(private var offset: Rotation3d = Rotation3d()) : GyroIO{
 
     private val ahrs = AHRS()
+    private val rotationOffset = Rotation2d()
 
       override fun updateInputs(inputs: GyroInputs){
 
@@ -70,9 +74,16 @@ class NavXGyroIO(private var offset: Rotation3d = Rotation3d()) : GyroIO{
           inputs.updateRaw()
     }
 
-    fun setRotation(rotation: Rotation3d){
-        ahrs.reset()
-        offset = rotation
+    override fun setRotation(rotation: Rotation3d){
+        val currentRotation = Rotation3d(
+            Quaternion(
+                ahrs.quaternionW.toDouble(),
+                ahrs.quaternionX.toDouble(),
+                ahrs.quaternionY.toDouble(),
+                ahrs.quaternionZ.toDouble()
+            )
+        )
+        offset = currentRotation - rotation
     }
 
     override fun calibrate() {

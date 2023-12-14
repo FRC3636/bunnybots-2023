@@ -23,6 +23,7 @@ import edu.wpi.first.math.MathShared
 import edu.wpi.first.math.util.Units
 import ModuleIO
 import ModuleIO.Inputs
+import edu.wpi.first.math.geometry.Rotation3d
 
 // A singleton object representing the drivetrain.
 object Drivetrain : Subsystem {
@@ -123,6 +124,10 @@ object Drivetrain : Subsystem {
         }
     }
 
+    fun zeroGyro() {
+        gyro.setRotation(Rotation3d())
+    }
+
     // Get the estimated pose of the drivetrain using the pose estimator.
     val estimatedPose: Pose2d
         get() = poseEstimator.estimatedPosition
@@ -138,9 +143,9 @@ internal val TRACK_WIDTH_HALF: Double = Units.inchesToMeters(14.0)
 // Constants
 internal val MODULE_POSITIONS = PerCorner(
     frontLeft = Pose2d(Translation2d(WHEEL_BASE_HALF, TRACK_WIDTH_HALF), Rotation2d.fromDegrees(-90.0)), 
-    frontRight = Pose2d(Translation2d(WHEEL_BASE_HALF, -TRACK_WIDTH_HALF), Rotation2d.fromDegrees(0.0)), 
-    backRight = Pose2d(Translation2d(-WHEEL_BASE_HALF, TRACK_WIDTH_HALF), Rotation2d.fromDegrees(90.0)), 
-    backLeft = Pose2d(Translation2d(-WHEEL_BASE_HALF, -TRACK_WIDTH_HALF), Rotation2d.fromDegrees(180.0))
+    frontRight = Pose2d(Translation2d(WHEEL_BASE_HALF, -TRACK_WIDTH_HALF), Rotation2d.fromDegrees(180.0)), 
+    backRight = Pose2d(Translation2d(-WHEEL_BASE_HALF, TRACK_WIDTH_HALF), Rotation2d.fromDegrees(0.0)), 
+    backLeft = Pose2d(Translation2d(-WHEEL_BASE_HALF, -TRACK_WIDTH_HALF), Rotation2d.fromDegrees(90.0))
 )
 
 

@@ -48,7 +48,12 @@ data class PerCorner<T>(
         )
 
         internal fun <T> fromConventionalArray(array: Array<T>): PerCorner<T> =
-            generate { corner -> array[corner.ordinal] }
+           PerCorner<T>(
+            frontLeft =  array[0],
+            frontRight = array[1], 
+            backRight = array[2], 
+            backLeft = array[3]
+        )
     }
 }
 
