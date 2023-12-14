@@ -53,13 +53,16 @@ abstract class IntakeIOReal(armMotorID: Int, rollersMotorID: Int, gearRatio:Doub
         armMotor.encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * gearRatio / 60
         armMotor.encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * gearRatio / 60
 
-        armMotor.inverted = true
+        armMotor.inverted = false
         rollerMotor.inverted = true
         armMotor.burnFlash()
     }
 
     override fun updateInputs(inputs: IntakeIO.Inputs){
-        inputs.position = Rotation2d(armEncoder.position)
+        inputs.position = Rotation2d(armEncoder.position - Math.PI/2)
+        if (inputs.position.radians <= 0) {
+            inputs.position = Rotation2d.fromRadians(1.5)
+        }
         inputs.armVelocity = Rotation2d(armEncoder.velocity)
         inputs.rollersOn = rollerMotor.appliedOutput > 0
         inputs.armVoltage = armMotor.appliedOutput * armMotor.busVoltage

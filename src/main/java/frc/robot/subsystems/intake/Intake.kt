@@ -51,27 +51,28 @@ abstract class Intake : Subsystem {
 
     fun moveIntake(position: Rotation2d, velocity: Rotation2d) {
         val newVelocity = Rotation2d.fromRadians(velocity.radians +
-                pidController.calculate(inputs.position.radians, max(
-                    position.radians, 0.0
-                )
-                ))
+                pidController.calculate(inputs.position.radians, position.radians))
 
         val voltage = feedForward.calculate(
             inputs.position.radians,
-            newVelocity.radians,
+            newVelocity.radians
         )
 
+        Logger.getInstance().recordOutput("$name/voltageApplied", voltage)
+
+        println("voltage = $voltage")
         io.setArmVoltage(voltage)
         mechanismDesiredPosition.angle = position.degrees
 
-        Logger.getInstance().recordOutput("$name/DesiredPosition", position.degrees)
+        Logger.getInstance().recordOutput("$name/DesiredPosition", position.radians)
+        Logger.getInstance().recordOutput("$name/NewVelocity", newVelocity.radians)
     }
 
     fun generateProfile(position: Rotation2d): TrapezoidProfile {
         return TrapezoidProfile(
-            TrapezoidProfile.Constraints(0.5, 0.5),
+            TrapezoidProfile.Constraints(15.0, 2.0),
             TrapezoidProfile.State(position.radians, 0.0),
-            TrapezoidProfile.State(inputs.position.radians, inputs.armVelocity.radians)
+            TrapezoidProfile.State(inputs.position.radians -0.02, inputs.armVelocity.radians)
         )
     }
 

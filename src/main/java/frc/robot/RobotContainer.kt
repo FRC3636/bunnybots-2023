@@ -41,15 +41,16 @@ object RobotContainer {
     }
 
     private fun setDefaultCommands(){
-        Drivetrain.defaultCommand =
-            DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
+
+//        Drivetrain.defaultCommand =
+//            DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
         //  Turret.defaultCommand = Turret.trackPrimaryTarget()
         Indexer
         // Shooter.defaultCommand = InstantCommand({
         //     Shooter.spin(1.0)
         // }).also {it.addRequirements(Shooter)}
         BallIntake
-        Turret.defaultCommand = InstantCommand().also {it.addRequirements(Turret)}
+//        Turret.defaultCommand = InstantCommand().also {it.addRequirements(Turret)}
 
     }
 
