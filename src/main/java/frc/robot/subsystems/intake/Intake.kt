@@ -36,9 +36,31 @@ abstract class Intake : Subsystem {
         MechanismLigament2d("DesiredPosition", 2.0, 90.0, 6.0, Color8Bit(Color.kGreen))
     )
 
+    private var setpointPosition: Rotation2d? = null
+    private var setpointVelocity: Rotation2d? = null
+
     override fun periodic() {
         io.updateInputs(inputs)
         Logger.getInstance().processInputs(name, inputs)
+
+        if (setpointPosition != null && setpointVelocity != null) {
+            val newVelocity = Rotation2d.fromRadians(setpointVelocity!!.radians +
+                    pidController.calculate(inputs.position.radians, setpointPosition!!.radians))
+
+            val voltage = feedForward.calculate(
+                inputs.position.radians,
+                newVelocity.radians
+            )
+            io.setArmVoltage(voltage)
+
+            Logger.getInstance().recordOutput("$name/voltageApplied", voltage)
+
+            mechanismDesiredPosition.angle = setpointPosition!!.degrees
+
+            Logger.getInstance().recordOutput("$name/DesiredPosition", setpointPosition!!.radians)
+            Logger.getInstance().recordOutput("$name/NewVelocity", newVelocity.radians)
+        }
+
 
 
         mechanismMeasuredPosition.angle = inputs.position.degrees
@@ -50,22 +72,8 @@ abstract class Intake : Subsystem {
     }
 
     fun moveIntake(position: Rotation2d, velocity: Rotation2d) {
-        val newVelocity = Rotation2d.fromRadians(velocity.radians +
-                pidController.calculate(inputs.position.radians, position.radians))
-
-        val voltage = feedForward.calculate(
-            inputs.position.radians,
-            newVelocity.radians
-        )
-
-        Logger.getInstance().recordOutput("$name/voltageApplied", voltage)
-
-        println("voltage = $voltage")
-        io.setArmVoltage(voltage)
-        mechanismDesiredPosition.angle = position.degrees
-
-        Logger.getInstance().recordOutput("$name/DesiredPosition", position.radians)
-        Logger.getInstance().recordOutput("$name/NewVelocity", newVelocity.radians)
+        setpointPosition = position
+        setpointVelocity = velocity
     }
 
     fun generateProfile(position: Rotation2d): TrapezoidProfile {

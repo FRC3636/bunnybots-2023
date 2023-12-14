@@ -11,7 +11,7 @@ object BallIntake : Intake() {
 
     override val pidController = PIDController(PIDCoefficients(2.5, 0.0, 0.06))
 
-    override val feedForward = ArmFeedforward(0.0,-0.15,-2.55)
+    override val feedForward = ArmFeedforward(0.0,-0.12,-2.55)
 
     override val io: IntakeIO = BallIntakeIOReal()
 
@@ -23,7 +23,7 @@ object BallIntake : Intake() {
 
     enum class Position(val pose: Rotation2d){
         Up(Rotation2d(1.45)),
-        Down(Rotation2d(0.6)), // source: jackson
+        Down(Rotation2d(0.55)), // source: jackson
         Stowed(Rotation2d())
     }
 

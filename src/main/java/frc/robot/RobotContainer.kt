@@ -47,9 +47,7 @@ object RobotContainer {
             DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
         //  Turret.defaultCommand = Turret.trackPrimaryTarget()
         Indexer
-         Shooter.defaultCommand = InstantCommand({
-             Shooter.spin(0.2)
-         }).also {it.addRequirements(Shooter)}
+         Shooter
         BallIntake
 //        Turret.defaultCommand = InstantCommand().also {it.addRequirements(Turret)}
 
@@ -65,6 +63,10 @@ object RobotContainer {
             InstantCommand({
                 Shooter.spin(1.0)
             }).also{ it.addRequirements(Shooter)}
+        ).whileFalse(
+            InstantCommand({
+                Shooter.spin(0.2)
+            }, Shooter)
         )
 
         JoystickButton(joystickLeft, 8).onTrue(
