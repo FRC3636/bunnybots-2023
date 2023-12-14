@@ -23,6 +23,7 @@ import frc.robot.subsystems.indexer.Indexer
 import frc.robot.subsystems.intake.BallIntake
 import frc.robot.subsystems.shooter.Shooter
 import frc.robot.subsystems.turret.Turret
+import java.time.Instant
 import kotlin.math.atan2
 
 
@@ -59,9 +60,7 @@ object RobotContainer {
 
 
     private fun configureBindings() {
-        // JoystickButton(controller, XboxController.Button.kY.value)
-        //     .whileTrue(Indexer.manualIndexCommand)
-
+        // Driver bindings
 
         JoystickButton(joystickLeft, 1).whileTrue(
             InstantCommand({
@@ -88,96 +87,54 @@ object RobotContainer {
                 Shooter.feed(0.0)
             }))
 
-        Trigger { controller.leftX > 0.1 || controller.leftX > 0.1 }.whileTrue(
-            Turret.controlWithJoysticks({ controller.leftX }, { controller.leftY })
-        )
+        // Operator bindings
 
-        // JoystickButton(simJoystick, 1).onTrue(
-        //     InstantCommand({
-        //         Turret.setTarget(Rotation2d.fromDegrees(180.0))
-        //     })
-        // )
-        // JoystickButton(simJoystick, 2).onTrue(
-        //     InstantCommand({
-        //         Turret.setTarget(Rotation2d.fromDegrees(190.0))
-        //     })
-        // )
-        // JoystickButton(simJoystick, 3).onTrue(
-        //     InstantCommand({
-        //         Turret.setTarget(Rotation2d.fromDegrees(270.0))
-        //     })
-        // )
-        // JoystickButton(simJoystick, 4).onTrue(
-        //     InstantCommand({
-        //         Turret.setTarget(Rotation2d.fromDegrees(45.0))
-        //     })
-        // )
+//        Trigger { controller.leftX > 0.1 || controller.leftX > 0.1 }.whileTrue(
+//            Turret.controlWithJoysticks({ controller.leftX }, { controller.leftY })
+//        )
+
+        Trigger { controller.leftTriggerAxis >= 0.5 }
+            .onTrue(
+                Indexer.setSpeedCommand(-1.0)
+            )
+            .onFalse(
+                Indexer.setSpeedCommand(0.0))
 
         JoystickButton(controller, XboxController.Button.kLeftBumper.value).onTrue(
-            InstantCommand({
-                BallIntake.runRollers(-1.0)
-            }).alongWith(
-                InstantCommand({
-                    Indexer.setSpeed(-1.0)
-                })
-            )
+            BallIntake.runRollersCommand(-1.0)
         ).onFalse(
-            InstantCommand({
-                BallIntake.runRollers(0.0)
-            }).alongWith(
-                InstantCommand({
-                    Indexer.setSpeed(0.0)
-                })
-            )
+            BallIntake.runRollersCommand(0.0)
         )
 
         JoystickButton(controller, XboxController.Button.kRightBumper.value)
             .onTrue(
-                ParallelCommandGroup(
+                SequentialCommandGroup(
+                    BallIntake.runRollersCommand(1.0),
                     SetIntakePosition(BallIntake.Position.Down.pose, BallIntake),
-                    InstantCommand({
-                        BallIntake.runRollers(1.0)
-                    }),
-                    InstantCommand({
-                        Indexer.setSpeed(1.0)
-                    })
                 )
             ).onFalse(
-                ParallelCommandGroup(
-                    InstantCommand({
-                        BallIntake.runRollers(0.0)
-                        Indexer.setSpeed(0.0)
-                    }),
-                    SetIntakePosition(BallIntake.Position.Up.pose, BallIntake)
+                SequentialCommandGroup(
+                    BallIntake.runRollersCommand(0.0),
+                    SetIntakePosition(BallIntake.Position.Up.pose, BallIntake),
                 )
             )
 
         JoystickButton(controller, XboxController.Button.kB.value)
             .onTrue(
-                InstantCommand({
-                    Indexer.setSpeed(1.0)
-                })
+                Indexer.setSpeedCommand(1.0)
             ).onFalse(
-                InstantCommand({
-                    Indexer.setSpeed(0.0)
-                }),
+                Indexer.setSpeedCommand(0.0)
             )
 
-        // indexer reverse, without lowering intake
-        JoystickButton(controller, XboxController.Button.kX.value)
+        Trigger { controller.pov == 90 }
             .onTrue(
-                InstantCommand({
-                    Indexer.setSpeed(-1.0)
-                })
-            ).onFalse(
-                InstantCommand({
-                    Indexer.setSpeed(0.0)
-                }),
+                SetIntakePosition(BallIntake.Position.Down.pose, BallIntake),
             )
 
-
-        JoystickButton(controller, XboxController.Button.kLeftBumper.value)
-            .onTrue(SetIntakePosition(BallIntake.Position.Stowed.pose, BallIntake))
+        Trigger { controller.pov == 270 }
+            .onTrue(
+                SetIntakePosition(BallIntake.Position.Up.pose, BallIntake),
+            )
     }
 
     val autonomousCommand: Command? = null

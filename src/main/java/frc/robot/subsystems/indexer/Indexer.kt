@@ -40,4 +40,10 @@ object Indexer : Subsystem {
     fun setSpeed(speed: Double) {
         io.setIndexerSpeed(speed)
     }
+
+    fun setSpeedCommand(speed: Double): Command {
+        return run {
+            setSpeed(speed)
+        }
+    }
 }
