@@ -71,6 +71,7 @@ object RobotContainer {
 
         JoystickButton(joystickLeft, 8).onTrue(
             InstantCommand({
+                println(">>> ZEROING GYRO!!! hi driver :D <<<")
                 Drivetrain.zeroGyro()
             })
         )
