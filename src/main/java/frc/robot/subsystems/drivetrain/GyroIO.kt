@@ -75,8 +75,15 @@ class NavXGyroIO(private var offset: Rotation3d = Rotation3d()) : GyroIO{
     }
 
     override fun setRotation(rotation: Rotation3d){
-        ahrs.reset()
-        offset = rotation
+        val currentRotation = Rotation3d(
+            Quaternion(
+                ahrs.quaternionW.toDouble(),
+                ahrs.quaternionX.toDouble(),
+                ahrs.quaternionY.toDouble(),
+                ahrs.quaternionZ.toDouble()
+            )
+        )
+        offset = currentRotation - rotation
     }
 
     override fun calibrate() {

@@ -31,7 +31,11 @@ object RobotContainer {
     val field = Field2d().also { SmartDashboard.putData("Field", it) }
     private val joystickLeft = Joystick(0)
     private val joystickRight = Joystick(1)
-    private val simJoystick = if(RobotBase.isSimulation()){Joystick(3)}else{null}
+    private val simJoystick = if (RobotBase.isSimulation()) {
+        Joystick(3)
+    } else {
+        null
+    }
     private val controller = XboxController(2)
 
 
@@ -41,13 +45,13 @@ object RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(RobotBase.isSimulation())
     }
 
-    private fun setDefaultCommands(){
+    private fun setDefaultCommands() {
 
         Drivetrain.defaultCommand =
             DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
         //  Turret.defaultCommand = Turret.trackPrimaryTarget()
         Indexer
-         Shooter
+        Shooter
         BallIntake
 //        Turret.defaultCommand = InstantCommand().also {it.addRequirements(Turret)}
 
@@ -62,7 +66,7 @@ object RobotContainer {
         JoystickButton(joystickLeft, 1).whileTrue(
             InstantCommand({
                 Shooter.spin(1.0)
-            }).also{ it.addRequirements(Shooter)}
+            }).also { it.addRequirements(Shooter) }
         ).whileFalse(
             InstantCommand({
                 Shooter.spin(0.2)
@@ -84,8 +88,8 @@ object RobotContainer {
                 Shooter.feed(0.0)
             }))
 
-        Trigger {controller.leftX > 0.1 || controller.leftX > 0.1}.whileTrue(
-            Turret.controlWithJoysticks({controller.leftX}, {controller.leftY})
+        Trigger { controller.leftX > 0.1 || controller.leftX > 0.1 }.whileTrue(
+            Turret.controlWithJoysticks({ controller.leftX }, { controller.leftY })
         )
 
         // JoystickButton(simJoystick, 1).onTrue(
@@ -128,15 +132,17 @@ object RobotContainer {
         )
 
         JoystickButton(controller, XboxController.Button.kRightBumper.value)
-            .onTrue(ParallelCommandGroup(
-                SetIntakePosition(BallIntake.Position.Down.pose, BallIntake),
-                InstantCommand({
-                    BallIntake.runRollers(1.0)
-                }),
-                InstantCommand({
-                    Indexer.setSpeed(1.0)
-                })
-            )).onFalse(
+            .onTrue(
+                ParallelCommandGroup(
+                    SetIntakePosition(BallIntake.Position.Down.pose, BallIntake),
+                    InstantCommand({
+                        BallIntake.runRollers(1.0)
+                    }),
+                    InstantCommand({
+                        Indexer.setSpeed(1.0)
+                    })
+                )
+            ).onFalse(
                 ParallelCommandGroup(
                     InstantCommand({
                         BallIntake.runRollers(0.0)
@@ -144,6 +150,17 @@ object RobotContainer {
                     }),
                     SetIntakePosition(BallIntake.Position.Up.pose, BallIntake)
                 )
+            )
+
+        JoystickButton(controller, XboxController.Button.kB.value)
+            .onTrue(
+                InstantCommand({
+                    Indexer.setSpeed(1.0)
+                })
+            ).onFalse(
+                InstantCommand({
+                    Indexer.setSpeed(0.0)
+                }),
             )
 
 
