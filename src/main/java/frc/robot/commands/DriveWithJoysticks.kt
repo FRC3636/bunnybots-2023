@@ -15,7 +15,7 @@ class DriveWithJoysticks(private val translationJoystick: Joystick, private val 
                 translationJoystick.y * MAX_SPEED_METERS_PER_SECOND,
                 translationJoystick.x * MAX_SPEED_METERS_PER_SECOND,
                 rotationJoystick.x * MAX_ROTATIONAL_SPEED,
-                Rotation2d()
+                Drivetrain.gyroInputs.rotation.toRotation2d()
             )
         )
     }

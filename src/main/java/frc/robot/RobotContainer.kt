@@ -42,13 +42,13 @@ object RobotContainer {
 
     private fun setDefaultCommands(){
 
-//        Drivetrain.defaultCommand =
-//            DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
+        Drivetrain.defaultCommand =
+            DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
         //  Turret.defaultCommand = Turret.trackPrimaryTarget()
         Indexer
-        // Shooter.defaultCommand = InstantCommand({
-        //     Shooter.spin(1.0)
-        // }).also {it.addRequirements(Shooter)}
+         Shooter.defaultCommand = InstantCommand({
+             Shooter.spin(0.2)
+         }).also {it.addRequirements(Shooter)}
         BallIntake
 //        Turret.defaultCommand = InstantCommand().also {it.addRequirements(Turret)}
 
@@ -58,6 +58,13 @@ object RobotContainer {
     private fun configureBindings() {
         // JoystickButton(controller, XboxController.Button.kY.value)
         //     .whileTrue(Indexer.manualIndexCommand)
+
+
+        JoystickButton(joystickRight, 1).whileTrue(
+            InstantCommand({
+                Shooter.spin(1.0)
+            }).also{ it.addRequirements(Shooter)}
+        )
 
         JoystickButton(joystickRight, 1)
             .onTrue(InstantCommand({
