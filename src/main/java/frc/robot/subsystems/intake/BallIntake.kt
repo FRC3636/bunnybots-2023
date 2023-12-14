@@ -23,7 +23,7 @@ object BallIntake : Intake() {
 
     enum class Position(val pose: Rotation2d){
         Up(Rotation2d(1.45)),
-        Down(Rotation2d(0.45)), // source: jackson
+        Down(Rotation2d(0.6)), // source: jackson
         Stowed(Rotation2d())
     }
 
