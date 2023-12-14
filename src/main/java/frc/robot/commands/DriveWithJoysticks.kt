@@ -10,8 +10,8 @@ class DriveWithJoysticks(private val translationJoystick: Joystick, private val 
     override fun getRequirements() = setOf(Drivetrain)
 
     override fun execute() {
-        val (tx, ty) = getXYWithDeadband(translationJoystick, DEADBAND)
-        val (rx, _) = getXYWithDeadband(rotationJoystick, DEADBAND)
+        val (tx, ty) = getXYWithDeadband(translationJoystick)
+        val (rx, _) = getXYWithDeadband(rotationJoystick)
         Drivetrain.drive(
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 ty * MAX_SPEED_METERS_PER_SECOND,
@@ -22,16 +22,11 @@ class DriveWithJoysticks(private val translationJoystick: Joystick, private val 
         )
     }
 
-    fun getXYWithDeadband(joystick: Joystick, deadband: Double): DoubleArray {
-        // Negative because joysticks are inverted
-        val xValue = -joystick.y * (joystick.z + 1) / 2
-        val yValue = -joystick.x * (joystick.z + 1) / 2
-
-
+    private fun getXYWithDeadband(joystick: Joystick): DoubleArray {
         // only apply deadzone if both axes are inside
-        return if (abs(xValue) < deadband && abs(yValue) < deadband) {
+        return if (abs(joystick.x) < DEADBAND && abs(joystick.y) < DEADBAND) {
             doubleArrayOf(0.0, 0.0)
-        } else doubleArrayOf(xValue, yValue)
+        } else doubleArrayOf(joystick.x, joystick.y)
     }
 
     internal companion object Constants {
