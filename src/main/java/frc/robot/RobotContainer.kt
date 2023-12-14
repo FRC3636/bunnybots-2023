@@ -163,6 +163,18 @@ object RobotContainer {
                 }),
             )
 
+        // indexer reverse, without lowering intake
+        JoystickButton(controller, XboxController.Button.kX.value)
+            .onTrue(
+                InstantCommand({
+                    Indexer.setSpeed(-1.0)
+                })
+            ).onFalse(
+                InstantCommand({
+                    Indexer.setSpeed(0.0)
+                }),
+            )
+
 
         JoystickButton(controller, XboxController.Button.kLeftBumper.value)
             .onTrue(SetIntakePosition(BallIntake.Position.Stowed.pose, BallIntake))
