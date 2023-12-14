@@ -23,6 +23,7 @@ import edu.wpi.first.math.MathShared
 import edu.wpi.first.math.util.Units
 import ModuleIO
 import ModuleIO.Inputs
+import edu.wpi.first.math.geometry.Rotation3d
 
 // A singleton object representing the drivetrain.
 object Drivetrain : Subsystem {
@@ -124,7 +125,7 @@ object Drivetrain : Subsystem {
     }
 
     fun zeroGyro() {
-        gyro.reset()
+        gyro.setRotation(Rotation3d())
     }
 
     // Get the estimated pose of the drivetrain using the pose estimator.
