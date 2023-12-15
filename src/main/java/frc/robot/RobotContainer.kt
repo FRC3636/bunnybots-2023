@@ -91,16 +91,6 @@ object RobotContainer {
             })
         )
 
-        Trigger { controller.rightTriggerAxis >= 0.5 }
-            .onTrue(InstantCommand({
-                Shooter.feed(1.0)
-                Indexer.setSpeed(1.0)
-            }))
-            .onFalse(InstantCommand({
-                Shooter.feed(0.0)
-                Indexer.setSpeed(0.0)
-            }))
-
         // Operator bindings
 
         Trigger { controller.rightTriggerAxis >= 0.5 }
