@@ -1,19 +1,14 @@
 package frc.robot
 
-import edu.wpi.first.cameraserver.CameraServer
-import edu.wpi.first.cscore.HttpCamera
-import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.XboxController
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
-import edu.wpi.first.wpilibj2.command.Subsystem
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.commands.DriveWithJoysticks
@@ -48,6 +43,7 @@ object RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(RobotBase.isSimulation())
 
         LimelightHelpers.setCameraMode_Driver("limelight");
+        LimelightHelpers.setLEDMode_ForceOff("limelight")
     }
 
     private fun setDefaultCommands() {
