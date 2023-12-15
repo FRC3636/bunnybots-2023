@@ -342,7 +342,7 @@ public class LimelightHelpers {
         @JsonProperty("Detector")
         public LimelightTarget_Detector[] targets_Detector;
 
-        @JsonProperty("Barcode")
+        @JsonProperty("Bardcode")
         public LimelightTarget_Barcode[] targets_Barcode;
 
         public Results() {
