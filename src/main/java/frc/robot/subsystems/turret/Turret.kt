@@ -19,6 +19,7 @@ import frc.robot.utils.PIDCoefficients
 import frc.robot.utils.PIDController
 import frc.robot.RobotContainer
 import frc.robot.subsystems.targetvision.Limelight
+import frc.robot.subsystems.targetvision.TargetVisionIO
 import frc.robot.utils.LimelightHelpers
 import org.apache.commons.math3.analysis.function.Log
 import org.littletonrobotics.junction.Logger
@@ -38,7 +39,7 @@ object Turret : Subsystem {
 
     private val inputs = TurretIO.Inputs()
 
-    private val pidController = PIDController(PIDCoefficients(6.00, 0.000, 0.1))
+    private val pidController = PIDController(PIDCoefficients(10.00, 0.000, 0.1))
 
     private val mechanism = Mechanism2d(3.0, 3.0)
     private val mechanismRoot: MechanismRoot2d = mechanism.getRoot("climber", 1.5, 1.5)
@@ -107,32 +108,28 @@ object Turret : Subsystem {
 
     private fun getVolts(): Double {
         if (mode == TurretMode.Manual) {
-            println(">>> MANUAL")
             return speed
         }
 
         val targetPos = if (mode == TurretMode.Zero) {
             Rotation2d()
         } else {
-            println("${TargetVision.inputs.targets}")
-            val targets = TargetVision.inputs.targets.filter {
+            val inputs = TargetVisionIO.Inputs()
+            Limelight.updateInputs(inputs)
+            val targets = inputs.targets.filter {
                 it.className == if (DriverStation.getAlliance() == Alliance.Blue) {
                     "red"
                 } else {
                     "blue"
                 }
             }
-//            println("$targets")
 
             if (targets.isEmpty()) {
-                println(">>>> NO TARGETS")
                 return 0.0
-            } else {
-                println(">>>> ${targets.size} TARGETS")
             }
 
-            println(">>>> MOVING: ${targets.first().tx}")
-            Rotation2d.fromDegrees(targets.first().tx)
+            Logger.getInstance().recordOutput("Turret/tx", targets.first().tx)
+           ( (Rotation2d.fromDegrees(targets.first().tx) + Rotation2d.fromDegrees(speed * -2.0)) * -1.0) + angleToChassis
         }
 
         return pidController.calculate(
