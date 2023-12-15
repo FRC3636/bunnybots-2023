@@ -92,7 +92,6 @@ object Turret : Subsystem {
         val goingTowardsMaxValue = volts.sign == inputs.angle.degrees.sign
         if (atOrPastMaxValue && goingTowardsMaxValue)
         {
-            println("reached max angle, ignoring turn instruction")
             volts = 0.0
         }
         Logger.getInstance().recordOutput("Turret/Voltage", volts)

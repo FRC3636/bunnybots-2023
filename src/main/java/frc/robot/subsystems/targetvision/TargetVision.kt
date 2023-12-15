@@ -55,7 +55,6 @@ object TargetVision : Subsystem {
 
     override fun periodic() {
         io.updateInputs(inputs)
-        println(">>> PERIODIC ${inputs.targets}")
 
         Logger.getInstance().processInputs("Vision", inputs)
 //        for (target in targetsbyDistance) {
