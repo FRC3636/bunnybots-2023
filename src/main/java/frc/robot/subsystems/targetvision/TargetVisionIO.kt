@@ -7,6 +7,7 @@ import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.Timer
 import frc.robot.utils.LimelightHelpers
 import frc.robot.utils.LimelightHelpers.LimelightResults
+import frc.robot.utils.LimelightHelpers.Results
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import java.util.*

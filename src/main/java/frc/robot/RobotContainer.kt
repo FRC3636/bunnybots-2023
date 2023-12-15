@@ -1,14 +1,19 @@
 package frc.robot
 
+import edu.wpi.first.cameraserver.CameraServer
+import edu.wpi.first.cscore.HttpCamera
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.XboxController
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import edu.wpi.first.wpilibj2.command.Subsystem
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.commands.DriveWithJoysticks
@@ -17,6 +22,11 @@ import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.subsystems.indexer.Indexer
 import frc.robot.subsystems.intake.BallIntake
 import frc.robot.subsystems.shooter.Shooter
+import frc.robot.subsystems.turret.Turret
+import frc.robot.utils.LimelightHelpers
+import org.littletonrobotics.junction.Logger
+import kotlin.math.pow
+import kotlin.math.sign
 
 
 object RobotContainer {
@@ -31,11 +41,12 @@ object RobotContainer {
     }
     private val controller = XboxController(2)
 
-
     init {
         configureBindings()
         setDefaultCommands()
         DriverStation.silenceJoystickConnectionWarning(RobotBase.isSimulation())
+
+        LimelightHelpers.setCameraMode_Driver("limelight");
     }
 
     private fun setDefaultCommands() {
@@ -46,7 +57,18 @@ object RobotContainer {
         Indexer
         Shooter
         BallIntake
-//        Turret.defaultCommand = InstantCommand().also {it.addRequirements(Turret)}
+        Turret.defaultCommand = object : Command {
+            override fun execute() {
+                Turret.setSpeed(controller.leftX.pow(2) * controller.leftX.sign * -3.0)
+                Logger.getInstance().recordOutput("Turret/input", controller.leftX)
+            }
+
+            override fun isFinished(): Boolean {
+                return false
+            }
+
+            override fun getRequirements() = setOf(Turret)
+        }
 
     }
 
@@ -71,15 +93,15 @@ object RobotContainer {
             })
         )
 
-        JoystickButton(joystickRight, 1)
+        // Operator bindings
+
+        Trigger { controller.rightTriggerAxis >= 0.5 }
             .onTrue(InstantCommand({
                 Shooter.feed(1.0)
             }))
             .onFalse(InstantCommand({
                 Shooter.feed(0.0)
             }))
-
-        // Operator bindings
 
 //        Trigger { controller.leftX > 0.1 || controller.leftX > 0.1 }.whileTrue(
 //            Turret.controlWithJoysticks({ controller.leftX }, { controller.leftY })
@@ -112,11 +134,33 @@ object RobotContainer {
                 )
             )
 
-        JoystickButton(controller, XboxController.Button.kB.value)
+        JoystickButton(controller, XboxController.Button.kA.value)
             .onTrue(
                 Indexer.setSpeedCommand(1.0)
             ).onFalse(
                 Indexer.setSpeedCommand(0.0)
+            )
+
+        JoystickButton(controller, XboxController.Button.kX.value)
+            .onTrue(
+                InstantCommand({
+                    Turret.mode = Turret.TurretMode.Zero
+                })
+            ).onFalse(
+                InstantCommand({
+                    Turret.mode = Turret.TurretMode.Manual
+                })
+            )
+
+        JoystickButton(controller, XboxController.Button.kY.value)
+            .onTrue(
+                InstantCommand({
+                    Turret.mode = Turret.TurretMode.Follow
+                })
+            ).onFalse(
+                InstantCommand({
+                    Turret.mode = Turret.TurretMode.Manual
+                })
             )
 
         Trigger { controller.pov == 180 }
@@ -128,6 +172,22 @@ object RobotContainer {
             .onTrue(
                 SetIntakePosition(BallIntake.Position.Up.pose, BallIntake),
             )
+
+//        Trigger { controller.pov == 90 }
+//            .onTrue(
+//                Turret.setVoltageCommand(-1.0)
+//            )
+//                    .onFalse(
+//                        Turret.setVoltageCommand(0.0)
+//                    )
+//
+//        Trigger { controller.pov == 270 }
+//            .onTrue(
+//                Turret.setVoltageCommand(1.0)
+//            )
+//            .onFalse(
+//                Turret.setVoltageCommand(0.0)
+//            )
 
         Trigger { controller.rightTriggerAxis >= 0.1 }
             .onTrue(

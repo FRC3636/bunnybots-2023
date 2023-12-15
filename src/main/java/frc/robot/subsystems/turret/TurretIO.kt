@@ -55,6 +55,9 @@ class TurretIOReal(motorCAN: CANDevice) : TurretIO {
 
     override fun updateInputs(inputs: TurretIO.Inputs) {
         inputs.angle = Rotation2d(encoder.position)
+        if (inputs.angle.degrees >= 180) {
+            inputs.angle -= Rotation2d.fromDegrees(360.0)
+        }
         inputs.angularVelocityHz = Rotation2d(encoder.velocity)
     }
 
@@ -63,7 +66,7 @@ class TurretIOReal(motorCAN: CANDevice) : TurretIO {
     }
 
     internal companion object Constants {
-        const val GEAR_RATIO = -1
+        const val GEAR_RATIO = -1.0
     }
 }
 
