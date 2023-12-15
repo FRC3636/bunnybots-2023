@@ -1,30 +1,24 @@
 package frc.robot.subsystems.turret
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d
-import edu.wpi.first.wpilibj2.command.CommandBase
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.CANDevice
 import frc.robot.subsystems.drivetrain.Drivetrain
-import frc.robot.subsystems.targetvision.TargetVision
-import frc.robot.utils.PIDCoefficients
-import frc.robot.utils.PIDController
-import frc.robot.RobotContainer
 import frc.robot.subsystems.targetvision.Limelight
 import frc.robot.subsystems.targetvision.TargetVisionIO
 import frc.robot.utils.LimelightHelpers
-import org.apache.commons.math3.analysis.function.Log
+import frc.robot.utils.PIDCoefficients
+import frc.robot.utils.PIDController
 import org.littletonrobotics.junction.Logger
 import kotlin.math.absoluteValue
-import kotlin.math.atan2
 import kotlin.math.sign
 
 
@@ -63,9 +57,11 @@ object Turret : Subsystem {
             when (value) {
                 TurretMode.Follow -> {
                     LimelightHelpers.setCameraMode_Processor("limelight")
+                    LimelightHelpers.setLEDMode_ForceOn("limelight")
                 }
                 else -> {
                     LimelightHelpers.setCameraMode_Driver("limelight")
+                    LimelightHelpers.setLEDMode_ForceOff("limelight")
                 }
             }
         }
