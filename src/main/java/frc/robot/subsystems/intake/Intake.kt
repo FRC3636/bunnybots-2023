@@ -79,9 +79,9 @@ abstract class Intake : Subsystem {
     }
 
     fun runRollersCommand(speed: Double): Command {
-        return runOnce {
+        return InstantCommand({
             this.runRollers(speed);
-        }
+        })
     }
 
     fun generateProfile(position: Rotation2d): TrapezoidProfile {

@@ -1,10 +1,13 @@
 package frc.robot.subsystems.targetvision
 
 
+import edu.wpi.first.cameraserver.CameraServer
+import edu.wpi.first.cscore.HttpCamera
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.util.Units
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj2.command.Subsystem
 import frc.robot.utils.LimelightHelpers.LimelightTarget_Detector
 import org.littletonrobotics.junction.Logger
@@ -17,7 +20,7 @@ import kotlin.math.tan
 object TargetVision : Subsystem {
 
     private val io: TargetVisionIO = Limelight
-    private val inputs: TargetVisionIO.Inputs = TargetVisionIO.Inputs()
+    val inputs: TargetVisionIO.Inputs = TargetVisionIO.Inputs()
 
 
     private fun getDistance(target: LimelightTarget_Detector): Double {
@@ -47,17 +50,19 @@ object TargetVision : Subsystem {
         0.0
     }
 
+    val httpCamera = HttpCamera("CoprocessorCamera", "http://10.36.36.11:5800/")
+
 
     override fun periodic() {
         io.updateInputs(inputs)
 
         Logger.getInstance().processInputs("Vision", inputs)
-        for (target in targetsbyDistance) {
-            if (target.first.classID == opposingAllianceId) {
-
-                addMeasurement(takeTargetSample(target.first))
-            }
-        }
+//        for (target in targetsbyDistance) {
+//            if (target.first.classID == opposingAllianceId) {
+//
+//                addMeasurement(takeTargetSample(target.first))
+//            }
+//        }
 
 
     }
@@ -74,6 +79,12 @@ object TargetVision : Subsystem {
 
         return TargetSample(inputs.lastUpdateTimestamp, target)
 
+    }
+
+    init {
+        CameraServer.addCamera(httpCamera)
+        Shuffleboard.getTab("Vision")
+            .add(httpCamera)
     }
 
 

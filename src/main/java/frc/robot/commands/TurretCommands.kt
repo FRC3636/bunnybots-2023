@@ -112,9 +112,9 @@ class AimAtTarget : CommandBase(){
 
 
     override fun execute() {
-        if (TargetVision.hasTargets) {
-            Turret.setTarget(findTargetRotation())
-        }
+//        if (TargetVision.hasTargets) {
+//            Turret.setSpeed(findTargetRotation())
+//        }
     }
 
 
