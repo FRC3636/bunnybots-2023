@@ -1,5 +1,7 @@
 package frc.robot
 
+import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.RobotBase
@@ -9,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.commands.DriveWithJoysticks
@@ -201,7 +204,10 @@ object RobotContainer {
             )
     }
 
-    val autonomousCommand: Command? = null
-
-
+    val autonomousCommand: Command = SequentialCommandGroup(
+        InstantCommand({ Drivetrain.drive(ChassisSpeeds(15.0, 15.0, 0.0)) }
+        ),
+        WaitCommand(4.0),
+        InstantCommand({ Drivetrain.drive(ChassisSpeeds(0.0, 0.0, 0.0)) })
+    )
 }
