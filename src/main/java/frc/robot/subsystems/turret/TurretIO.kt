@@ -39,18 +39,25 @@ class TurretIOReal(motorCAN: CANDevice) : TurretIO {
 
 
     private val motor = CANSparkMax(motorCAN.id, CANSparkMaxLowLevel.MotorType.kBrushless)
+
     private val encoder = motor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle)
 
 
     init {
-        encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO
-        encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
+        motor.encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO
         motor.encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
-        motor.encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
+
+        encoder.velocityConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO / 60
+        encoder.positionConversionFactor = Units.rotationsToRadians(1.0) * GEAR_RATIO
+        
+        motor.burnFlash()
     }
 
     override fun updateInputs(inputs: TurretIO.Inputs) {
         inputs.angle = Rotation2d(encoder.position)
+        if (inputs.angle.degrees >= 180) {
+            inputs.angle -= Rotation2d.fromDegrees(360.0)
+        }
         inputs.angularVelocityHz = Rotation2d(encoder.velocity)
     }
 
@@ -59,7 +66,7 @@ class TurretIOReal(motorCAN: CANDevice) : TurretIO {
     }
 
     internal companion object Constants {
-        const val GEAR_RATIO = 5.0
+        const val GEAR_RATIO = -1.0
     }
 }
 

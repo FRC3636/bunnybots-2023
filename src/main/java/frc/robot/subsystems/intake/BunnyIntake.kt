@@ -1,24 +1,24 @@
-package frc.robot.subsystems.intake
+// package frc.robot.subsystems.intake
 
-import edu.wpi.first.math.controller.ArmFeedforward
-import edu.wpi.first.math.geometry.Rotation2d
-import frc.robot.utils.PIDCoefficients
-import frc.robot.utils.PIDController
+// import edu.wpi.first.math.controller.ArmFeedforward
+// import edu.wpi.first.math.geometry.Rotation2d
+// import frc.robot.utils.PIDCoefficients
+// import frc.robot.utils.PIDController
 
-object BunnyIntake : Intake() {
+// object BunnyIntake : Intake() {
 
-    override val pidController = PIDController(PIDCoefficients())
+//     override val pidController = PIDController(PIDCoefficients())
 
-    override val feedForward = ArmFeedforward(0.0,0.0,0.0)
+//     override val feedForward = ArmFeedforward(0.0,0.0,0.0)
 
-    override val io: IntakeIO = BallIntakeIOReal()
+//     override val io: IntakeIO = BallIntakeIOReal()
 
-    override val inputs = IntakeIO.Inputs()
+//     override val inputs = IntakeIO.Inputs()
 
-    override val name = "Bunny"
+//     override val name = "Bunny"
 
-    enum class Postition(pose: Rotation2d){
-        Up(Rotation2d()),
-        Down(Rotation2d())
-    }
-}
+//     enum class Postition(pose: Rotation2d){
+//         Up(Rotation2d()),
+//         Down(Rotation2d())
+//     }
+// }

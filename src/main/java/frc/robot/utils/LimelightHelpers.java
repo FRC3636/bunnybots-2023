@@ -267,6 +267,9 @@ public class LimelightHelpers {
         @JsonProperty("typ")
         public double ty_pixels;
 
+        @JsonProperty("pts")
+        public double[] pts;
+
         public LimelightTarget_Detector() {
         }
     }
@@ -342,7 +345,7 @@ public class LimelightHelpers {
         @JsonProperty("Detector")
         public LimelightTarget_Detector[] targets_Detector;
 
-        @JsonProperty("Barcode")
+        @JsonProperty("Bardcode")
         public LimelightTarget_Barcode[] targets_Barcode;
 
         public Results() {

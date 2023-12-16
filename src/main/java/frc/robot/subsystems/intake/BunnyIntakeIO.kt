@@ -1,10 +1,10 @@
-package frc.robot.subsystems.intake
+// package frc.robot.subsystems.intake
 
-import frc.robot.CANDevice
+// import frc.robot.CANDevice
 
-class BunnyIntakeIO : IntakeIOReal(CANDevice.BunnyIntakeArmRoller.id, CANDevice.BallIntakeRollerMotor.id, GEAR_RATIO) {
+// class BunnyIntakeIO : IntakeIOReal(CANDevice.BunnyIntakeArmRoller.id, CANDevice.BallIntakeRollerMotor.id, GEAR_RATIO) {
 
-    internal companion object Constants{
-        const val GEAR_RATIO = 1.0
-    }
-}
+//     internal companion object Constants{
+//         const val GEAR_RATIO = 1.0
+//     }
+// }
