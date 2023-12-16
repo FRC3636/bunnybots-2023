@@ -96,43 +96,35 @@ object RobotContainer {
 
         // Operator bindings
 
-        Trigger { controller.rightTriggerAxis >= 0.5 }
-            .or(JoystickButton(joystickRight, 1))
-            .onTrue(InstantCommand({
+        Trigger { controller.rightTriggerAxis >= 0.5 }.or(JoystickButton(joystickRight, 1)).onTrue(InstantCommand({
                 Shooter.feed(1.0)
                 Indexer.setSpeed(1.0)
-            }))
-            .onFalse(InstantCommand({
+            })).onFalse(InstantCommand({
                 Shooter.feed(0.0)
                 Indexer.setSpeed(0.0)
             }))
 
-        Trigger { controller.leftTriggerAxis >= 0.5 }
-            .onTrue(
+        Trigger { controller.leftTriggerAxis >= 0.5 }.onTrue(
                 SequentialCommandGroup(
                     BallIntake.runRollersCommand(-1.0),
                 )
-            )
-            .onFalse(
+            ).onFalse(
                 SequentialCommandGroup(
                     BallIntake.runRollersCommand(0.0),
                     SetIntakePosition(BallIntake.Position.Up.pose, BallIntake),
                 )
             )
 
-        JoystickButton(controller, XboxController.Button.kLeftBumper.value)
-            .onTrue(
+        JoystickButton(controller, XboxController.Button.kLeftBumper.value).onTrue(
                 SequentialCommandGroup(
                     BallIntake.runRollersCommand(0.25),
                     SetIntakePosition(BallIntake.Position.Down.pose, BallIntake),
                 )
-            )
-            .onFalse(
+            ).onFalse(
                 BallIntake.runRollersCommand(0.0)
             )
 
-        JoystickButton(controller, XboxController.Button.kRightBumper.value)
-            .onTrue(
+        JoystickButton(controller, XboxController.Button.kRightBumper.value).onTrue(
                 SequentialCommandGroup(
                     BallIntake.runRollersCommand(1.0),
                     SetIntakePosition(BallIntake.Position.Down.pose, BallIntake),
@@ -146,27 +138,22 @@ object RobotContainer {
                 )
             )
 
-        JoystickButton(controller, XboxController.Button.kA.value)
-            .onTrue(
+        JoystickButton(controller, XboxController.Button.kA.value).onTrue(
                 Indexer.setSpeedCommand(1.0)
             ).onFalse(
                 Indexer.setSpeedCommand(0.0)
             )
 
-        JoystickButton(controller, XboxController.Button.kB.value)
-            .or(JoystickButton(joystickLeft, 1))
-            .whileTrue(
-                InstantCommand({
-                    Shooter.spin(1.0)
-                }).also { it.addRequirements(Shooter) }
-            ).whileFalse(
+        JoystickButton(controller, XboxController.Button.kB.value).or(JoystickButton(joystickLeft, 1))
+            .whileTrue(InstantCommand({
+                Shooter.spin(1.0)
+            }).also { it.addRequirements(Shooter) }).whileFalse(
                 InstantCommand({
                     Shooter.spin(0.2)
                 }, Shooter)
             )
 
-        JoystickButton(controller, XboxController.Button.kX.value)
-            .onTrue(
+        JoystickButton(controller, XboxController.Button.kX.value).onTrue(
                 InstantCommand({
                     Turret.mode = Turret.TurretMode.Zero
                 })
@@ -176,8 +163,7 @@ object RobotContainer {
                 })
             )
 
-        JoystickButton(controller, XboxController.Button.kY.value)
-            .onTrue(
+        JoystickButton(controller, XboxController.Button.kY.value).onTrue(
                 InstantCommand({
                     Turret.mode = Turret.TurretMode.Follow
                 })
@@ -187,23 +173,29 @@ object RobotContainer {
                 })
             )
 
-        Trigger { controller.pov == 180 }
-            .onTrue(
+        Trigger { controller.pov == 180 }.onTrue(
                 SetIntakePosition(BallIntake.Position.Down.pose, BallIntake),
             )
 
-        Trigger { controller.pov == 0 }
-            .onTrue(
+        Trigger { controller.pov == 0 }.onTrue(
                 SetIntakePosition(BallIntake.Position.Up.pose, BallIntake),
             )
     }
 
 
-
     val autonomousCommand: Command = SequentialCommandGroup(
-        InstantCommand({ Drivetrain.drive(ChassisSpeeds(if (DriverStation.getAlliance() == DriverStation.Alliance.Red) { -2.0 } else { 2.0 }, 0.0, 0.0)) }, Drivetrain
-        ),
-        WaitCommand(2.0),
-        InstantCommand({ Drivetrain.drive(ChassisSpeeds(0.0, 0.0, 0.0)) }, Drivetrain)
+        InstantCommand(
+            {
+                Drivetrain.drive(
+                    ChassisSpeeds(
+                        if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
+                            -2.0
+                        } else {
+                            2.0
+                        }, 0.0, 0.0
+                    )
+                )
+            }, Drivetrain
+        ), WaitCommand(5.0), InstantCommand({ Drivetrain.drive(ChassisSpeeds(0.0, 0.0, 0.0)) }, Drivetrain)
     )
 }
