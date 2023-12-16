@@ -45,7 +45,7 @@ object RobotContainer {
         setDefaultCommands()
         DriverStation.silenceJoystickConnectionWarning(RobotBase.isSimulation())
 
-        LimelightHelpers.setCameraMode_Driver("limelight");
+        LimelightHelpers.setCameraMode_Driver("limelight")
         LimelightHelpers.setLEDMode_ForceOff("limelight")
     }
 
