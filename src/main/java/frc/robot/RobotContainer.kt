@@ -1,6 +1,7 @@
 package frc.robot
 
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.RobotBase
@@ -11,9 +12,11 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.commands.DriveWithJoysticks
+import frc.robot.commands.MobilityAuto
 import frc.robot.commands.SetIntakePosition
 import frc.robot.subsystems.drivetrain.Drivetrain
 import frc.robot.subsystems.indexer.Indexer
@@ -38,7 +41,7 @@ object RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(RobotBase.isSimulation())
     }
 
-    private fun setDefaultCommands(){
+    private fun setDefaultCommands() {
         Drivetrain.defaultCommand =
             DriveWithJoysticks(translationJoystick = joystickLeft, rotationJoystick = joystickRight)
         Turret.defaultCommand = Turret.trackPrimaryTarget()
@@ -64,20 +67,22 @@ object RobotContainer {
             }))
 
 
-        Trigger {controller.leftX > 0.1 || controller.leftX > 0.1}.whileTrue(
-            Turret.controlWithJoysticks({controller.leftX}, {controller.leftY})
+        Trigger { controller.leftX > 0.1 || controller.leftX > 0.1 }.whileTrue(
+            Turret.controlWithJoysticks({ controller.leftX }, { controller.leftY })
         )
 
         JoystickButton(controller, XboxController.Button.kRightBumper.value)
-            .onTrue(ParallelCommandGroup(
-                SetIntakePosition(BallIntake.Position.Down.pose, BallIntake),
-                InstantCommand({
-                    BallIntake.runRollers(1.0)
-                }),
-                InstantCommand({
-                    Indexer.setSpeed(1.0)
-                })
-            )).onFalse(
+            .onTrue(
+                ParallelCommandGroup(
+                    SetIntakePosition(BallIntake.Position.Down.pose, BallIntake),
+                    InstantCommand({
+                        BallIntake.runRollers(1.0)
+                    }),
+                    InstantCommand({
+                        Indexer.setSpeed(1.0)
+                    })
+                )
+            ).onFalse(
                 SequentialCommandGroup(
                     SetIntakePosition(BallIntake.Position.Up.pose, BallIntake),
                     InstantCommand({
@@ -91,7 +96,10 @@ object RobotContainer {
             .onTrue(SetIntakePosition(BallIntake.Position.Stowed.pose, BallIntake))
     }
 
-    val autonomousCommand: Command? = null
-
-
+    val autonomousCommand: Command = SequentialCommandGroup(
+        InstantCommand({ Drivetrain.drive(ChassisSpeeds(15.0, 15.0, 0.0)) }
+        ),
+        WaitCommand(4.0),
+        InstantCommand({ Drivetrain.drive(ChassisSpeeds(0.0, 0.0, 0.0)) })
+    )
 }
