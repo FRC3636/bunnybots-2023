@@ -201,9 +201,9 @@ object RobotContainer {
 
 
     val autonomousCommand: Command = SequentialCommandGroup(
-        InstantCommand({ Drivetrain.drive(ChassisSpeeds(1.0, 0.0, 0.0)) }, Drivetrain
+        InstantCommand({ Drivetrain.drive(ChassisSpeeds(if (DriverStation.getAlliance() == DriverStation.Alliance.Red) { -2.0 } else { 2.0 }, 0.0, 0.0)) }, Drivetrain
         ),
-        WaitCommand(4.0),
+        WaitCommand(2.0),
         InstantCommand({ Drivetrain.drive(ChassisSpeeds(0.0, 0.0, 0.0)) }, Drivetrain)
     )
 }
