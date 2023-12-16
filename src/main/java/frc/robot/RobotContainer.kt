@@ -45,7 +45,7 @@ object RobotContainer {
         setDefaultCommands()
         DriverStation.silenceJoystickConnectionWarning(RobotBase.isSimulation())
 
-        LimelightHelpers.setCameraMode_Driver("limelight");
+        LimelightHelpers.setCameraMode_Driver("limelight")
         LimelightHelpers.setLEDMode_ForceOff("limelight")
     }
 
@@ -109,10 +109,17 @@ object RobotContainer {
 
         Trigger { controller.leftTriggerAxis >= 0.5 }
             .onTrue(
-                Indexer.setSpeedCommand(-1.0)
+                SequentialCommandGroup(
+                    Indexer.setSpeedCommand(-1.0),
+                    BallIntake.runRollersCommand(-1.0),
+                )
             )
             .onFalse(
-                Indexer.setSpeedCommand(0.0)
+                SequentialCommandGroup(
+                    Indexer.setSpeedCommand(0.0),
+                    BallIntake.runRollersCommand(0.0),
+                    SetIntakePosition(BallIntake.Position.Up.pose, BallIntake),
+                )
             )
 
         JoystickButton(controller, XboxController.Button.kLeftBumper.value)
