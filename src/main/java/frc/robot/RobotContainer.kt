@@ -94,16 +94,6 @@ object RobotContainer {
             })
         )
 
-        Trigger { controller.rightTriggerAxis >= 0.5 }
-            .onTrue(InstantCommand({
-                Shooter.feed(1.0)
-                Indexer.setSpeed(1.0)
-            }))
-            .onFalse(InstantCommand({
-                Shooter.feed(0.0)
-                Indexer.setSpeed(0.0)
-            }))
-
         // Operator bindings
 
         Trigger { controller.rightTriggerAxis >= 0.5 }
@@ -166,14 +156,14 @@ object RobotContainer {
         JoystickButton(controller, XboxController.Button.kB.value)
             .or(JoystickButton(joystickLeft, 1))
             .whileTrue(
-            InstantCommand({
-                Shooter.spin(1.0)
-            }).also { it.addRequirements(Shooter) }
-        ).whileFalse(
-            InstantCommand({
-                Shooter.spin(0.2)
-            }, Shooter)
-        )
+                InstantCommand({
+                    Shooter.spin(1.0)
+                }).also { it.addRequirements(Shooter) }
+            ).whileFalse(
+                InstantCommand({
+                    Shooter.spin(0.2)
+                }, Shooter)
+            )
 
         JoystickButton(controller, XboxController.Button.kX.value)
             .onTrue(
@@ -206,18 +196,9 @@ object RobotContainer {
             .onTrue(
                 SetIntakePosition(BallIntake.Position.Up.pose, BallIntake),
             )
-
-        Trigger { controller.rightTriggerAxis >= 0.1 }
-            .onTrue(
-                SequentialCommandGroup(
-                    BallIntake.runRollersCommand(0.25),
-                    SetIntakePosition(BallIntake.Position.Down.pose, BallIntake),
-                )
-            )
-            .onFalse(
-                BallIntake.runRollersCommand(0.0)
-            )
     }
+
+
 
     val autonomousCommand: Command = SequentialCommandGroup(
         InstantCommand({ Drivetrain.drive(ChassisSpeeds(1.0, 0.0, 0.0)) }, Drivetrain
