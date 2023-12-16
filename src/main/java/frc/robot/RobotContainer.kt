@@ -45,7 +45,7 @@ object RobotContainer {
         setDefaultCommands()
         DriverStation.silenceJoystickConnectionWarning(RobotBase.isSimulation())
 
-        LimelightHelpers.setCameraMode_Driver("limelight")
+        LimelightHelpers.setCameraMode_Driver("limelight");
         LimelightHelpers.setLEDMode_ForceOff("limelight")
     }
 
@@ -222,7 +222,7 @@ object RobotContainer {
     }
 
     val autonomousCommand: Command = SequentialCommandGroup(
-        InstantCommand({ Drivetrain.drive(ChassisSpeeds(15.0, 0.0, 0.0)) }
+        InstantCommand({ Drivetrain.drive(ChassisSpeeds(4.0, 0.0, 0.0)) }
         ),
         WaitCommand(4.0),
         InstantCommand({ Drivetrain.drive(ChassisSpeeds(0.0, 0.0, 0.0)) })
