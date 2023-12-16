@@ -1,5 +1,7 @@
 package frc.robot
 
+import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.RobotBase
@@ -9,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import frc.robot.commands.DriveWithJoysticks
@@ -42,7 +45,7 @@ object RobotContainer {
         setDefaultCommands()
         DriverStation.silenceJoystickConnectionWarning(RobotBase.isSimulation())
 
-        LimelightHelpers.setCameraMode_Driver("limelight");
+        LimelightHelpers.setCameraMode_Driver("limelight")
         LimelightHelpers.setLEDMode_ForceOff("limelight")
     }
 
@@ -116,10 +119,17 @@ object RobotContainer {
 
         Trigger { controller.leftTriggerAxis >= 0.5 }
             .onTrue(
-                Indexer.setSpeedCommand(-1.0)
+                SequentialCommandGroup(
+                    Indexer.setSpeedCommand(-1.0),
+                    BallIntake.runRollersCommand(-1.0),
+                )
             )
             .onFalse(
-                Indexer.setSpeedCommand(0.0)
+                SequentialCommandGroup(
+                    Indexer.setSpeedCommand(0.0),
+                    BallIntake.runRollersCommand(0.0),
+                    SetIntakePosition(BallIntake.Position.Up.pose, BallIntake),
+                )
             )
 
         JoystickButton(controller, XboxController.Button.kLeftBumper.value)
@@ -211,7 +221,10 @@ object RobotContainer {
             )
     }
 
-    val autonomousCommand: Command? = null
-
-
+    val autonomousCommand: Command = SequentialCommandGroup(
+        InstantCommand({ Drivetrain.drive(ChassisSpeeds(15.0, 0.0, 0.0)) }
+        ),
+        WaitCommand(4.0),
+        InstantCommand({ Drivetrain.drive(ChassisSpeeds(0.0, 0.0, 0.0)) })
+    )
 }
