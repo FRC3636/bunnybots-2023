@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d
@@ -51,6 +52,10 @@ object Turret : Subsystem {
 //        }
 
     private var speed = 0.0
+    private var scanDelay = Timer()
+    private var objectsRecentlyDetected = true
+    private var scanDirection = 0.0
+
     var mode = TurretMode.Manual
         set(value) {
             field = value
@@ -72,6 +77,8 @@ object Turret : Subsystem {
         Follow,
     }
 
+    val atOrPastMaxValue: Boolean
+        get() = inputs.angle.degrees.absoluteValue >= MAX_ROTATION_DEGREES
 
     override fun periodic() {
 
@@ -88,7 +95,6 @@ object Turret : Subsystem {
 
 
         var volts = getVolts()
-        val atOrPastMaxValue = inputs.angle.degrees.absoluteValue >= MAX_ROTATION_DEGREES
         val goingTowardsMaxValue = volts.sign == inputs.angle.degrees.sign
         if (atOrPastMaxValue && goingTowardsMaxValue)
         {
@@ -109,9 +115,9 @@ object Turret : Subsystem {
         val targetPos = if (mode == TurretMode.Zero) {
             Rotation2d()
         } else {
-            val inputs = TargetVisionIO.Inputs()
-            Limelight.updateInputs(inputs)
-            val targets = inputs.targets.filter {
+            val camInputs = TargetVisionIO.Inputs()
+            Limelight.updateInputs(camInputs)
+            val targets = camInputs.targets.filter {
                 it.className == if (DriverStation.getAlliance() == Alliance.Blue) {
                     "red"
                 } else {
@@ -120,11 +126,27 @@ object Turret : Subsystem {
             }
 
             if (targets.isEmpty()) {
-                return 0.0
-            }
+                if (objectsRecentlyDetected) {
+                    scanDelay.start()
+                    objectsRecentlyDetected = false
+                    scanDirection = -inputs.angle.degrees.sign
+                }
 
+                if (!scanDelay.hasElapsed(0.5)) {
+                    return 0.0
+                }
+
+                if (atOrPastMaxValue && scanDirection == inputs.angle.degrees.sign) {
+                    scanDirection *= -1
+                }
+
+                return scanDirection * 2.0
+            }
+            objectsRecentlyDetected = true
+            scanDelay.reset()
+            scanDelay.stop()
             Logger.getInstance().recordOutput("Turret/tx", targets.first().tx)
-           ( (Rotation2d.fromDegrees(targets.first().tx) + Rotation2d.fromDegrees(speed * -2.0)) * -1.0) + angleToChassis
+            ( (Rotation2d.fromDegrees(targets.first().tx) + Rotation2d.fromDegrees(speed * -2.0)) * -1.0) + angleToChassis
         }
 
         return pidController.calculate(
