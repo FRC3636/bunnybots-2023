@@ -140,7 +140,7 @@ object Turret : Subsystem {
                     scanDirection *= -1
                 }
 
-                return scanDirection * 2.0
+                return scanDirection * 5.0
             }
             objectsRecentlyDetected = true
             scanDelay.reset()
@@ -165,7 +165,7 @@ object Turret : Subsystem {
         get() = inputs.angle.plus(Drivetrain.estimatedPose.rotation)
 
     // Constants
-    private const val MAX_ROTATION_DEGREES = 90.0
+    private const val MAX_ROTATION_DEGREES = 110.0
     fun setSpeedCommand(setpoint: Double): Command {
         return InstantCommand({
             this.setSpeed(setpoint)
