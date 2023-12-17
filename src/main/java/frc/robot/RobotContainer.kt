@@ -187,12 +187,11 @@ object RobotContainer {
         InstantCommand(
             {
                 Drivetrain.drive(
-                    ChassisSpeeds(
-                        if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
-                            -2.0
-                        } else {
-                            2.0
-                        }, 0.0, 0.0
+                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                        2.0,
+                        0.0,
+                        0.0,
+                        Drivetrain.gyroInputs.rotation.toRotation2d()
                     )
                 )
             }, Drivetrain
